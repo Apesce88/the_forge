@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+
+  <!-- ── PWA Meta Tags ── -->
+  <!-- These tell iPhone Safari to treat this as a standalone app -->
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="The Forge"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+
+  <!-- ── Viewport ── -->
+  <!-- viewport-fit=cover lets content go behind the notch/dynamic island -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
+  <title>The Forge</title>
+
+  <style>
+    /* ── Color Palette ── */
+    :root {
+      --black:      #0a0a0a;
+      --grey-dark:  #111111;
+      --grey-mid:   #1a1a1a;
+      --grey-card:  #222222;
+      --grey-light: #2e2e2e;
+      --grey-muted: #3a3a3a;
+      --lime:       #a3e635;
+      --lime-dark:  #5a7d10;
+      --lime-dim:   #1a2a08;
+      --red:        #ef4444;
+      --red-dim:    #2a0a0a;
+      --gold:       #f59e0b;
+      --gold-dim:   #2a1e04;
+      --white:      #ffffff;
+      --text-pri:   #f0f0f0;
+      --text-sec:   #888888;
+      --text-mute:  #444444;
+
+      /* Safe area insets for iPhone notch / home bar */
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Base ── */
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--text-pri);
+      font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      overflow: hidden; /* app shell handles its own scroll */
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── App Shell ── */
+    #app {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      /* Respect iPhone safe areas */
+      padding-top: var(--sat);
+      padding-bottom: var(--sab);
+      padding-left: var(--sal);
+      padding-right: var(--sar);
+      background: var(--black);
+    }
+
+    /* ── Screen Container ── */
+    /* This is the scrollable middle section between header and nav */
+    #screen {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    /* ── Bottom Navigation ── */
+    #bottom-nav {
+      display: flex;
+      background: var(--grey-dark);
+      border-top: 1px solid var(--grey-light);
+      padding: 8px 0 4px;
+      /* Extra padding for iPhone home bar */
+      padding-bottom: calc(4px + var(--sab));
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 0;
+      color: var(--text-mute);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+
+    .nav-btn.active {
+      color: var(--lime);
+    }
+
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── Home Screen ── */
+    .home-header {
+      padding: 32px 20px 20px;
+    }
+
+    .home-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 4px;
+    }
+
+    .home-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-pri);
+      letter-spacing: 0.02em;
+    }
+
+    .home-subtitle {
+      font-size: 13px;
+      color: var(--text-sec);
+      margin-top: 4px;
+    }
+
+    /* ── Placeholder content ── */
+    .placeholder-section {
+      padding: 20px;
+    }
+
+    .placeholder-card {
+      background: var(--grey-mid);
+      border: 1px solid var(--grey-light);
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .placeholder-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .placeholder-dot.lime  { background: var(--lime-dim);  border: 1px solid var(--lime); }
+    .placeholder-dot.red   { background: var(--red-dim);   border: 1px solid var(--red); }
+    .placeholder-dot.gold  { background: var(--gold-dim);  border: 1px solid var(--gold); }
+    .placeholder-dot.grey  { background: var(--grey-card); border: 1px solid var(--grey-muted); }
+
+    .placeholder-text .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .placeholder-text .label.lime  { color: var(--lime); }
+    .placeholder-text .label.red   { color: var(--red); }
+    .placeholder-text .label.gold  { color: var(--gold); }
+    .placeholder-text .label.grey  { color: var(--text-sec); }
+
+    .placeholder-text .title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-pri);
+    }
+
+    .placeholder-text .sub {
+      font-size: 11px;
+      color: var(--text-sec);
+      margin-top: 2px;
+    }
+
+    /* Phase label */
+    .phase-badge {
+      margin: 20px 20px 0;
+      background: var(--lime-dim);
+      border: 1px solid var(--lime-dark);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--lime);
+      line-height: 1.6;
+    }
+
+    .phase-badge strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Coming soon screen */
+    .coming-soon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 300px;
+      padding: 40px 20px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .coming-soon-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: var(--grey-mid);
+      border: 1px solid var(--grey-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .coming-soon-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--lime);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .coming-soon h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-pri);
+    }
+
+    .coming-soon p {
+      font-size: 13px;
+      color: var(--text-sec);
+      max-width: 260px;
+      line-height: 1.6;
+    }
+
+    .forge-mark {
+      font-size: 11px;
+      color: var(--text-mute);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Scrollable Screen Area ── -->
+  <div id="screen">
+    <!-- JS renders the current screen here -->
+  </div>
+
+  <!-- ── Bottom Navigation ── -->
+  <nav id="bottom-nav">
+
+    <button class="nav-btn active" id="nav-plan" onclick="navigate('plan')">
+      <!-- Fire emblem with upward arrow rising from within -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2 C10 5 7 7 7 11 C7 15.5 9.5 18 12 19 C14.5 18 17 15.5 17 11 C17 7 14 5 12 2 Z" stroke-width="1.6"/>
+        <line x1="12" y1="18" x2="12" y2="10" stroke-width="1.8"/>
+        <polyline points="9.5 12.5 12 10 14.5 12.5" stroke-width="1.8"/>
+      </svg>
+      Plan
+    </button>
+
+    <button class="nav-btn" id="nav-exercises" onclick="navigate('exercises')">
+      <!-- List icon -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <line x1="8" y1="6" x2="21" y2="6"/>
+        <line x1="8" y1="12" x2="21" y2="12"/>
+        <line x1="8" y1="18" x2="21" y2="18"/>
+        <circle cx="3" cy="6" r="1" fill="currentColor"/>
+        <circle cx="3" cy="12" r="1" fill="currentColor"/>
+        <circle cx="3" cy="18" r="1" fill="currentColor"/>
+      </svg>
+      My Exercises
+    </button>
+
+    <button class="nav-btn" id="nav-settings" onclick="navigate('settings')">
+      <!-- Gear icon -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      Settings
+    </button>
+
+  </nav>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  // This is the single source of truth for what screen is showing.
+  // In later phases, all app data (plan, library, settings) lives here too.
+  var state = {
+    view: 'plan'
+  };
+
+  // ── Navigate ───────────────────────────────────────────────────────────────
+  // Called when a nav button is tapped. Updates state and re-renders.
+  function navigate(view) {
+    state.view = view;
+
+    // Update nav button active states
+    document.querySelectorAll('.nav-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    var activeBtn = document.getElementById('nav-' + view);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // Render the correct screen
+    render();
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  // Master render function. Reads state.view and draws the right screen.
+  // In later phases this grows to handle day views, modals, forms etc.
+  function render() {
+    var screen = document.getElementById('screen');
+
+    if (state.view === 'plan')      { screen.innerHTML = renderPlan(); }
+    if (state.view === 'exercises') { screen.innerHTML = renderExercises(); }
+    if (state.view === 'settings')  { screen.innerHTML = renderSettings(); }
+  }
+
+  // ── Screen: Plan ───────────────────────────────────────────────────────────
+  function renderPlan() {
+    return `
+      <div class="home-header">
+        <div class="home-eyebrow">7-Day Program</div>
+        <div class="home-title">The Forge</div>
+        <div class="home-subtitle">Hypertrophy · Power · Speed</div>
+      </div>
+
+      <div class="phase-badge">
+        <strong>Phase 1 — Shell Complete</strong>
+        PWA installed · Color system active · Navigation working · Day cards coming in Phase 2
+      </div>
+
+      <div class="placeholder-section">
+        <div class="placeholder-card">
+          <div class="placeholder-dot lime"></div>
+          <div class="placeholder-text">
+            <div class="label lime">Day 01</div>
+            <div class="title">Chest &amp; Shoulders</div>
+            <div class="sub">Hypertrophy · volume priority</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot red"></div>
+          <div class="placeholder-text">
+            <div class="label red">Day 02</div>
+            <div class="title">Lower Body</div>
+            <div class="sub">Power + Hamstring</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot gold"></div>
+          <div class="placeholder-text">
+            <div class="label gold">Day 03</div>
+            <div class="title">Speed &amp; Agility</div>
+            <div class="sub">Athletic Movement</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot lime"></div>
+          <div class="placeholder-text">
+            <div class="label lime">Day 04</div>
+            <div class="title">Back &amp; Chest</div>
+            <div class="sub">Max / Power + Arms</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot red"></div>
+          <div class="placeholder-text">
+            <div class="label red">Day 05</div>
+            <div class="title">Lower Explosiveness</div>
+            <div class="sub">Plyos + Tempo Run</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot lime"></div>
+          <div class="placeholder-text">
+            <div class="label lime">Day 06</div>
+            <div class="title">Extra / Aux</div>
+            <div class="sub">Volume &amp; Size</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-dot grey"></div>
+          <div class="placeholder-text">
+            <div class="label grey">Day 07</div>
+            <div class="title">Recovery</div>
+            <div class="sub">True Rest</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; padding: 12px 0 32px;">
+        <div class="forge-mark">The Forge · Beta v0.1</div>
+      </div>
+    `;
+  }
+
+  // ── Screen: My Exercises ───────────────────────────────────────────────────
+  function renderExercises() {
+    return `
+      <div class="coming-soon">
+        <div class="coming-soon-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <circle cx="3" cy="6" r="1" fill="currentColor"/>
+            <circle cx="3" cy="12" r="1" fill="currentColor"/>
+            <circle cx="3" cy="18" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2>My Exercises</h2>
+        <p>Your personal exercise bank. Removed exercises will live here and can be added back to any workout day.</p>
+        <div class="forge-mark">Coming in Phase 6</div>
+      </div>
+    `;
+  }
+
+  // ── Screen: Settings ───────────────────────────────────────────────────────
+  function renderSettings() {
+    return `
+      <div class="coming-soon">
+        <div class="coming-soon-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </div>
+        <h2>Settings</h2>
+        <p>Gemini API key, auto-fill preferences, and app options will live here.</p>
+        <div class="forge-mark">Coming in Phase 7</div>
+      </div>
+    `;
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────────────
+  // Runs once when the page loads. Draws the initial screen.
+  render();
+</script>
+
+</body>
+</html>

@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-title" content="The Forge"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
   <title>The Forge</title>
  
@@ -31,8 +34,8 @@
       --text-pri:    #f0f0f0;
       --text-sec:    #888888;
       --text-mute:   #444444;
-      --font-title: 'Cinzel', serif;
-      --font-body:  'Bebas Neue', sans-serif;
+      --font-title:  'Cinzel', serif;
+      --font-body:   'Bebas Neue', sans-serif;
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
       --sal: env(safe-area-inset-left, 0px);
@@ -133,6 +136,7 @@
       text-transform: uppercase;
       color: var(--gold-metal);
       margin-bottom: 4px;
+      font-family: var(--font-body);
     }
  
     .home-title {
@@ -143,15 +147,12 @@
       font-family: var(--font-title);
     }
  
-    .home-title span {
-      color: var(--lime);
-    }
- 
     .home-subtitle {
       font-size: 12px;
       color: var(--text-sec);
       margin-top: 4px;
       letter-spacing: 0.04em;
+      font-family: var(--font-body);
     }
  
     /* ── Stats Row ── */
@@ -183,6 +184,7 @@
       margin-top: 3px;
       letter-spacing: 0.04em;
       line-height: 1.3;
+      font-family: var(--font-body);
     }
  
     /* ── Day Grid ── */
@@ -239,6 +241,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       margin-bottom: 6px;
+      font-family: var(--font-body);
     }
  
     .day-card.lime  .day-number { color: var(--lime); }
@@ -252,12 +255,14 @@
       color: var(--text-pri);
       line-height: 1.3;
       margin-bottom: 3px;
+      font-family: var(--font-title);
     }
  
     .day-subtitle {
       font-size: 11px;
       color: var(--text-sec);
       line-height: 1.4;
+      font-family: var(--font-body);
     }
  
     /* Color bar at bottom of card */
@@ -281,6 +286,250 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       padding: 20px 0 8px;
+      font-family: var(--font-body);
+    }
+ 
+     /* ── Day Detail View ── */
+    .day-detail-header {
+      padding: 20px 20px 16px;
+      margin-bottom: 4px;
+    }
+ 
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--grey-mid);
+      border: 1px solid var(--grey-light);
+      color: var(--text-sec);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+ 
+    .back-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+ 
+    .day-detail-badge {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+ 
+    .day-detail-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      font-family: var(--font-title);
+      color: var(--black);
+      flex-shrink: 0;
+    }
+ 
+    .day-detail-num.lime { background: var(--lime); }
+    .day-detail-num.red  { background: var(--red); }
+    .day-detail-num.gold { background: var(--gold); }
+    .day-detail-num.grey { background: var(--grey-muted); color: var(--text-pri); }
+ 
+    .day-detail-info h1 {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: var(--font-title);
+      color: var(--text-pri);
+      line-height: 1.2;
+    }
+ 
+    .day-detail-info .detail-sub {
+      font-size: 13px;
+      font-family: var(--font-body);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+ 
+    .day-detail-info .detail-sub.lime { color: var(--lime); }
+    .day-detail-info .detail-sub.red  { color: var(--red); }
+    .day-detail-info .detail-sub.gold { color: var(--gold); }
+    .day-detail-info .detail-sub.grey { color: var(--text-sec); }
+ 
+    .day-focus-text {
+      font-size: 11px;
+      color: var(--text-mute);
+      font-family: var(--font-body);
+      letter-spacing: 0.06em;
+      padding: 8px 20px 0;
+    }
+ 
+    .detail-divider {
+      height: 1px;
+      background: var(--grey-mid);
+      margin: 14px 20px;
+    }
+ 
+    /* ── Tier Section ── */
+    .tier-section {
+      padding: 0 16px;
+      margin-bottom: 24px;
+    }
+ 
+    .tier-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--grey-mid);
+    }
+ 
+    .tier-icon {
+      font-size: 15px;
+    }
+ 
+    .tier-name {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-body);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+ 
+    .tier-name.lime { color: var(--lime); }
+    .tier-name.red  { color: var(--red); }
+    .tier-name.gold { color: var(--gold); }
+    .tier-name.grey { color: var(--text-sec); }
+ 
+    /* ── Exercise Card ── */
+    .ex-card {
+      background: #0d0d0d;
+      border: 1px solid var(--grey-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+ 
+    .ex-name {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-title);
+      color: var(--text-pri);
+      margin-bottom: 10px;
+    }
+ 
+    /* Equipment tabs */
+    .equip-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+ 
+    .equip-tab {
+      flex: 1;
+      padding: 5px 4px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      letter-spacing: 0.04em;
+      background: var(--grey-mid);
+      color: var(--text-mute);
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+ 
+    .equip-tab.active {
+      background: var(--grey-card);
+      color: var(--text-pri);
+    }
+ 
+    .equip-tab-emoji { font-size: 13px; }
+    .equip-tab-label { font-size: 9px; letter-spacing: 0.04em; }
+ 
+    .equip-content {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.5;
+      min-height: 20px;
+      font-family: 'Trebuchet MS', sans-serif;
+    }
+ 
+    /* ── Field Steps (Day 03 speed day) ── */
+    .field-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #0d0d0d;
+      border: 1px solid var(--grey-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+ 
+    .field-step-icon { font-size: 20px; flex-shrink: 0; }
+ 
+    .field-step-text {
+      font-size: 14px;
+      color: var(--text-sec);
+      line-height: 1.5;
+      font-family: 'Trebuchet MS', sans-serif;
+      padding-top: 2px;
+    }
+ 
+    /* ── Recovery Options ── */
+    .recovery-card {
+      background: #0d0d0d;
+      border: 1px solid var(--grey-light);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin: 0 16px 10px;
+    }
+ 
+    .recovery-icon { font-size: 24px; margin-bottom: 6px; }
+ 
+    .recovery-title {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-title);
+      color: var(--text-pri);
+      margin-bottom: 4px;
+    }
+ 
+    .recovery-desc {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.6;
+      font-family: 'Trebuchet MS', sans-serif;
+    }
+ 
+    /* ── Day note (e.g. tempo run) ── */
+    .day-note {
+      margin: 0 16px 20px;
+      background: var(--grey-dim, #111);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text-sec);
+      font-family: 'Trebuchet MS', sans-serif;
+      line-height: 1.5;
+      border: 1px solid var(--grey-light);
     }
  
     /* ── Coming Soon ── */
@@ -320,7 +569,7 @@
     .coming-soon h2 {
       font-size: 18px;
       font-weight: 700;
-      font-family: 'Cinzel', serif;
+      font-family: var(--font-title);
       color: var(--text-pri);
     }
  
@@ -331,15 +580,12 @@
       line-height: 1.6;
     }
  
-    .coming-soon .forge-mark {
-      padding: 8px 0 0;
-    }
+    .coming-soon .forge-mark { padding: 8px 0 0; }
   </style>
 </head>
 <body>
 <div id="app">
   <div id="screen"></div>
- 
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-plan" onclick="navigate('plan')">
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -349,7 +595,6 @@
       </svg>
       Plan
     </button>
- 
     <button class="nav-btn" id="nav-exercises" onclick="navigate('exercises')">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <line x1="8" y1="6" x2="21" y2="6"/>
@@ -361,7 +606,6 @@
       </svg>
       My Exercises
     </button>
- 
     <button class="nav-btn" id="nav-settings" onclick="navigate('settings')">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="3"/>
@@ -373,101 +617,349 @@
 </div>
  
 <script>
-  // ── Day Data ───────────────────────────────────────────────────────────────
-  // Each day has a color class matching our CSS: lime / red / gold / grey
-  var DAYS = [
-    { num:'01', title:'Back & Chest',      sub:'Max / Power + Arms', color:'lime' },
-    { num:'02', title:'Lower Body',        sub:'Power + Hamstring',  color:'red'  },
-    { num:'03', title:'Chest & Shoulders', sub:'Hypertrophy',        color:'lime' },
-    { num:'04', title:'Speed & Agility',   sub:'Athletic Movement',  color:'gold' },
-    { num:'05', title:'Extra / Aux',       sub:'Volume & Size',      color:'lime' },
-    { num:'06', title:'Lower Explosiveness', sub:'Plyos + Tempo Run',color:'red'  },
-    { num:'07', title:'Recovery',          sub:'True Rest',          color:'grey' },
-  ];
+// ── Full Workout Data ────────────────────────────────────────────────────────
+var DAYS = [
+  {
+    num:'01', title:'Back & Chest', sub:'Max / Power + Arms', color:'lime',
+    focus:'Heavy compounds · back thickness · arm volume',
+    tiers:[
+      { label:'Primary', icon:'🔥', exercises:[
+        { name:'Max Bench 3×5', fw:'Barbell bench press', mb:'Chest press machine loaded heavy', bw:'Weighted slow-tempo push-ups' },
+        { name:'Pull-Ups', fw:'Weighted pull-ups', mb:'Lat pulldown wide grip', bw:'Bodyweight pull-ups max sets' },
+      ]},
+      { label:'Secondary', icon:'💪', exercises:[
+        { name:'Bent-Over Rows (heavy)', fw:'Barbell bent-over row', mb:'Seated cable row heavy', bw:'Inverted row feet elevated' },
+        { name:'Lat Pulldown', fw:'DB pullover', mb:'Lat pulldown wide or close grip', bw:'Straight-arm push-down on low bar' },
+        { name:'Chest Fly', fw:'DB fly flat or incline', mb:'Pec deck or cable crossover', bw:'Wide push-up slow eccentric squeeze' },
+        { name:'Face Pulls', fw:'DB rear delt row', mb:'Cable face pulls', bw:'Prone T raises' },
+      ]},
+      { label:'Accessory', icon:'✦', exercises:[
+        { name:'Reverse Grip Curls', fw:'Barbell or DB reverse curl', mb:'Cable reverse curl', bw:'Pronated-grip pull-ups' },
+        { name:'Skull Crushers', fw:'EZ bar skull crushers', mb:'Cable pushdown straight bar', bw:'Close-grip or diamond push-ups' },
+        { name:'Obliques', fw:'DB or plate Russian twists', mb:'Cable woodchop', bw:'Russian twists or side plank dips' },
+      ]},
+    ]
+  },
+  {
+    num:'02', title:'Lower Body', sub:'Power + Hamstring', color:'red',
+    focus:'Explosiveness · injury prevention · eccentric focus',
+    tiers:[
+      { label:'Primary', icon:'🔥', exercises:[
+        { name:'Squat / Deadlift', fw:'Barbell back squat or trap bar DL', mb:'Hack squat or leg press heavy', bw:'Pistol squat or single-leg to bench' },
+        { name:'Box / Lateral Jumps', fw:'Weighted box jump (light DB)', mb:'Keep plyos pure — no machine', bw:'Box jumps, broad jumps, lateral bounds' },
+      ]},
+      { label:'Secondary', icon:'💪', exercises:[
+        { name:'RDL (eccentric)', fw:'DB or barbell RDL slow lower', mb:'Cable pull-through or band RDL', bw:'Single-leg RDL 3-sec lower' },
+        { name:'Leg Press (eccentric)', fw:'DB goblet squat 4-sec lower', mb:'Leg press machine slow eccentric', bw:'Bulgarian split squat 4-sec lower' },
+        { name:'Nordic Curls', fw:'Feet anchored under DB', mb:'Hamstring curl machine slow eccentric', bw:'Floor nordic with door anchor' },
+      ]},
+      { label:'Accessory', icon:'✦', exercises:[
+        { name:'KB / DB Swings', fw:'KB or DB swings', mb:'Cable hip hinge pull-through', bw:'Explosive glute bridge' },
+        { name:'Tricep Pushdowns', fw:'DB overhead extension', mb:'Cable pushdown', bw:'Diamond push-ups' },
+        { name:'Curls', fw:'DB or barbell curl', mb:'Cable curl or preacher machine', bw:'Chin-ups' },
+        { name:'Synergy Ab Circuit', fw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds', mb:'Cable crunch + machine rotation', bw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds' },
+      ]},
+    ]
+  },
+  {
+    num:'03', title:'Chest & Shoulders', sub:'Hypertrophy', color:'lime',
+    focus:'Width + thickness · volume priority',
+    tiers:[
+      { label:'Primary', icon:'🔥', exercises:[
+        { name:'Incline Press', fw:'Incline barbell or DB press', mb:'Incline chest press machine', bw:'Feet-elevated push-ups on bench' },
+        { name:'Overhead Press', fw:'DB or barbell standing OHP', mb:'Shoulder press machine', bw:'Pike push-ups, feet elevated' },
+        { name:'YTW Weighted', fw:'Light DB Y/T/W bent over', mb:'Cable Y/T/W low pulley', bw:'Prone Y/T/W raises on floor' },
+      ]},
+      { label:'Secondary', icon:'💪', exercises:[
+        { name:'Flat Press', fw:'DB or barbell flat bench', mb:'Chest press machine', bw:'Push-ups slow tempo' },
+        { name:'Shrugs', fw:'DB or barbell shrugs', mb:'Smith machine or cable shrugs', bw:'Scapular shrug holds' },
+        { name:'Upright Rows', fw:'DB or barbell upright row', mb:'Cable upright row', bw:'Prone T raises with pause' },
+        { name:'Lateral Raises', fw:'DB lateral raises', mb:'Cable or band lateral raises', bw:'Plank lateral arm raises' },
+      ]},
+      { label:'Accessory', icon:'✦', exercises:[
+        { name:'Dips', fw:'Weighted dips (DB between legs)', mb:'Assisted dip machine low assist', bw:'Bodyweight or bench dips' },
+        { name:'Hammer Curls', fw:'DB hammer curls', mb:'Cable rope curl neutral grip', bw:'Chin-ups close/neutral grip' },
+        { name:'Decline Press / Core', fw:'Decline DB press or plate sit-up', mb:'Cable crunch kneeling', bw:'Decline push-ups or V-ups' },
+      ]},
+    ]
+  },
+  {
+    num:'04', title:'Speed & Agility', sub:'Athletic Movement', color:'gold',
+    focus:'Football-specific · acceleration · change of direction',
+    field:[
+      { icon:'⚡', text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)' },
+      { icon:'🏃', text:'10-yard acceleration bursts × 6' },
+      { icon:'↔️', text:'Lateral shuffle + break drills × 4 each side' },
+      { icon:'🔄', text:'Backpedal to turn-and-run × 4 each side' },
+      { icon:'📐', text:'Cone / agility drill of choice (10 min)' },
+      { icon:'🧘', text:'Cool down + light stretch' },
+    ]
+  },
+  {
+    num:'05', title:'Extra / Aux', sub:'Volume & Size', color:'lime',
+    focus:'Unilateral volume · weak point mass · conditioning',
+    tiers:[
+      { label:'Primary', icon:'🔥', exercises:[
+        { name:'Single Arm DB Press', fw:'Single arm DB bench or floor press', mb:'Single arm cable press', bw:'Archer push-up (loads one side)' },
+        { name:'Meadows Row', fw:'DB Meadows row from floor (unilateral)', mb:'Single arm cable row', bw:'Single arm inverted row' },
+      ]},
+      { label:'Secondary', icon:'💪', exercises:[
+        { name:'Incline DB Curl', fw:'Incline bench DB curl (full stretch)', mb:'Low cable curl on incline bench', bw:'Chin-up with slow eccentric' },
+        { name:'Lateral Raise Drop Sets', fw:'3 DB weights descending, no rest', mb:'Cable lateral — drop weight × 3', bw:'Plank lateral raises to failure × 3' },
+        { name:'Chest-Supported Row', fw:'DB row on incline bench (chest supported)', mb:'Chest-supported row machine', bw:'Prone row with band anchored low' },
+        { name:'Cable Pull-Apart', fw:'Band pull-apart', mb:'Cable pull-apart at shoulder height', bw:'Prone Y raises slow tempo' },
+        { name:'Single-Leg RDL', fw:'DB single-leg RDL', mb:'Cable single-leg RDL', bw:'Bodyweight single-leg RDL slow' },
+      ]},
+      { label:'Accessory', icon:'✦', exercises:[
+        { name:'Speed Circuit 4–5 rounds', fw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s', mb:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s', bw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s' },
+      ]},
+    ]
+  },
+  {
+    num:'06', title:'Lower Explosiveness', sub:'Plyos + Tempo Run', color:'red',
+    focus:'Fast-twitch development · aerobic base',
+    tiers:[
+      { label:'Plyometric Block — do first', icon:'⚡', exercises:[
+        { name:'Broad Jumps', fw:'4 × 5 reps', mb:'4 × 5 reps', bw:'4 × 5 reps' },
+        { name:'Jump Squats', fw:'3 × 8 reps', mb:'3 × 8 reps', bw:'3 × 8 reps' },
+        { name:'Single-Leg Bounding', fw:'3 × 10 each side', mb:'3 × 10 each side', bw:'3 × 10 each side' },
+        { name:'Pogos', fw:'3 × 20 reps', mb:'3 × 20 reps', bw:'3 × 20 reps' },
+      ]},
+    ],
+    note:'🏃 Finish with 20–30 min tempo run at conversational pace'
+  },
+  {
+    num:'07', title:'Recovery', sub:'True Rest', color:'grey',
+    focus:'Rest or active recovery — listen to your body',
+    recovery:[
+      { icon:'😴', title:'True Rest', desc:'Full off day. Sleep in, eat well, let your body repair. This is training too.' },
+      { icon:'🚶', title:'Active Recovery', desc:'Easy 20–30 min walk or light jog, foam rolling, yoga focused on hips, hamstrings, thoracic spine.' },
+      { icon:'🧘', title:'Mobility Focus', desc:'30 min yoga: couch stretch, pigeon pose, doorway chest opener, cat-cow, world\'s greatest stretch.' },
+    ]
+  },
+];
  
-  // ── State ──────────────────────────────────────────────────────────────────
-  var state = { view: 'plan' };
+// ── State ──────────────────────────────────────────────────────────────────
+var state = {
+  view: 'plan',
+  dayIndex: null,
+  // Tracks which equipment tab is active per exercise card
+  // Key: "dayIndex-tierIndex-exIndex", Value: 0/1/2
+  equipTabs: {}
+};
  
-  // ── Navigate ───────────────────────────────────────────────────────────────
-  function navigate(view) {
-    state.view = view;
-    document.querySelectorAll('.nav-btn').forEach(function(b) {
-      b.classList.remove('active');
-    });
-    var btn = document.getElementById('nav-' + view);
-    if (btn) btn.classList.add('active');
-    render();
-  }
- 
-  // ── Render ─────────────────────────────────────────────────────────────────
-  function render() {
-    var screen = document.getElementById('screen');
-    if (state.view === 'plan')      screen.innerHTML = renderPlan();
-    if (state.view === 'exercises') screen.innerHTML = renderExercises();
-    if (state.view === 'settings')  screen.innerHTML = renderSettings();
-  }
- 
-  // ── Screen: Plan ───────────────────────────────────────────────────────────
-  function renderPlan() {
-    // Build day cards HTML
-    var cardsHTML = DAYS.map(function(d, i) {
-      return '<button class="day-card ' + d.color + '" onclick="tapDay(' + i + ')">'
-        + '<div class="day-number">Day ' + d.num + '</div>'
-        + '<div class="day-title">' + d.title + '</div>'
-        + '<div class="day-subtitle">' + d.sub + '</div>'
-        + '<div class="day-bar"></div>'
-        + '</button>';
-    }).join('');
- 
-    return ''
-      + '<div class="home-header">'
-      +   '<div class="home-eyebrow">7-Day Program</div>'
-      +   '<div class="home-title">The Forge</div>'
-      +   '<div class="home-subtitle">Hypertrophy &nbsp;·&nbsp; Power &nbsp;·&nbsp; Speed</div>'
-      + '</div>'
-      + '<div class="stats-row">'
-      +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Upper Days</div></div>'
-      +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Lower Days</div></div>'
-      +   '<div class="stat-card"><div class="stat-num">1+1</div><div class="stat-label">Speed + Aux</div></div>'
-      + '</div>'
-      + '<div class="day-grid">' + cardsHTML + '</div>'
-      + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.2</div>';
-  }
- 
-  // ── Day tap (placeholder — Phase 3 wires this up) ─────────────────────────
-  function tapDay(index) {
-    // Phase 3 will navigate to the day detail view
-    // For now just a visual confirmation it's tappable
-    var day = DAYS[index];
-    alert('Day ' + day.num + ' — ' + day.title + '\n\nFull workout view coming in Phase 3.');
-  }
- 
-  // ── Screen: My Exercises ───────────────────────────────────────────────────
-  function renderExercises() {
-    return '<div class="coming-soon">'
-      + '<div class="coming-soon-icon">'
-      +   '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>'
-      + '</div>'
-      + '<h2>My Exercises</h2>'
-      + '<p>Your personal exercise bank. Removed exercises live here and can be added back to any workout day.</p>'
-      + '<div class="forge-mark">Coming in Phase 6</div>'
-      + '</div>';
-  }
- 
-  // ── Screen: Settings ───────────────────────────────────────────────────────
-  function renderSettings() {
-    return '<div class="coming-soon">'
-      + '<div class="coming-soon-icon">'
-      +   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-      + '</div>'
-      + '<h2>Settings</h2>'
-      + '<p>Gemini API key, auto-fill preferences, and app options will live here.</p>'
-      + '<div class="forge-mark">Coming in Phase 7</div>'
-      + '</div>';
-  }
- 
-  // ── Boot ───────────────────────────────────────────────────────────────────
+// ── Navigate ───────────────────────────────────────────────────────────────
+function navigate(view) {
+  state.view = view;
+  state.dayIndex = null;
+  document.querySelectorAll('.nav-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  var btn = document.getElementById('nav-' + view);
+  if (btn) btn.classList.add('active');
   render();
+}
+ 
+// ── Open Day ───────────────────────────────────────────────────────────────
+function tapDay(index) {
+  state.view = 'day';
+  state.dayIndex = index;
+  state.equipTabs = {}; // reset tab selections when opening a new day
+  render();
+  // Scroll to top of screen
+  document.getElementById('screen').scrollTop = 0;
+}
+ 
+// ── Back to Plan ───────────────────────────────────────────────────────────
+function goBack() {
+  state.view = 'plan';
+  state.dayIndex = null;
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+ 
+// ── Switch Equipment Tab ───────────────────────────────────────────────────
+function switchTab(key, tabIndex) {
+  state.equipTabs[key] = tabIndex;
+  // Only re-render the specific exercise card for performance
+  var card = document.querySelector('[data-key="' + key + '"]');
+  if (card) {
+    var tabs = card.querySelectorAll('.equip-tab');
+    var content = card.querySelector('.equip-content');
+    var day = DAYS[state.dayIndex];
+    var parts = key.split('-');
+    var ti = parseInt(parts[1]);
+    var ei = parseInt(parts[2]);
+    var ex = day.tiers[ti].exercises[ei];
+    var vals = [ex.fw, ex.mb, ex.bw];
+    tabs.forEach(function(t, i) {
+      t.classList.toggle('active', i === tabIndex);
+    });
+    content.textContent = vals[tabIndex];
+  }
+}
+ 
+// ── Render ─────────────────────────────────────────────────────────────────
+function render() {
+  var screen = document.getElementById('screen');
+  if (state.view === 'plan')      screen.innerHTML = renderPlan();
+  if (state.view === 'day')       screen.innerHTML = renderDay(state.dayIndex);
+  if (state.view === 'exercises') screen.innerHTML = renderExercises();
+  if (state.view === 'settings')  screen.innerHTML = renderSettings();
+}
+ 
+// ── Screen: Plan ───────────────────────────────────────────────────────────
+function renderPlan() {
+  var cardsHTML = DAYS.map(function(d, i) {
+    return '<button class="day-card ' + d.color + '" onclick="tapDay(' + i + ')">'
+      + '<div class="day-number">Day ' + d.num + '</div>'
+      + '<div class="day-title">' + d.title + '</div>'
+      + '<div class="day-subtitle">' + d.sub + '</div>'
+      + '<div class="day-bar"></div>'
+      + '</button>';
+  }).join('');
+ 
+  return ''
+    + '<div class="home-header">'
+    +   '<div class="home-eyebrow">7-Day Program</div>'
+    +   '<div class="home-title">The Forge</div>'
+    +   '<div class="home-subtitle">Hypertrophy &nbsp;·&nbsp; Power &nbsp;·&nbsp; Speed</div>'
+    + '</div>'
+    + '<div class="stats-row">'
+    +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Upper Days</div></div>'
+    +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Lower Days</div></div>'
+    +   '<div class="stat-card"><div class="stat-num">1+1</div><div class="stat-label">Speed + Aux</div></div>'
+    + '</div>'
+    + '<div class="day-grid">' + cardsHTML + '</div>'
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.3</div>';
+}
+ 
+// ── Screen: Day Detail ─────────────────────────────────────────────────────
+function renderDay(index) {
+  var d = DAYS[index];
+  var c = d.color;
+  var html = '';
+ 
+  // Header
+  html += '<div class="day-detail-header">';
+  html += '<button class="back-btn" onclick="goBack()">'
+    + '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>'
+    + 'Back</button>';
+  html += '<div class="day-detail-badge">';
+  html += '<div class="day-detail-num ' + c + '">' + d.num + '</div>';
+  html += '<div class="day-detail-info">';
+  html += '<h1>' + d.title + '</h1>';
+  html += '<div class="detail-sub ' + c + '">' + d.sub + '</div>';
+  html += '</div></div></div>';
+  html += '<div class="day-focus-text">' + d.focus + '</div>';
+  html += '<div class="detail-divider"></div>';
+ 
+  // Field day (Speed & Agility)
+  if (d.field) {
+    html += '<div class="tier-section">';
+    d.field.forEach(function(step) {
+      html += '<div class="field-step">'
+        + '<div class="field-step-icon">' + step.icon + '</div>'
+        + '<div class="field-step-text">' + step.text + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+  }
+ 
+  // Recovery day
+  if (d.recovery) {
+    d.recovery.forEach(function(r) {
+      html += '<div class="recovery-card">'
+        + '<div class="recovery-icon">' + r.icon + '</div>'
+        + '<div class="recovery-title">' + r.title + '</div>'
+        + '<div class="recovery-desc">' + r.desc + '</div>'
+        + '</div>';
+    });
+  }
+ 
+  // Tier sections with exercises
+  if (d.tiers) {
+    d.tiers.forEach(function(tier, ti) {
+      html += '<div class="tier-section">';
+      html += '<div class="tier-label">'
+        + '<span class="tier-icon">' + tier.icon + '</span>'
+        + '<span class="tier-name ' + c + '">' + tier.label + '</span>'
+        + '</div>';
+ 
+      tier.exercises.forEach(function(ex, ei) {
+        var key = index + '-' + ti + '-' + ei;
+        var activeTab = state.equipTabs[key] || 0;
+        var vals = [ex.fw, ex.mb, ex.bw];
+        var tabs = [
+          { emoji:'🏋️', label:'Free Weight' },
+          { emoji:'⚙️', label:'Machine/Band' },
+          { emoji:'🤸', label:'Bodyweight' },
+        ];
+ 
+        // Check if all three options are identical (e.g. plyos with just reps)
+        var isSimple = ex.fw === ex.mb && ex.mb === ex.bw;
+ 
+        html += '<div class="ex-card" data-key="' + key + '">';
+        html += '<div class="ex-name">' + ex.name + '</div>';
+ 
+        if (isSimple) {
+          html += '<div class="equip-content">' + ex.fw + '</div>';
+        } else {
+          html += '<div class="equip-tabs">';
+          tabs.forEach(function(t, i) {
+            html += '<button class="equip-tab' + (i === activeTab ? ' active' : '') + '"'
+              + ' onclick="switchTab(\'' + key + '\',' + i + ')">'
+              + '<span class="equip-tab-emoji">' + t.emoji + '</span>'
+              + '<span class="equip-tab-label">' + t.label + '</span>'
+              + '</button>';
+          });
+          html += '</div>';
+          html += '<div class="equip-content">' + vals[activeTab] + '</div>';
+        }
+ 
+        html += '</div>'; // ex-card
+      });
+ 
+      html += '</div>'; // tier-section
+    });
+  }
+ 
+  // Day note (e.g. tempo run reminder)
+  if (d.note) {
+    html += '<div class="day-note">' + d.note + '</div>';
+  }
+ 
+  html += '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.3</div>';
+  return html;
+}
+ 
+// ── Screen: My Exercises ───────────────────────────────────────────────────
+function renderExercises() {
+  return '<div class="coming-soon">'
+    + '<div class="coming-soon-icon">'
+    +   '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>'
+    + '</div>'
+    + '<h2>My Exercises</h2>'
+    + '<p>Your personal exercise bank. Removed exercises live here and can be added back to any workout day.</p>'
+    + '<div class="forge-mark">Coming in Phase 6</div>'
+    + '</div>';
+}
+ 
+// ── Screen: Settings ───────────────────────────────────────────────────────
+function renderSettings() {
+  return '<div class="coming-soon">'
+    + '<div class="coming-soon-icon">'
+    +   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+    + '</div>'
+    + '<h2>Settings</h2>'
+    + '<p>Gemini API key, auto-fill preferences, and app options will live here.</p>'
+    + '<div class="forge-mark">Coming in Phase 7</div>'
+    + '</div>';
+}
+ 
+// ── Boot ───────────────────────────────────────────────────────────────────
+render();
 </script>
 </body>
 </html>
+ 

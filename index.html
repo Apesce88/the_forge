@@ -12,9 +12,7 @@
   <meta http-equiv="Expires" content="0"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
   <title>The Forge</title>
- 
   <style>
-    /* ── Color Palette ── */
     :root {
       --black:       #0a0a0a;
       --grey-dark:   #111111;
@@ -30,7 +28,6 @@
       --gold:        #f59e0b;
       --gold-metal:  #c8922a;
       --gold-dim:    #2a1e04;
-      --white:       #ffffff;
       --text-pri:    #f0f0f0;
       --text-sec:    #888888;
       --text-mute:   #444444;
@@ -42,87 +39,48 @@
       --sar: env(safe-area-inset-right, 0px);
     }
  
-    /* ── Reset ── */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
  
     html, body {
-      height: 100%;
-      background: var(--black);
-      color: var(--text-pri);
+      height: 100%; background: var(--black); color: var(--text-pri);
       font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
-      font-size: 16px;
-      line-height: 1.5;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
+      font-size: 16px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased;
     }
  
-    /* ── App Shell ── */
     #app {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      padding-top: var(--sat);
-      padding-left: var(--sal);
-      padding-right: var(--sar);
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      padding-top: var(--sat); padding-left: var(--sal); padding-right: var(--sar);
       background: var(--black);
     }
  
     #screen {
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-      padding-bottom: calc(16px + var(--sab));
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain; padding-bottom: calc(16px + var(--sab));
     }
  
-    /* ── Bottom Navigation ── */
+    /* ── Bottom Nav ── */
     #bottom-nav {
-      display: flex;
-      background: var(--grey-dark);
+      display: flex; background: var(--grey-dark);
       border-top: 1px solid var(--grey-light);
-      padding: 8px 0 4px;
-      padding-bottom: calc(8px + var(--sab));
-      flex-shrink: 0;
+      padding: 8px 0 calc(8px + var(--sab)); flex-shrink: 0;
     }
  
     .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 6px 0;
-      color: var(--text-mute);
-      font-family: inherit;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      transition: color 0.15s;
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: none; cursor: pointer; padding: 6px 0;
+      color: var(--text-mute); font-family: var(--font-body);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; transition: color 0.15s;
     }
  
     .nav-btn.active { color: var(--gold-metal); }
  
     .nav-btn svg {
-      width: 24px;
-      height: 24px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      width: 24px; height: 24px; stroke: currentColor; fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
     }
  
-    /* ── Home Header ── */
+    /* ── Home ── */
     .home-header {
       padding: 28px 20px 16px;
       border-bottom: 1px solid var(--grey-mid);
@@ -130,215 +88,99 @@
     }
  
     .home-eyebrow {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold-metal);
-      margin-bottom: 4px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold-metal); margin-bottom: 4px;
       font-family: var(--font-body);
     }
  
     .home-title {
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--text-pri);
-      letter-spacing: 0.04em;
-      font-family: var(--font-title);
+      font-size: 30px; font-weight: 700; color: var(--text-pri);
+      letter-spacing: 0.04em; font-family: var(--font-title);
     }
  
     .home-subtitle {
-      font-size: 12px;
-      color: var(--text-sec);
-      margin-top: 4px;
-      letter-spacing: 0.04em;
-      font-family: var(--font-body);
+      font-size: 12px; color: var(--text-sec); margin-top: 4px;
+      letter-spacing: 0.04em; font-family: var(--font-body);
     }
  
-    /* ── Stats Row ── */
     .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      padding: 0 16px 16px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; padding: 0 16px 16px;
     }
  
     .stat-card {
-      background: #0d0d0d;
-      border: 1px solid var(--grey-light);
-      border-radius: 12px;
-      padding: 10px 8px;
-      text-align: center;
+      background: #0d0d0d; border: 1px solid var(--grey-light);
+      border-radius: 12px; padding: 10px 8px; text-align: center;
     }
  
-    .stat-num {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-pri);
-      line-height: 1;
-    }
+    .stat-num { font-size: 22px; font-weight: 700; color: var(--text-pri); line-height: 1; font-family: var(--font-title); }
+    .stat-label { font-size: 10px; color: var(--text-sec); margin-top: 3px; letter-spacing: 0.04em; line-height: 1.3; font-family: var(--font-body); }
  
-    .stat-label {
-      font-size: 10px;
-      color: var(--text-sec);
-      margin-top: 3px;
-      letter-spacing: 0.04em;
-      line-height: 1.3;
-      font-family: var(--font-body);
-    }
- 
-    /* ── Day Grid ── */
-    .day-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 0 16px;
-    }
+    .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
  
     .day-card {
-      background: #0d0d0d;
-      border-radius: 16px;
-      padding: 16px 14px 14px;
-      cursor: pointer;
-      text-align: left;
-      border: 1px solid var(--grey-light);
-      transition: transform 0.12s, border-color 0.12s;
-      position: relative;
-      overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
-      /* Full width of last card if odd number */
+      background: #0d0d0d; border-radius: 16px; padding: 16px 14px 14px;
+      cursor: pointer; text-align: left; border: 1.5px solid var(--grey-light);
+      transition: transform 0.12s; position: relative; overflow: hidden;
     }
  
-    .day-card:active {
-      transform: scale(0.96);
-    }
+    .day-card:active { transform: scale(0.96); }
  
-    /* Color tint overlay on card */
     .day-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      opacity: 0.04;
-      pointer-events: none;
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      opacity: 0.04; pointer-events: none;
     }
  
-    .day-card.lime  { border-color: var(--lime); border-width: 1.5px; }
-    .day-card.lime::before  { background: var(--lime); }
+    .day-card.lime { border-color: var(--lime); }
+    .day-card.lime::before { background: var(--lime); }
+    .day-card.red  { border-color: var(--red); }
+    .day-card.red::before  { background: var(--red); }
+    .day-card.gold { border-color: var(--gold); }
+    .day-card.gold::before { background: var(--gold); }
+    .day-card.grey { border-color: var(--grey-muted); }
+    .day-card.grey::before { background: #888; }
  
-    .day-card.red   { border-color: var(--red); border-width: 1.5px; }
-    .day-card.red::before   { background: var(--red); }
+    .day-number { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; font-family: var(--font-body); }
+    .day-card.lime .day-number { color: var(--lime); }
+    .day-card.red  .day-number { color: var(--red); }
+    .day-card.gold .day-number { color: var(--gold); }
+    .day-card.grey .day-number { color: var(--text-sec); }
  
-    .day-card.gold  { border-color: var(--gold); border-width: 1.5px; }
-    .day-card.gold::before  { background: var(--gold); }
+    .day-title { font-size: 14px; font-weight: 700; color: var(--text-pri); line-height: 1.3; margin-bottom: 3px; font-family: var(--font-body); }
+    .day-subtitle { font-size: 11px; color: var(--text-sec); line-height: 1.4; font-family: var(--font-body); }
  
-    .day-card.grey  { border-color: var(--grey-muted); border-width: 1.5px; }
-    .day-card.grey::before  { background: #888; }
- 
-    .day-number {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      font-family: var(--font-body);
-    }
- 
-    .day-card.lime  .day-number { color: var(--lime); }
-    .day-card.red   .day-number { color: var(--red); }
-    .day-card.gold  .day-number { color: var(--gold); }
-    .day-card.grey  .day-number { color: var(--text-sec); }
- 
-    .day-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-pri);
-      line-height: 1.3;
-      margin-bottom: 3px;
-      font-family: var(--font-body);
-    }
- 
-    .day-subtitle {
-      font-size: 11px;
-      color: var(--text-sec);
-      line-height: 1.4;
-      font-family: var(--font-body);
-    }
- 
-    /* Color bar at bottom of card */
-    .day-bar {
-      height: 3px;
-      border-radius: 2px;
-      margin-top: 14px;
-      width: 28px;
-    }
- 
+    .day-bar { height: 3px; border-radius: 2px; margin-top: 14px; width: 28px; }
     .day-card.lime .day-bar { background: var(--lime); }
     .day-card.red  .day-bar { background: var(--red); }
     .day-card.gold .day-bar { background: var(--gold); }
     .day-card.grey .day-bar { background: var(--grey-muted); }
  
-    /* Forge mark */
     .forge-mark {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-mute);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 20px 0 8px;
+      text-align: center; font-size: 11px; color: var(--text-mute);
+      letter-spacing: 0.12em; text-transform: uppercase; padding: 20px 0 8px;
       font-family: var(--font-body);
     }
  
-     /* ── Day Detail View ── */
-    .day-detail-header {
-      padding: 20px 20px 16px;
-      margin-bottom: 4px;
-    }
+    /* ── Day Detail ── */
+    .day-detail-header { padding: 20px 20px 16px; margin-bottom: 4px; }
  
     .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--grey-mid);
-      border: 1px solid var(--grey-light);
-      color: var(--text-sec);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-family: var(--font-body);
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      margin-bottom: 16px;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--grey-mid); border: 1px solid var(--grey-light);
+      color: var(--text-sec); border-radius: 20px; padding: 6px 14px;
+      font-size: 13px; font-family: var(--font-body); letter-spacing: 0.06em;
+      cursor: pointer; margin-bottom: 16px;
     }
  
-    .back-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
+    .back-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
  
-    .day-detail-badge {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .day-detail-badge { display: flex; align-items: center; gap: 14px; }
  
     .day-detail-num {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      font-family: var(--);
-      color: var(--black);
-      flex-shrink: 0;
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; font-family: var(--font-title);
+      color: var(--black); flex-shrink: 0;
     }
  
     .day-detail-num.lime { background: var(--lime); }
@@ -346,241 +188,222 @@
     .day-detail-num.gold { background: var(--gold); }
     .day-detail-num.grey { background: var(--grey-muted); color: var(--text-pri); }
  
-    .day-detail-info h1 {
-      font-size: 20px;
-      font-weight: 700;
-      font-family: var(--font-title);
-      color: var(--text-pri);
-      line-height: 1.2;
-    }
- 
-    .day-detail-info .detail-sub {
-      font-size: 13px;
-      font-family: var(--font-body);
-      letter-spacing: 0.06em;
-      margin-top: 2px;
-    }
- 
+    .day-detail-info h1 { font-size: 20px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); line-height: 1.2; }
+    .day-detail-info .detail-sub { font-size: 13px; font-family: var(--font-body); letter-spacing: 0.06em; margin-top: 2px; }
     .day-detail-info .detail-sub.lime { color: var(--lime); }
     .day-detail-info .detail-sub.red  { color: var(--red); }
     .day-detail-info .detail-sub.gold { color: var(--gold); }
     .day-detail-info .detail-sub.grey { color: var(--text-sec); }
  
-    .day-focus-text {
-      font-size: 11px;
-      color: var(--text-mute);
-      font-family: var(--font-body);
-      letter-spacing: 0.06em;
-      padding: 8px 20px 0;
-    }
+    .day-focus-text { font-size: 11px; color: var(--text-mute); font-family: var(--font-body); letter-spacing: 0.06em; padding: 8px 20px 0; }
+    .detail-divider { height: 1px; background: var(--grey-mid); margin: 14px 20px; }
  
-    .detail-divider {
-      height: 1px;
-      background: var(--grey-mid);
-      margin: 14px 20px;
-    }
+    .tier-section { padding: 0 16px; margin-bottom: 24px; }
  
-    /* ── Tier Section ── */
-    .tier-section {
-      padding: 0 16px;
-      margin-bottom: 24px;
-    }
- 
-    .tier-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--grey-mid);
-    }
- 
-    .tier-icon {
-      font-size: 15px;
-    }
- 
-    .tier-name {
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-body);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
- 
+    .tier-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--grey-mid); }
+    .tier-icon { font-size: 15px; }
+    .tier-name { font-size: 11px; font-weight: 700; font-family: var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; }
     .tier-name.lime { color: var(--lime); }
     .tier-name.red  { color: var(--red); }
     .tier-name.gold { color: var(--gold); }
     .tier-name.grey { color: var(--text-sec); }
  
-    /* ── Exercise Card ── */
+    /* ── Exercise Card (Day View) ── */
     .ex-card {
-      background: #0d0d0d;
-      border: 1px solid var(--grey-light);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
+      background: #0d0d0d; border: 1px solid var(--grey-light);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
     }
  
-    .ex-name {
-      font-size: 14px;
-      font-weight: 700;
-      font-family: var(--font-title);
-      color: var(--text-pri);
-      margin-bottom: 10px;
+    .ex-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .ex-name { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
+ 
+    .ex-menu-btn {
+      background: var(--grey-mid); border: none; border-radius: 8px;
+      color: var(--text-sec); font-size: 15px; cursor: pointer; padding: 2px 8px; line-height: 1.4;
     }
  
-    /* Equipment tabs */
-    .equip-tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
+    .ex-actions { display: flex; gap: 8px; margin-bottom: 10px; }
+ 
+    .ex-action-btn {
+      flex: 1; padding: 7px; border-radius: 10px; font-size: 12px;
+      font-family: var(--font-body); letter-spacing: 0.04em;
+      font-weight: 600; cursor: pointer; border: 1px solid;
     }
+ 
+    .ex-action-edit { background: rgba(255,255,255,0.05); border-color: var(--grey-light); color: var(--text-pri); }
+    .ex-action-remove { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: var(--red); }
+ 
+    .equip-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
  
     .equip-tab {
-      flex: 1;
-      padding: 5px 4px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 10px;
-      font-weight: 600;
-      font-family: var(--font-body);
-      letter-spacing: 0.04em;
-      background: var(--grey-mid);
-      color: var(--text-mute);
-      transition: all 0.15s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
+      flex: 1; padding: 5px 4px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 10px; font-weight: 600; font-family: var(--font-body); letter-spacing: 0.04em;
+      background: var(--grey-mid); color: var(--text-mute); transition: all 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
     }
  
-    .equip-tab.active {
-      background: var(--grey-card);
-      color: var(--text-pri);
-    }
- 
+    .equip-tab.active { background: var(--grey-card); color: var(--text-pri); }
     .equip-tab-emoji { font-size: 13px; }
     .equip-tab-label { font-size: 9px; letter-spacing: 0.04em; }
+    .equip-content { font-size: 13px; color: var(--text-sec); line-height: 1.5; min-height: 20px; }
  
-    .equip-content {
-      font-size: 13px;
-      color: var(--text-sec);
-      line-height: 1.5;
-      min-height: 20px;
-      font-family: 'Trebuchet MS', sans-serif;
-    }
- 
-    /* ── Field Steps (Day 03 speed day) ── */
-    .field-step {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      background: #0d0d0d;
-      border: 1px solid var(--grey-light);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-    }
- 
+    .field-step { display: flex; gap: 12px; align-items: flex-start; background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
     .field-step-icon { font-size: 20px; flex-shrink: 0; }
+    .field-step-text { font-size: 14px; color: var(--text-sec); line-height: 1.5; padding-top: 2px; }
  
-    .field-step-text {
-      font-size: 14px;
-      color: var(--text-sec);
-      line-height: 1.5;
-      font-family: 'Trebuchet MS', sans-serif;
-      padding-top: 2px;
-    }
- 
-    /* ── Recovery Options ── */
-    .recovery-card {
-      background: #0d0d0d;
-      border: 1px solid var(--grey-light);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin: 0 16px 10px;
-    }
- 
+    .recovery-card { background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 14px; padding: 14px 16px; margin: 0 16px 10px; }
     .recovery-icon { font-size: 24px; margin-bottom: 6px; }
+    .recovery-title { font-size: 15px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 4px; }
+    .recovery-desc { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
  
-    .recovery-title {
-      font-size: 15px;
-      font-weight: 700;
-      font-family: var(--font-title);
-      color: var(--text-pri);
-      margin-bottom: 4px;
+    .day-note { margin: 0 16px 20px; background: #0d0d0d; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-sec); line-height: 1.5; border: 1px solid var(--grey-light); }
+ 
+    .day-empty-tier {
+      background: #0d0d0d; border: 1.5px dashed var(--grey-muted);
+      border-radius: 12px; padding: 20px; text-align: center;
+      font-size: 13px; color: var(--text-mute); font-family: var(--font-body);
+      letter-spacing: 0.04em; margin-bottom: 8px;
     }
  
-    .recovery-desc {
-      font-size: 13px;
-      color: var(--text-sec);
-      line-height: 1.6;
-      font-family: 'Trebuchet MS', sans-serif;
+    /* ── My Exercises Screen ── */
+    .lib-header {
+      padding: 28px 20px 16px;
+      border-bottom: 1px solid var(--grey-mid);
     }
  
-    /* ── Day note (e.g. tempo run) ── */
-    .day-note {
-      margin: 0 16px 20px;
-      background: var(--grey-dim, #111);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      color: var(--text-sec);
-      font-family: 'Trebuchet MS', sans-serif;
-      line-height: 1.5;
-      border: 1px solid var(--grey-light);
+    .lib-title { font-size: 26px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 4px; }
+    .lib-sub { font-size: 12px; color: var(--text-sec); font-family: var(--font-body); letter-spacing: 0.04em; }
+ 
+    /* Category tabs */
+    .cat-tabs {
+      display: flex; gap: 6px; padding: 12px 16px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+ 
+    .cat-tabs::-webkit-scrollbar { display: none; }
+ 
+    .cat-tab {
+      flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+      border: 1px solid var(--grey-light); background: #0d0d0d;
+      color: var(--text-mute); font-size: 12px; font-family: var(--font-body);
+      letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s;
+      text-transform: uppercase;
+    }
+ 
+    .cat-tab.active { background: var(--lime-dim); border-color: var(--lime); color: var(--lime); }
+ 
+    /* Exercise library card */
+    .lib-ex-card {
+      background: #0d0d0d; border: 1px solid var(--grey-light);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+    }
+ 
+    .lib-ex-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .lib-ex-name { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
+    .lib-ex-cat { font-size: 10px; font-family: var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; }
+    .lib-ex-cat.upper   { color: var(--lime); }
+    .lib-ex-cat.lower   { color: var(--red); }
+    .lib-ex-cat.power   { color: var(--gold); }
+    .lib-ex-cat.core    { color: #a78bfa; }
+    .lib-ex-cat.recovery { color: var(--text-sec); }
+ 
+    .lib-ex-options { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+    .lib-ex-option { font-size: 12px; color: var(--text-mute); line-height: 1.4; }
+    .lib-ex-option span { color: var(--text-sec); }
+ 
+    .lib-ex-menu-btn {
+      background: var(--grey-mid); border: none; border-radius: 8px;
+      color: var(--text-sec); font-size: 15px; cursor: pointer; padding: 2px 8px;
+    }
+ 
+    .lib-ex-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .lib-ex-action {
+      flex: 1; padding: 7px; border-radius: 10px; font-size: 12px;
+      font-family: var(--font-body); letter-spacing: 0.04em;
+      cursor: pointer; border: 1px solid;
+    }
+    .lib-ex-edit   { background: rgba(255,255,255,0.05); border-color: var(--grey-light); color: var(--text-pri); }
+    .lib-ex-delete { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: var(--red); }
+ 
+    .lib-section-pad { padding: 0 16px; }
+ 
+    .lib-add-btn {
+      width: 100%; padding: 14px; border-radius: 14px; margin-top: 8px;
+      border: 1.5px dashed var(--lime-dark); background: var(--lime-dim);
+      color: var(--lime); font-size: 13px; font-family: var(--font-body);
+      letter-spacing: 0.06em; cursor: pointer;
+    }
+ 
+    .lib-empty {
+      text-align: center; padding: 40px 20px;
+      font-size: 13px; color: var(--text-mute);
+      font-family: var(--font-body); letter-spacing: 0.04em; line-height: 1.8;
+    }
+ 
+    .lib-empty-icon { font-size: 36px; margin-bottom: 10px; }
+ 
+    /* ── Modal / Sheet ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+      display: flex; align-items: flex-end; justify-content: center; z-index: 100;
+    }
+ 
+    .modal-sheet {
+      background: #161616; border-radius: 22px 22px 0 0;
+      width: 100%; max-width: 480px; padding: 20px 20px 40px;
+      border: 1px solid var(--grey-light); max-height: 90vh; overflow-y: auto;
+    }
+ 
+    .modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--grey-muted); margin: 0 auto 18px; }
+    .modal-title { font-size: 16px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 16px; }
+ 
+    .form-label { font-size: 11px; font-family: var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 6px; display: block; }
+ 
+    .form-input {
+      width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--grey-light);
+      border-radius: 10px; padding: 11px 13px; color: var(--text-pri); font-size: 14px;
+      outline: none; margin-bottom: 12px; font-family: 'Trebuchet MS', sans-serif;
+    }
+ 
+    .form-input:focus { border-color: var(--lime); }
+ 
+    .form-select {
+      width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--grey-light);
+      border-radius: 10px; padding: 11px 13px; color: var(--text-pri); font-size: 14px;
+      outline: none; margin-bottom: 12px; font-family: var(--font-body);
+      letter-spacing: 0.04em; -webkit-appearance: none; cursor: pointer;
+    }
+ 
+    .form-section-label {
+      font-size: 11px; font-family: var(--font-body); letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--lime); margin: 4px 0 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--grey-mid);
+    }
+ 
+    .form-row { display: flex; gap: 10px; margin-top: 6px; }
+ 
+    .btn-cancel {
+      flex: 1; padding: 13px; border-radius: 12px;
+      border: 1px solid var(--grey-light); background: transparent;
+      color: var(--text-sec); font-size: 14px; font-family: var(--font-body);
+      letter-spacing: 0.06em; cursor: pointer;
+    }
+ 
+    .btn-save {
+      flex: 2; padding: 13px; border-radius: 12px; border: none;
+      background: var(--lime); color: var(--black); font-size: 14px;
+      font-family: var(--font-body); letter-spacing: 0.06em; font-weight: 700; cursor: pointer;
+    }
+ 
+    .btn-save:disabled { background: var(--grey-muted); color: var(--text-mute); cursor: not-allowed; }
  
     /* ── Coming Soon ── */
-    .coming-soon {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      padding: 40px 20px;
-      text-align: center;
-      gap: 12px;
-    }
- 
-    .coming-soon-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-      background: #0d0d0d;
-      border: 1px solid var(--grey-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
- 
-    .coming-soon-icon svg {
-      width: 32px;
-      height: 32px;
-      stroke: var(--gold-metal);
-      fill: none;
-      stroke-width: 1.6;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
- 
-    .coming-soon h2 {
-      font-size: 18px;
-      font-weight: 700;
-      font-family: var(--font-title);
-      color: var(--text-pri);
-    }
- 
-    .coming-soon p {
-      font-size: 13px;
-      color: var(--text-sec);
-      max-width: 260px;
-      line-height: 1.6;
-    }
- 
-    .coming-soon .forge-mark { padding: 8px 0 0; }
+    .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 40px 20px; text-align: center; gap: 12px; }
+    .coming-soon-icon { width: 64px; height: 64px; border-radius: 20px; background: #0d0d0d; border: 1px solid var(--grey-light); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .coming-soon-icon svg { width: 32px; height: 32px; stroke: var(--gold-metal); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .coming-soon h2 { font-size: 18px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
+    .coming-soon p { font-size: 13px; color: var(--text-sec); max-width: 260px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -588,215 +411,255 @@
   <div id="screen"></div>
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-plan" onclick="navigate('plan')">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 2 C10 5 7 7 7 11 C7 15.5 9.5 18 12 19 C14.5 18 17 15.5 17 11 C17 7 14 5 12 2 Z"/>
-        <line x1="12" y1="18" x2="12" y2="10"/>
-        <polyline points="9.5 12.5 12 10 14.5 12.5"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2 C10 5 7 7 7 11 C7 15.5 9.5 18 12 19 C14.5 18 17 15.5 17 11 C17 7 14 5 12 2 Z"/><line x1="12" y1="18" x2="12" y2="10"/><polyline points="9.5 12.5 12 10 14.5 12.5"/></svg>
       Plan
     </button>
     <button class="nav-btn" id="nav-exercises" onclick="navigate('exercises')">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <line x1="8" y1="6" x2="21" y2="6"/>
-        <line x1="8" y1="12" x2="21" y2="12"/>
-        <line x1="8" y1="18" x2="21" y2="18"/>
-        <circle cx="3" cy="6" r="1" fill="currentColor"/>
-        <circle cx="3" cy="12" r="1" fill="currentColor"/>
-        <circle cx="3" cy="18" r="1" fill="currentColor"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>
       My Exercises
     </button>
     <button class="nav-btn" id="nav-settings" onclick="navigate('settings')">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       Settings
     </button>
   </nav>
 </div>
  
 <script>
-// ── Full Workout Data ────────────────────────────────────────────────────────
+// ── Default Exercise Library ───────────────────────────────────────────────
+// All exercises pre-loaded, organized by category
+// id is generated on first load and saved to localStorage
+var DEFAULT_LIBRARY = [
+  // UPPER — Chest
+  { name:'Incline Press',          cat:'upper', fw:'Incline barbell or DB press',         mb:'Incline chest press machine',       bw:'Feet-elevated push-ups on bench' },
+  { name:'Flat Press',             cat:'upper', fw:'DB or barbell flat bench',             mb:'Chest press machine',               bw:'Push-ups slow tempo' },
+  { name:'Decline Press',          cat:'upper', fw:'Decline DB press',                    mb:'Decline chest press machine',       bw:'Decline push-ups, feet elevated' },
+  { name:'Chest Fly',              cat:'upper', fw:'DB fly flat or incline',              mb:'Pec deck or cable crossover',       bw:'Wide push-up slow eccentric squeeze' },
+  { name:'Dips',                   cat:'upper', fw:'Weighted dips (DB between legs)',     mb:'Assisted dip machine low assist',   bw:'Bodyweight or bench dips' },
+  // UPPER — Shoulders
+  { name:'Overhead Press',         cat:'upper', fw:'DB or barbell standing OHP',          mb:'Shoulder press machine',            bw:'Pike push-ups, feet elevated' },
+  { name:'Lateral Raises',         cat:'upper', fw:'DB lateral raises',                  mb:'Cable or band lateral raises',      bw:'Plank lateral arm raises' },
+  { name:'Upright Rows',           cat:'upper', fw:'DB or barbell upright row',           mb:'Cable upright row',                 bw:'Prone T raises with pause' },
+  { name:'Shrugs',                 cat:'upper', fw:'DB or barbell shrugs',                mb:'Smith machine or cable shrugs',     bw:'Scapular shrug holds' },
+  { name:'YTW Weighted',           cat:'upper', fw:'Light DB Y/T/W bent over',            mb:'Cable Y/T/W low pulley',            bw:'Prone Y/T/W raises on floor' },
+  { name:'Rear Delt Fly',          cat:'upper', fw:'DB rear delt fly bent over',          mb:'Pec deck reverse or cable face pull', bw:'Prone Y raises' },
+  // UPPER — Back
+  { name:'Pull-Ups',               cat:'upper', fw:'Weighted pull-ups',                  mb:'Lat pulldown wide grip',            bw:'Bodyweight pull-ups max sets' },
+  { name:'Bent-Over Rows',         cat:'upper', fw:'Barbell bent-over row',               mb:'Seated cable row heavy',            bw:'Inverted row feet elevated' },
+  { name:'Lat Pulldown',           cat:'upper', fw:'DB pullover',                         mb:'Lat pulldown wide or close grip',   bw:'Straight-arm push-down on low bar' },
+  { name:'Face Pulls',             cat:'upper', fw:'DB rear delt row',                   mb:'Cable face pulls',                  bw:'Prone T raises' },
+  { name:'Meadows Row',            cat:'upper', fw:'DB Meadows row from floor',           mb:'Single arm cable row',              bw:'Single arm inverted row' },
+  { name:'Chest-Supported Row',    cat:'upper', fw:'DB row on incline bench',             mb:'Chest-supported row machine',       bw:'Prone row with band anchored low' },
+  { name:'Cable Pull-Apart',       cat:'upper', fw:'Band pull-apart',                    mb:'Cable pull-apart at shoulder height', bw:'Prone Y raises slow tempo' },
+  // UPPER — Arms
+  { name:'Hammer Curls',           cat:'upper', fw:'DB hammer curls',                    mb:'Cable rope curl neutral grip',      bw:'Chin-ups close/neutral grip' },
+  { name:'Reverse Grip Curls',     cat:'upper', fw:'Barbell or DB reverse curl',         mb:'Cable reverse curl',                bw:'Pronated-grip pull-ups' },
+  { name:'Incline DB Curl',        cat:'upper', fw:'Incline bench DB curl (full stretch)',mb:'Low cable curl on incline bench',   bw:'Chin-up with slow eccentric' },
+  { name:'Skull Crushers',         cat:'upper', fw:'EZ bar skull crushers',              mb:'Cable pushdown straight bar',       bw:'Close-grip or diamond push-ups' },
+  { name:'Tricep Pushdowns',       cat:'upper', fw:'DB overhead extension',              mb:'Cable pushdown',                    bw:'Diamond push-ups' },
+  { name:'Single Arm DB Press',    cat:'upper', fw:'Single arm DB bench or floor press', mb:'Single arm cable press',            bw:'Archer push-up (loads one side)' },
+  { name:'Lateral Raise Drop Sets',cat:'upper', fw:'3 DB weights descending, no rest',  mb:'Cable lateral — drop weight × 3',  bw:'Plank lateral raises to failure × 3' },
+  // LOWER
+  { name:'Squat',                  cat:'lower', fw:'Barbell back squat',                 mb:'Hack squat or leg press heavy',     bw:'Pistol squat or single-leg to bench' },
+  { name:'Deadlift',               cat:'lower', fw:'Barbell or trap bar deadlift',       mb:'Leg press slow eccentric',          bw:'Single-leg RDL bodyweight' },
+  { name:'RDL (eccentric)',        cat:'lower', fw:'DB or barbell RDL slow lower',       mb:'Cable pull-through or band RDL',    bw:'Single-leg RDL 3-sec lower' },
+  { name:'Nordic Curls',           cat:'lower', fw:'Feet anchored under DB',             mb:'Hamstring curl machine slow eccentric', bw:'Floor nordic with door anchor' },
+  { name:'Leg Press (eccentric)',  cat:'lower', fw:'DB goblet squat 4-sec lower',        mb:'Leg press machine slow eccentric',  bw:'Bulgarian split squat 4-sec lower' },
+  { name:'KB / DB Swings',         cat:'lower', fw:'KB or DB swings',                   mb:'Cable hip hinge pull-through',      bw:'Explosive glute bridge' },
+  { name:'Single-Leg RDL',         cat:'lower', fw:'DB single-leg RDL',                 mb:'Cable single-leg RDL',              bw:'Bodyweight single-leg RDL slow' },
+  { name:'Good Mornings',          cat:'lower', fw:'Barbell good mornings',              mb:'Cable pull-through',                bw:'Bodyweight hip hinge slow tempo' },
+  { name:'Hip Thrust',             cat:'lower', fw:'Barbell hip thrust',                 mb:'Hip abductor machine',              bw:'Single-leg glute bridge' },
+  { name:'Calf Raise',             cat:'lower', fw:'Standing DB calf raise',             mb:'Standing calf raise machine',       bw:'Single-leg bodyweight calf raise' },
+  // POWER
+  { name:'Box Jumps',              cat:'power', fw:'Weighted box jump (light DB)',       mb:'Keep plyos pure — no machine',      bw:'Box jumps max height' },
+  { name:'Broad Jumps',            cat:'power', fw:'4 × 5 reps',                        mb:'4 × 5 reps',                        bw:'4 × 5 reps' },
+  { name:'Lateral Bounds',         cat:'power', fw:'Lateral bounds × 10 each side',     mb:'Lateral bounds × 10 each side',     bw:'Lateral bounds × 10 each side' },
+  { name:'Jump Squats',            cat:'power', fw:'3 × 8 reps',                        mb:'3 × 8 reps',                        bw:'3 × 8 reps' },
+  { name:'Single-Leg Bounding',    cat:'power', fw:'3 × 10 each side',                  mb:'3 × 10 each side',                  bw:'3 × 10 each side' },
+  { name:'Pogos',                  cat:'power', fw:'3 × 20 reps',                       mb:'3 × 20 reps',                       bw:'3 × 20 reps' },
+  { name:'10-Yard Acceleration',   cat:'power', fw:'10-yard sprint from stance × 6',    mb:'10-yard sprint from stance × 6',    bw:'10-yard sprint from stance × 6' },
+  { name:'Lateral Shuffle Drills', cat:'power', fw:'Lateral shuffle + break × 4 each',  mb:'Lateral shuffle + break × 4 each',  bw:'Lateral shuffle + break × 4 each' },
+  { name:'Backpedal to Sprint',    cat:'power', fw:'Backpedal to turn-and-run × 4',     mb:'Backpedal to turn-and-run × 4',     bw:'Backpedal to turn-and-run × 4' },
+  { name:'Speed Circuit',          cat:'power', fw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10', mb:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10', bw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10' },
+  // CORE
+  { name:'Plank',                  cat:'core',  fw:'Weighted plank (plate on back)',     mb:'Cable plank with resistance',       bw:'Plank hold 45–60 sec' },
+  { name:'Leg Raises',             cat:'core',  fw:'Hanging leg raises (weighted)',      mb:'Cable crunch',                      bw:'Lying leg raises' },
+  { name:'Bicycle Crunches',       cat:'core',  fw:'Bicycle crunches × 20',             mb:'Bicycle crunches × 20',             bw:'Bicycle crunches × 20' },
+  { name:'Russian Twists',         cat:'core',  fw:'DB or plate Russian twists',         mb:'Cable woodchop',                    bw:'Bodyweight Russian twists' },
+  { name:'Hollow Body Hold',       cat:'core',  fw:'Hollow body hold 30 sec',           mb:'Hollow body hold 30 sec',           bw:'Hollow body hold 30 sec' },
+  { name:'V-Ups',                  cat:'core',  fw:'V-ups × 15',                        mb:'V-ups × 15',                        bw:'V-ups × 15' },
+  { name:'Sprinter Sit-Ups',       cat:'core',  fw:'Sprinter sit-ups × 20',             mb:'Sprinter sit-ups × 20',             bw:'Sprinter sit-ups × 20' },
+  { name:'Side Plank',             cat:'core',  fw:'Side plank hold 30 sec each',       mb:'Side plank hold 30 sec each',       bw:'Side plank hold 30 sec each' },
+  { name:'Synergy Ab Circuit',     cat:'core',  fw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds', mb:'Cable crunch + machine rotation', bw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds' },
+  { name:'Obliques',               cat:'core',  fw:'DB or plate Russian twists',         mb:'Cable woodchop',                    bw:'Russian twists or side plank dips' },
+  // RECOVERY
+  { name:'Active Recovery Run',    cat:'recovery', fw:'20–30 min easy jog',             mb:'20–30 min easy jog',                bw:'20–30 min easy jog' },
+  { name:'Foam Rolling',           cat:'recovery', fw:'Full body foam roll 15 min',     mb:'Full body foam roll 15 min',        bw:'Full body foam roll 15 min' },
+  { name:'Yoga — Mobility Flow',   cat:'recovery', fw:'30 min yoga flow',               mb:'30 min yoga flow',                  bw:'30 min yoga flow' },
+  { name:'Couch Stretch',          cat:'recovery', fw:'Couch stretch 2 min each side',  mb:'Couch stretch 2 min each side',     bw:'Couch stretch 2 min each side' },
+  { name:'Pigeon Pose',            cat:'recovery', fw:'Pigeon pose 2 min each side',    mb:'Pigeon pose 2 min each side',       bw:'Pigeon pose 2 min each side' },
+  { name:'World\'s Greatest Stretch', cat:'recovery', fw:'5 reps each side',            mb:'5 reps each side',                  bw:'5 reps each side' },
+  { name:'Cat-Cow',                cat:'recovery', fw:'Cat-cow × 10 slow breaths',      mb:'Cat-cow × 10 slow breaths',         bw:'Cat-cow × 10 slow breaths' },
+];
+ 
+// ── Day Data ───────────────────────────────────────────────────────────────
 var DAYS = [
-  {
-    num:'01', title:'Back & Chest', sub:'Max / Power + Arms', color:'lime',
-    focus:'Heavy compounds · back thickness · arm volume',
-    tiers:[
-      { label:'Primary', icon:'🔥', exercises:[
-        { name:'Max Bench 3×5', fw:'Barbell bench press', mb:'Chest press machine loaded heavy', bw:'Weighted slow-tempo push-ups' },
-        { name:'Pull-Ups', fw:'Weighted pull-ups', mb:'Lat pulldown wide grip', bw:'Bodyweight pull-ups max sets' },
-      ]},
-      { label:'Secondary', icon:'💪', exercises:[
-        { name:'Bent-Over Rows (heavy)', fw:'Barbell bent-over row', mb:'Seated cable row heavy', bw:'Inverted row feet elevated' },
-        { name:'Lat Pulldown', fw:'DB pullover', mb:'Lat pulldown wide or close grip', bw:'Straight-arm push-down on low bar' },
-        { name:'Chest Fly', fw:'DB fly flat or incline', mb:'Pec deck or cable crossover', bw:'Wide push-up slow eccentric squeeze' },
-        { name:'Face Pulls', fw:'DB rear delt row', mb:'Cable face pulls', bw:'Prone T raises' },
-      ]},
-      { label:'Accessory', icon:'✦', exercises:[
-        { name:'Reverse Grip Curls', fw:'Barbell or DB reverse curl', mb:'Cable reverse curl', bw:'Pronated-grip pull-ups' },
-        { name:'Skull Crushers', fw:'EZ bar skull crushers', mb:'Cable pushdown straight bar', bw:'Close-grip or diamond push-ups' },
-        { name:'Obliques', fw:'DB or plate Russian twists', mb:'Cable woodchop', bw:'Russian twists or side plank dips' },
-      ]},
-    ]
-  },
-  {
-    num:'02', title:'Lower Body', sub:'Power + Hamstring', color:'red',
-    focus:'Explosiveness · injury prevention · eccentric focus',
-    tiers:[
-      { label:'Primary', icon:'🔥', exercises:[
-        { name:'Squat / Deadlift', fw:'Barbell back squat or trap bar DL', mb:'Hack squat or leg press heavy', bw:'Pistol squat or single-leg to bench' },
-        { name:'Box / Lateral Jumps', fw:'Weighted box jump (light DB)', mb:'Keep plyos pure — no machine', bw:'Box jumps, broad jumps, lateral bounds' },
-      ]},
-      { label:'Secondary', icon:'💪', exercises:[
-        { name:'RDL (eccentric)', fw:'DB or barbell RDL slow lower', mb:'Cable pull-through or band RDL', bw:'Single-leg RDL 3-sec lower' },
-        { name:'Leg Press (eccentric)', fw:'DB goblet squat 4-sec lower', mb:'Leg press machine slow eccentric', bw:'Bulgarian split squat 4-sec lower' },
-        { name:'Nordic Curls', fw:'Feet anchored under DB', mb:'Hamstring curl machine slow eccentric', bw:'Floor nordic with door anchor' },
-      ]},
-      { label:'Accessory', icon:'✦', exercises:[
-        { name:'KB / DB Swings', fw:'KB or DB swings', mb:'Cable hip hinge pull-through', bw:'Explosive glute bridge' },
-        { name:'Tricep Pushdowns', fw:'DB overhead extension', mb:'Cable pushdown', bw:'Diamond push-ups' },
-        { name:'Curls', fw:'DB or barbell curl', mb:'Cable curl or preacher machine', bw:'Chin-ups' },
-        { name:'Synergy Ab Circuit', fw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds', mb:'Cable crunch + machine rotation', bw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds' },
-      ]},
-    ]
-  },
-  {
-    num:'03', title:'Chest & Shoulders', sub:'Hypertrophy', color:'lime',
-    focus:'Width + thickness · volume priority',
-    tiers:[
-      { label:'Primary', icon:'🔥', exercises:[
-        { name:'Incline Press', fw:'Incline barbell or DB press', mb:'Incline chest press machine', bw:'Feet-elevated push-ups on bench' },
-        { name:'Overhead Press', fw:'DB or barbell standing OHP', mb:'Shoulder press machine', bw:'Pike push-ups, feet elevated' },
-        { name:'YTW Weighted', fw:'Light DB Y/T/W bent over', mb:'Cable Y/T/W low pulley', bw:'Prone Y/T/W raises on floor' },
-      ]},
-      { label:'Secondary', icon:'💪', exercises:[
-        { name:'Flat Press', fw:'DB or barbell flat bench', mb:'Chest press machine', bw:'Push-ups slow tempo' },
-        { name:'Shrugs', fw:'DB or barbell shrugs', mb:'Smith machine or cable shrugs', bw:'Scapular shrug holds' },
-        { name:'Upright Rows', fw:'DB or barbell upright row', mb:'Cable upright row', bw:'Prone T raises with pause' },
-        { name:'Lateral Raises', fw:'DB lateral raises', mb:'Cable or band lateral raises', bw:'Plank lateral arm raises' },
-      ]},
-      { label:'Accessory', icon:'✦', exercises:[
-        { name:'Dips', fw:'Weighted dips (DB between legs)', mb:'Assisted dip machine low assist', bw:'Bodyweight or bench dips' },
-        { name:'Hammer Curls', fw:'DB hammer curls', mb:'Cable rope curl neutral grip', bw:'Chin-ups close/neutral grip' },
-        { name:'Decline Press / Core', fw:'Decline DB press or plate sit-up', mb:'Cable crunch kneeling', bw:'Decline push-ups or V-ups' },
-      ]},
-    ]
-  },
-  {
-    num:'04', title:'Speed & Agility', sub:'Athletic Movement', color:'gold',
-    focus:'Football-specific · acceleration · change of direction',
-    field:[
-      { icon:'⚡', text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)' },
-      { icon:'🏃', text:'10-yard acceleration bursts × 6' },
-      { icon:'↔️', text:'Lateral shuffle + break drills × 4 each side' },
-      { icon:'🔄', text:'Backpedal to turn-and-run × 4 each side' },
-      { icon:'📐', text:'Cone / agility drill of choice (10 min)' },
-      { icon:'🧘', text:'Cool down + light stretch' },
-    ]
-  },
-  {
-    num:'05', title:'Extra / Aux', sub:'Volume & Size', color:'lime',
-    focus:'Unilateral volume · weak point mass · conditioning',
-    tiers:[
-      { label:'Primary', icon:'🔥', exercises:[
-        { name:'Single Arm DB Press', fw:'Single arm DB bench or floor press', mb:'Single arm cable press', bw:'Archer push-up (loads one side)' },
-        { name:'Meadows Row', fw:'DB Meadows row from floor (unilateral)', mb:'Single arm cable row', bw:'Single arm inverted row' },
-      ]},
-      { label:'Secondary', icon:'💪', exercises:[
-        { name:'Incline DB Curl', fw:'Incline bench DB curl (full stretch)', mb:'Low cable curl on incline bench', bw:'Chin-up with slow eccentric' },
-        { name:'Lateral Raise Drop Sets', fw:'3 DB weights descending, no rest', mb:'Cable lateral — drop weight × 3', bw:'Plank lateral raises to failure × 3' },
-        { name:'Chest-Supported Row', fw:'DB row on incline bench (chest supported)', mb:'Chest-supported row machine', bw:'Prone row with band anchored low' },
-        { name:'Cable Pull-Apart', fw:'Band pull-apart', mb:'Cable pull-apart at shoulder height', bw:'Prone Y raises slow tempo' },
-        { name:'Single-Leg RDL', fw:'DB single-leg RDL', mb:'Cable single-leg RDL', bw:'Bodyweight single-leg RDL slow' },
-      ]},
-      { label:'Accessory', icon:'✦', exercises:[
-        { name:'Speed Circuit 4–5 rounds', fw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s', mb:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s', bw:'Push-up×10→Squat×10→Pull-up×5→Sprinter sit-up×10 · rest 30s' },
-      ]},
-    ]
-  },
-  {
-    num:'06', title:'Lower Explosiveness', sub:'Plyos + Tempo Run', color:'red',
-    focus:'Fast-twitch development · aerobic base',
-    tiers:[
-      { label:'Plyometric Block — do first', icon:'⚡', exercises:[
-        { name:'Broad Jumps', fw:'4 × 5 reps', mb:'4 × 5 reps', bw:'4 × 5 reps' },
-        { name:'Jump Squats', fw:'3 × 8 reps', mb:'3 × 8 reps', bw:'3 × 8 reps' },
-        { name:'Single-Leg Bounding', fw:'3 × 10 each side', mb:'3 × 10 each side', bw:'3 × 10 each side' },
-        { name:'Pogos', fw:'3 × 20 reps', mb:'3 × 20 reps', bw:'3 × 20 reps' },
-      ]},
-    ],
-    note:'🏃 Finish with 20–30 min tempo run at conversational pace'
-  },
-  {
-    num:'07', title:'Recovery', sub:'True Rest', color:'grey',
-    focus:'Rest or active recovery — listen to your body',
-    recovery:[
-      { icon:'😴', title:'True Rest', desc:'Full off day. Sleep in, eat well, let your body repair. This is training too.' },
-      { icon:'🚶', title:'Active Recovery', desc:'Easy 20–30 min walk or light jog, foam rolling, yoga focused on hips, hamstrings, thoracic spine.' },
-      { icon:'🧘', title:'Mobility Focus', desc:'30 min yoga: couch stretch, pigeon pose, doorway chest opener, cat-cow, world\'s greatest stretch.' },
-    ]
-  },
+  { num:'01', title:'Back & Chest',          sub:'Max / Power + Arms',   color:'lime', focus:'Heavy compounds · back thickness · arm volume',         tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'02', title:'Lower Body',            sub:'Power + Hamstring',    color:'red',  focus:'Explosiveness · injury prevention · eccentric focus',    tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'03', title:'Chest & Shoulders',     sub:'Hypertrophy',          color:'lime', focus:'Width + thickness · volume priority',                   tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'04', title:'Speed & Agility',       sub:'Athletic Movement',    color:'gold', focus:'Football-specific · acceleration · change of direction', field:[{icon:'⚡',text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)'},{icon:'🏃',text:'10-yard acceleration bursts × 6'},{icon:'↔️',text:'Lateral shuffle + break drills × 4 each side'},{icon:'🔄',text:'Backpedal to turn-and-run × 4 each side'},{icon:'📐',text:'Cone / agility drill of choice (10 min)'},{icon:'🧘',text:'Cool down + light stretch'}] },
+  { num:'05', title:'Extra / Aux',           sub:'Volume & Size',        color:'lime', focus:'Unilateral volume · weak point mass · conditioning',     tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'06', title:'Lower Explosiveness',   sub:'Plyos + Tempo Run',    color:'red',  focus:'Fast-twitch development · aerobic base',                 tiers:[{label:'Plyometric Block — do first',icon:'⚡',exercises:[]}], note:'🏃 Finish with 20–30 min tempo run at conversational pace' },
+  { num:'07', title:'Recovery',              sub:'True Rest',            color:'grey', focus:'Rest or active recovery — listen to your body',          recovery:[{icon:'😴',title:'True Rest',desc:'Full off day. Sleep in, eat well, let your body repair.'},{icon:'🚶',title:'Active Recovery',desc:'Easy 20–30 min walk or light jog, foam rolling, yoga.'},{icon:'🧘',title:'Mobility Focus',desc:'30 min yoga: couch stretch, pigeon pose, cat-cow, world\'s greatest stretch.'}] },
 ];
  
 // ── State ──────────────────────────────────────────────────────────────────
 var state = {
   view: 'plan',
   dayIndex: null,
-  // Tracks which equipment tab is active per exercise card
-  // Key: "dayIndex-tierIndex-exIndex", Value: 0/1/2
-  equipTabs: {}
+  libCat: 'upper',
+  equipTabs: {},
+  openMenuId: null,   // which exercise ••• menu is open
+  modal: null,        // null | { mode:'addLib'|'editLib'|'editDay', ... }
 };
+ 
+// ── localStorage Keys ──────────────────────────────────────────────────────
+var KEY_LIBRARY = 'forge_library_v1';
+var KEY_DAYS    = 'forge_days_v1';
+ 
+// ── Load / Save ────────────────────────────────────────────────────────────
+function loadData() {
+  try {
+    var lib = localStorage.getItem(KEY_LIBRARY);
+    if (lib) {
+      state.library = JSON.parse(lib);
+    } else {
+      // First load — seed with default library, assign IDs
+      state.library = DEFAULT_LIBRARY.map(function(ex, i) {
+        return Object.assign({}, ex, { id: 'lib-' + i });
+      });
+      saveLibrary();
+    }
+  } catch(e) { state.library = DEFAULT_LIBRARY.map(function(ex,i){ return Object.assign({},ex,{id:'lib-'+i}); }); }
+ 
+  try {
+    var days = localStorage.getItem(KEY_DAYS);
+    if (days) {
+      state.days = JSON.parse(days);
+    } else {
+      state.days = JSON.parse(JSON.stringify(DAYS));
+      saveDays();
+    }
+  } catch(e) { state.days = JSON.parse(JSON.stringify(DAYS)); }
+}
+ 
+function saveLibrary() {
+  try { localStorage.setItem(KEY_LIBRARY, JSON.stringify(state.library)); } catch(e) {}
+}
+ 
+function saveDays() {
+  try { localStorage.setItem(KEY_DAYS, JSON.stringify(state.days)); } catch(e) {}
+}
+ 
+function genId() { return 'ex-' + Date.now() + '-' + Math.random().toString(36).slice(2,7); }
  
 // ── Navigate ───────────────────────────────────────────────────────────────
 function navigate(view) {
   state.view = view;
   state.dayIndex = null;
-  document.querySelectorAll('.nav-btn').forEach(function(b) {
-    b.classList.remove('active');
-  });
+  state.openMenuId = null;
+  state.modal = null;
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
   var btn = document.getElementById('nav-' + view);
   if (btn) btn.classList.add('active');
   render();
 }
  
-// ── Open Day ───────────────────────────────────────────────────────────────
-function tapDay(index) {
+function tapDay(i) {
   state.view = 'day';
-  state.dayIndex = index;
-  state.equipTabs = {}; // reset tab selections when opening a new day
+  state.dayIndex = i;
+  state.equipTabs = {};
+  state.openMenuId = null;
   render();
-  // Scroll to top of screen
   document.getElementById('screen').scrollTop = 0;
 }
  
-// ── Back to Plan ───────────────────────────────────────────────────────────
 function goBack() {
   state.view = 'plan';
   state.dayIndex = null;
+  state.openMenuId = null;
   render();
   document.getElementById('screen').scrollTop = 0;
 }
  
-// ── Switch Equipment Tab ───────────────────────────────────────────────────
-function switchTab(key, tabIndex) {
-  state.equipTabs[key] = tabIndex;
-  // Only re-render the specific exercise card for performance
+// ── Equipment Tabs ─────────────────────────────────────────────────────────
+function switchTab(key, idx) {
+  state.equipTabs[key] = idx;
   var card = document.querySelector('[data-key="' + key + '"]');
-  if (card) {
-    var tabs = card.querySelectorAll('.equip-tab');
-    var content = card.querySelector('.equip-content');
-    var day = DAYS[state.dayIndex];
-    var parts = key.split('-');
-    var ti = parseInt(parts[1]);
-    var ei = parseInt(parts[2]);
-    var ex = day.tiers[ti].exercises[ei];
-    var vals = [ex.fw, ex.mb, ex.bw];
-    tabs.forEach(function(t, i) {
-      t.classList.toggle('active', i === tabIndex);
+  if (!card) return;
+  var parts = key.split('-');
+  var di = parseInt(parts[0]), ti = parseInt(parts[1]), ei = parseInt(parts[2]);
+  var ex = state.days[di].tiers[ti].exercises[ei];
+  var vals = [ex.fw, ex.mb, ex.bw];
+  card.querySelectorAll('.equip-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  card.querySelector('.equip-content').textContent = vals[idx];
+}
+ 
+// ── Menu Toggle ────────────────────────────────────────────────────────────
+function toggleMenu(id) {
+  state.openMenuId = state.openMenuId === id ? null : id;
+  render();
+}
+ 
+// ── Library Category ───────────────────────────────────────────────────────
+function setLibCat(cat) {
+  state.libCat = cat;
+  state.openMenuId = null;
+  render();
+}
+ 
+// ── Modal ──────────────────────────────────────────────────────────────────
+function openModal(modal) { state.modal = modal; render(); }
+function closeModal() { state.modal = null; render(); }
+ 
+// ── Add Exercise to Library ────────────────────────────────────────────────
+function openAddLibModal() {
+  openModal({ mode: 'addLib', name:'', cat: state.libCat, fw:'', mb:'', bw:'' });
+}
+ 
+// ── Edit Exercise in Library ───────────────────────────────────────────────
+function openEditLibModal(id) {
+  var ex = state.library.find(function(e){ return e.id === id; });
+  if (!ex) return;
+  openModal({ mode: 'editLib', id: id, name: ex.name, cat: ex.cat, fw: ex.fw, mb: ex.mb, bw: ex.bw });
+}
+ 
+// ── Delete Exercise from Library ───────────────────────────────────────────
+function deleteLibEx(id) {
+  state.library = state.library.filter(function(e){ return e.id !== id; });
+  state.openMenuId = null;
+  saveLibrary();
+  render();
+}
+ 
+// ── Save Library Exercise (add or edit) ───────────────────────────────────
+function saveLibExercise() {
+  var m = state.modal;
+  if (!m || !m.name.trim()) return;
+  if (m.mode === 'addLib') {
+    state.library.push({ id: genId(), name: m.name.trim(), cat: m.cat, fw: m.fw.trim(), mb: m.mb.trim(), bw: m.bw.trim() });
+  } else if (m.mode === 'editLib') {
+    state.library = state.library.map(function(e){
+      return e.id === m.id ? { id:e.id, name:m.name.trim(), cat:m.cat, fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim() } : e;
     });
-    content.textContent = vals[tabIndex];
   }
+  saveLibrary();
+  closeModal();
+}
+ 
+// ── Update modal form field ────────────────────────────────────────────────
+function updateModal(field, value) {
+  if (state.modal) { state.modal[field] = value; }
 }
  
 // ── Render ─────────────────────────────────────────────────────────────────
@@ -804,13 +667,23 @@ function render() {
   var screen = document.getElementById('screen');
   if (state.view === 'plan')      screen.innerHTML = renderPlan();
   if (state.view === 'day')       screen.innerHTML = renderDay(state.dayIndex);
-  if (state.view === 'exercises') screen.innerHTML = renderExercises();
+  if (state.view === 'exercises') screen.innerHTML = renderLibrary();
   if (state.view === 'settings')  screen.innerHTML = renderSettings();
+ 
+  // Render modal on top if needed
+  var existing = document.getElementById('modal-layer');
+  if (existing) existing.remove();
+  if (state.modal) {
+    var div = document.createElement('div');
+    div.id = 'modal-layer';
+    div.innerHTML = renderModal();
+    document.getElementById('app').appendChild(div);
+  }
 }
  
 // ── Screen: Plan ───────────────────────────────────────────────────────────
 function renderPlan() {
-  var cardsHTML = DAYS.map(function(d, i) {
+  var cardsHTML = state.days.map(function(d, i) {
     return '<button class="day-card ' + d.color + '" onclick="tapDay(' + i + ')">'
       + '<div class="day-number">Day ' + d.num + '</div>'
       + '<div class="day-title">' + d.title + '</div>'
@@ -819,147 +692,246 @@ function renderPlan() {
       + '</button>';
   }).join('');
  
-  return ''
-    + '<div class="home-header">'
-    +   '<div class="home-eyebrow">7-Day Program</div>'
-    +   '<div class="home-title">The Forge</div>'
-    +   '<div class="home-subtitle">Hypertrophy &nbsp;·&nbsp; Power &nbsp;·&nbsp; Speed</div>'
+  return '<div class="home-header">'
+    + '<div class="home-eyebrow">7-Day Program</div>'
+    + '<div class="home-title">The Forge</div>'
+    + '<div class="home-subtitle">Hypertrophy &nbsp;·&nbsp; Power &nbsp;·&nbsp; Speed</div>'
     + '</div>'
     + '<div class="stats-row">'
-    +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Upper Days</div></div>'
-    +   '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Lower Days</div></div>'
-    +   '<div class="stat-card"><div class="stat-num">1+1</div><div class="stat-label">Speed + Aux</div></div>'
+    + '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Upper Days</div></div>'
+    + '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Lower Days</div></div>'
+    + '<div class="stat-card"><div class="stat-num">1+1</div><div class="stat-label">Speed + Aux</div></div>'
     + '</div>'
     + '<div class="day-grid">' + cardsHTML + '</div>'
-    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.3</div>';
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.4</div>';
 }
  
 // ── Screen: Day Detail ─────────────────────────────────────────────────────
 function renderDay(index) {
-  var d = DAYS[index];
+  var d = state.days[index];
   var c = d.color;
-  var html = '';
+  var html = '<div class="day-detail-header">'
+    + '<button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>'
+    + '<div class="day-detail-badge">'
+    + '<div class="day-detail-num ' + c + '">' + d.num + '</div>'
+    + '<div class="day-detail-info"><h1>' + d.title + '</h1><div class="detail-sub ' + c + '">' + d.sub + '</div></div>'
+    + '</div></div>'
+    + '<div class="day-focus-text">' + d.focus + '</div>'
+    + '<div class="detail-divider"></div>';
  
-  // Header
-  html += '<div class="day-detail-header">';
-  html += '<button class="back-btn" onclick="goBack()">'
-    + '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>'
-    + 'Back</button>';
-  html += '<div class="day-detail-badge">';
-  html += '<div class="day-detail-num ' + c + '">' + d.num + '</div>';
-  html += '<div class="day-detail-info">';
-  html += '<h1>' + d.title + '</h1>';
-  html += '<div class="detail-sub ' + c + '">' + d.sub + '</div>';
-  html += '</div></div></div>';
-  html += '<div class="day-focus-text">' + d.focus + '</div>';
-  html += '<div class="detail-divider"></div>';
- 
-  // Field day (Speed & Agility)
   if (d.field) {
     html += '<div class="tier-section">';
-    d.field.forEach(function(step) {
-      html += '<div class="field-step">'
-        + '<div class="field-step-icon">' + step.icon + '</div>'
-        + '<div class="field-step-text">' + step.text + '</div>'
-        + '</div>';
-    });
+    d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
     html += '</div>';
   }
  
-  // Recovery day
   if (d.recovery) {
-    d.recovery.forEach(function(r) {
-      html += '<div class="recovery-card">'
-        + '<div class="recovery-icon">' + r.icon + '</div>'
-        + '<div class="recovery-title">' + r.title + '</div>'
-        + '<div class="recovery-desc">' + r.desc + '</div>'
-        + '</div>';
+    d.recovery.forEach(function(r){
+      html += '<div class="recovery-card"><div class="recovery-icon">'+r.icon+'</div><div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
     });
   }
  
-  // Tier sections with exercises
   if (d.tiers) {
     d.tiers.forEach(function(tier, ti) {
-      html += '<div class="tier-section">';
-      html += '<div class="tier-label">'
-        + '<span class="tier-icon">' + tier.icon + '</span>'
-        + '<span class="tier-name ' + c + '">' + tier.label + '</span>'
-        + '</div>';
+      html += '<div class="tier-section">'
+        + '<div class="tier-label"><span class="tier-icon">'+tier.icon+'</span><span class="tier-name '+c+'">'+tier.label+'</span></div>';
  
-      tier.exercises.forEach(function(ex, ei) {
-        var key = index + '-' + ti + '-' + ei;
-        var activeTab = state.equipTabs[key] || 0;
-        var vals = [ex.fw, ex.mb, ex.bw];
-        var tabs = [
-          { emoji:'🏋️', label:'Free Weight' },
-          { emoji:'⚙️', label:'Machine/Band' },
-          { emoji:'🤸', label:'Bodyweight' },
-        ];
+      if (tier.exercises.length === 0) {
+        html += '<div class="day-empty-tier">No exercises yet — add from Phase 5</div>';
+      } else {
+        tier.exercises.forEach(function(ex, ei) {
+          var key = index + '-' + ti + '-' + ei;
+          var activeTab = state.equipTabs[key] || 0;
+          var vals = [ex.fw, ex.mb, ex.bw];
+          var isSimple = ex.fw === ex.mb && ex.mb === ex.bw;
+          var menuOpen = state.openMenuId === key;
  
-        // Check if all three options are identical (e.g. plyos with just reps)
-        var isSimple = ex.fw === ex.mb && ex.mb === ex.bw;
+          html += '<div class="ex-card" data-key="' + key + '">'
+            + '<div class="ex-card-header">'
+            + '<div class="ex-name">' + ex.name + '</div>'
+            + '<button class="ex-menu-btn" onclick="toggleMenu(\'' + key + '\')">•••</button>'
+            + '</div>';
  
-        html += '<div class="ex-card" data-key="' + key + '">';
-        html += '<div class="ex-name">' + ex.name + '</div>';
+          if (menuOpen) {
+            html += '<div class="ex-actions">'
+              + '<button class="ex-action-btn ex-action-edit" onclick="openEditDayModal(' + index + ',' + ti + ',' + ei + ')">✏️ Edit</button>'
+              + '<button class="ex-action-btn ex-action-remove" onclick="removeDayEx(' + index + ',' + ti + ',' + ei + ')">📋 Remove</button>'
+              + '</div>';
+          }
  
-        if (isSimple) {
-          html += '<div class="equip-content">' + ex.fw + '</div>';
-        } else {
-          html += '<div class="equip-tabs">';
-          tabs.forEach(function(t, i) {
-            html += '<button class="equip-tab' + (i === activeTab ? ' active' : '') + '"'
-              + ' onclick="switchTab(\'' + key + '\',' + i + ')">'
-              + '<span class="equip-tab-emoji">' + t.emoji + '</span>'
-              + '<span class="equip-tab-label">' + t.label + '</span>'
-              + '</button>';
-          });
+          if (!isSimple) {
+            html += '<div class="equip-tabs">'
+              + ['🏋️ Free Weight','⚙️ Machine/Band','🤸 Bodyweight'].map(function(t,i){
+                  var parts = t.split(' ');
+                  return '<button class="equip-tab'+(i===activeTab?' active':'')+'" onclick="switchTab(\''+key+'\','+i+')">'
+                    +'<span class="equip-tab-emoji">'+parts[0]+'</span>'
+                    +'<span class="equip-tab-label">'+parts.slice(1).join(' ')+'</span></button>';
+                }).join('')
+              + '</div>'
+              + '<div class="equip-content">'+vals[activeTab]+'</div>';
+          } else {
+            html += '<div class="equip-content">'+ex.fw+'</div>';
+          }
+ 
           html += '</div>';
-          html += '<div class="equip-content">' + vals[activeTab] + '</div>';
-        }
- 
-        html += '</div>'; // ex-card
-      });
- 
-      html += '</div>'; // tier-section
+        });
+      }
+      html += '</div>';
     });
   }
  
-  // Day note (e.g. tempo run reminder)
-  if (d.note) {
-    html += '<div class="day-note">' + d.note + '</div>';
-  }
- 
-  html += '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.3</div>';
+  if (d.note) html += '<div class="day-note">'+d.note+'</div>';
+  html += '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.4</div>';
   return html;
 }
  
-// ── Screen: My Exercises ───────────────────────────────────────────────────
-function renderExercises() {
-  return '<div class="coming-soon">'
-    + '<div class="coming-soon-icon">'
-    +   '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>'
+// ── Remove exercise from day → add to library ──────────────────────────────
+function removeDayEx(di, ti, ei) {
+  var ex = state.days[di].tiers[ti].exercises[ei];
+  // Add to library if not already there
+  var exists = state.library.some(function(e){ return e.name === ex.name; });
+  if (!exists) {
+    state.library.push({ id: genId(), name: ex.name, cat: 'upper', fw: ex.fw, mb: ex.mb, bw: ex.bw });
+    saveLibrary();
+  }
+  state.days[di].tiers[ti].exercises.splice(ei, 1);
+  saveDays();
+  state.openMenuId = null;
+  render();
+}
+ 
+// ── Edit exercise in day ───────────────────────────────────────────────────
+function openEditDayModal(di, ti, ei) {
+  var ex = state.days[di].tiers[ti].exercises[ei];
+  openModal({ mode:'editDay', di:di, ti:ti, ei:ei, name:ex.name, cat:'upper', fw:ex.fw, mb:ex.mb, bw:ex.bw });
+}
+ 
+function saveEditDayExercise() {
+  var m = state.modal;
+  if (!m || !m.name.trim()) return;
+  state.days[m.di].tiers[m.ti].exercises[m.ei] = { name:m.name.trim(), fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim() };
+  saveDays();
+  closeModal();
+}
+ 
+// ── Screen: My Exercises Library ───────────────────────────────────────────
+function renderLibrary() {
+  var cats = [
+    { id:'upper',    label:'Upper',    color:'lime' },
+    { id:'lower',    label:'Lower',    color:'red' },
+    { id:'power',    label:'Power',    color:'gold' },
+    { id:'core',     label:'Core',     color:'purple' },
+    { id:'recovery', label:'Recovery', color:'grey' },
+  ];
+ 
+  var filtered = state.library.filter(function(e){ return e.cat === state.libCat; });
+ 
+  var tabsHTML = cats.map(function(c){
+    return '<button class="cat-tab' + (state.libCat === c.id ? ' active' : '') + '" onclick="setLibCat(\'' + c.id + '\')">' + c.label + '</button>';
+  }).join('');
+ 
+  var exHTML = '';
+  if (filtered.length === 0) {
+    exHTML = '<div class="lib-empty"><div class="lib-empty-icon">📋</div>No exercises in this category yet.<br/>Tap + to add one.</div>';
+  } else {
+    filtered.forEach(function(ex) {
+      var menuOpen = state.openMenuId === ex.id;
+      exHTML += '<div class="lib-ex-card">'
+        + '<div class="lib-ex-header">'
+        + '<div><div class="lib-ex-name">'+ex.name+'</div></div>'
+        + '<button class="lib-ex-menu-btn" onclick="toggleMenu(\''+ex.id+'\')">•••</button>'
+        + '</div>';
+ 
+      if (menuOpen) {
+        exHTML += '<div class="lib-ex-actions">'
+          + '<button class="lib-ex-action lib-ex-edit" onclick="openEditLibModal(\''+ex.id+'\')">✏️ Edit</button>'
+          + '<button class="lib-ex-action lib-ex-delete" onclick="deleteLibEx(\''+ex.id+'\')">🗑 Delete</button>'
+          + '</div>';
+      }
+ 
+      exHTML += '<div class="lib-ex-options">'
+        + '<div class="lib-ex-option">🏋️ <span>'+ex.fw+'</span></div>'
+        + '<div class="lib-ex-option">⚙️ <span>'+ex.mb+'</span></div>'
+        + '<div class="lib-ex-option">🤸 <span>'+ex.bw+'</span></div>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+ 
+  return '<div class="lib-header">'
+    + '<div class="home-eyebrow">Exercise Bank</div>'
+    + '<div class="lib-title">My Exercises</div>'
+    + '<div class="lib-sub">' + state.library.length + ' exercises · tap ••• to edit or delete</div>'
     + '</div>'
-    + '<h2>My Exercises</h2>'
-    + '<p>Your personal exercise bank. Removed exercises live here and can be added back to any workout day.</p>'
+    + '<div class="cat-tabs">' + tabsHTML + '</div>'
+    + '<div class="lib-section-pad">'
+    + exHTML
+    + '<button class="lib-add-btn" onclick="openAddLibModal()">+ Add Exercise</button>'
+    + '</div>'
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.4</div>';
+}
+ 
+// ── Modal Renderer ─────────────────────────────────────────────────────────
+function renderModal() {
+  var m = state.modal;
+  if (!m) return '';
+ 
+  var isEdit = m.mode === 'editLib' || m.mode === 'editDay';
+  var title = isEdit ? 'Edit Exercise' : 'Add Exercise';
+  var saveLabel = isEdit ? 'Save Changes' : 'Add to Library';
+  var saveFn = m.mode === 'editDay' ? 'saveEditDayExercise()' : 'saveLibExercise()';
+  var showCat = m.mode !== 'editDay';
+ 
+  var catOptions = ['upper','lower','power','core','recovery'].map(function(c){
+    return '<option value="'+c+'"'+(m.cat===c?' selected':'')+'>'+c.charAt(0).toUpperCase()+c.slice(1)+'</option>';
+  }).join('');
+ 
+  return '<div class="modal-overlay" onclick="closeModal()">'
+    + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+    + '<div class="modal-handle"></div>'
+    + '<div class="modal-title">'+title+'</div>'
+ 
+    + '<label class="form-label">Exercise Name</label>'
+    + '<input class="form-input" type="text" placeholder="e.g. Barbell Good Mornings" value="'+escHtml(m.name)+'" oninput="updateModal(\'name\',this.value)"/>'
+ 
+    + (showCat ? '<label class="form-label">Category</label><select class="form-select" onchange="updateModal(\'cat\',this.value)">'+catOptions+'</select>' : '')
+ 
+    + '<div class="form-section-label">Equipment Options</div>'
+ 
+    + '<label class="form-label">🏋️ Free Weight</label>'
+    + '<input class="form-input" type="text" placeholder="e.g. Barbell Good Mornings" value="'+escHtml(m.fw)+'" oninput="updateModal(\'fw\',this.value)"/>'
+ 
+    + '<label class="form-label">⚙️ Machine / Band</label>'
+    + '<input class="form-input" type="text" placeholder="e.g. Cable pull-through" value="'+escHtml(m.mb)+'" oninput="updateModal(\'mb\',this.value)"/>'
+ 
+    + '<label class="form-label">🤸 Bodyweight</label>'
+    + '<input class="form-input" type="text" placeholder="e.g. Single-leg RDL slow tempo" value="'+escHtml(m.bw)+'" oninput="updateModal(\'bw\',this.value)"/>'
+ 
+    + '<div class="form-row">'
+    + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-save" onclick="'+saveFn+'" '+(m.name.trim()?'':'disabled')+'>'+saveLabel+'</button>'
+    + '</div>'
+    + '</div></div>';
+}
+ 
+// ── Settings ───────────────────────────────────────────────────────────────
+function renderSettings() {
+  return '<div class="coming-soon">'
+    + '<div class="coming-soon-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>'
+    + '<h2>Settings</h2>'
+    + '<p>Gemini API key, auto-fill preferences, and app options will live here.</p>'
     + '<div class="forge-mark">Coming in Phase 6</div>'
     + '</div>';
 }
  
-// ── Screen: Settings ───────────────────────────────────────────────────────
-function renderSettings() {
-  return '<div class="coming-soon">'
-    + '<div class="coming-soon-icon">'
-    +   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-    + '</div>'
-    + '<h2>Settings</h2>'
-    + '<p>Gemini API key, auto-fill preferences, and app options will live here.</p>'
-    + '<div class="forge-mark">Coming in Phase 7</div>'
-    + '</div>';
+// ── Utility ────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
  
 // ── Boot ───────────────────────────────────────────────────────────────────
+loadData();
 render();
 </script>
 </body>
 </html>
- 

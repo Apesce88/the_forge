@@ -659,7 +659,14 @@ function saveLibExercise() {
  
 // ── Update modal form field ────────────────────────────────────────────────
 function updateModal(field, value) {
-  if (state.modal) { state.modal[field] = value; }
+  if (!state.modal) return;
+  var wasEmpty = !state.modal.name.trim();
+  state.modal[field] = value;
+  var isEmpty = !state.modal.name.trim();
+  // Only re-render when crossing the empty/not-empty boundary
+  if (field === 'name' && wasEmpty !== isEmpty) {
+    render();
+  }
 }
  
 // ── Render ─────────────────────────────────────────────────────────────────

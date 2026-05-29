@@ -660,12 +660,17 @@ function saveLibExercise() {
 // ── Update modal form field ────────────────────────────────────────────────
 function updateModal(field, value) {
   if (!state.modal) return;
-  var wasEmpty = !state.modal.name.trim();
   state.modal[field] = value;
-  var isEmpty = !state.modal.name.trim();
-  // Only re-render when crossing the empty/not-empty boundary
-  if (field === 'name' && wasEmpty !== isEmpty) {
-    render();
+  // Only update the button — don't re-render the whole screen
+  if (field === 'name') {
+    var saveBtn = document.querySelector('.btn-save');
+    if (saveBtn) {
+      if (value.trim()) {
+        saveBtn.removeAttribute('disabled');
+      } else {
+        saveBtn.setAttribute('disabled', 'disabled');
+      }
+    }
   }
 }
  

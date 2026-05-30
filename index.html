@@ -94,8 +94,15 @@
     }
  
     .home-title {
-      font-size: 30px; font-weight: 700; color: var(--text-pri);
-      letter-spacing: 0.04em; font-family: var(--font-title);
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-family: var(--font-title);
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
     }
  
     .home-subtitle {
@@ -271,7 +278,16 @@
       border-bottom: 1px solid var(--grey-mid);
     }
  
-    .lib-title { font-size: 26px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 4px; }
+    .lib-title {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: var(--font-title);
+      margin-bottom: 4px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     .lib-sub { font-size: 12px; color: var(--text-sec); font-family: var(--font-body); letter-spacing: 0.04em; }
  
     /* Category tabs */
@@ -402,7 +418,7 @@
     .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 40px 20px; text-align: center; gap: 12px; }
     .coming-soon-icon { width: 64px; height: 64px; border-radius: 20px; background: #0d0d0d; border: 1px solid var(--grey-light); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
     .coming-soon-icon svg { width: 32px; height: 32px; stroke: var(--gold-metal); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    .coming-soon h2 { font-size: 18px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
+    .coming-soon h2 { font-size: 18px; font-weight: 700; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .coming-soon p { font-size: 13px; color: var(--text-sec); max-width: 260px; line-height: 1.6; }
   </style>
 </head>

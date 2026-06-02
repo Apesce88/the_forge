@@ -333,8 +333,29 @@
       background: var(--grey-mid); border: none; border-radius: 8px;
       color: var(--text-sec); font-size: 15px; cursor: pointer; padding: 2px 8px;
     }
- 
+
+    
     .lib-ex-actions { display: flex; gap: 8px; margin-top: 8px; }
+   
+    .picker-ex-btn {
+      width: 100%; background: #0d0d0d; border: 1px solid var(--grey-light);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+      text-align: left; cursor: pointer;
+    }
+
+    .picker-ex-btn:active { transform: scale(0.98); }
+
+    .picker-ex-name {
+      font-size: 14px; font-weight: 700; font-family: var(--font-title);
+      color: var(--text-pri); margin-bottom: 4px;
+    }
+
+    .picker-ex-opts {
+      font-size: 11px; color: var(--text-mute);
+      font-family: 'Trebuchet MS', sans-serif; line-height: 1.4;
+    }
+
+    
     .lib-ex-action {
       flex: 1; padding: 7px; border-radius: 10px; font-size: 12px;
       font-family: var(--font-body); letter-spacing: 0.04em;
@@ -349,6 +370,13 @@
       width: 100%; padding: 14px; border-radius: 14px; margin-top: 8px;
       border: 1.5px dashed var(--lime-dark); background: var(--lime-dim);
       color: var(--lime); font-size: 13px; font-family: var(--font-body);
+      letter-spacing: 0.06em; cursor: pointer;
+    }
+   
+    .add-ex-btn {
+      width: 100%; padding: 10px; border-radius: 12px; margin-top: 4px;
+      border: 1.5px dashed var(--lime-dark); background: var(--lime-dim);
+      color: var(--lime); font-size: 12px; font-family: var(--font-body);
       letter-spacing: 0.06em; cursor: pointer;
     }
  
@@ -535,6 +563,7 @@ var state = {
   view: 'plan',
   dayIndex: null,
   libCat: 'upper',
+  pickerCat: 'upper',
   equipTabs: {},
   openMenuId: null,   // which exercise ••• menu is open
   modal: null,        // null | { mode:'addLib'|'editLib'|'editDay', ... }
@@ -642,6 +671,30 @@ function closeModal() { state.modal = null; render(); }
 // ── Add Exercise to Library ────────────────────────────────────────────────
 function openAddLibModal() {
   openModal({ mode: 'addLib', name:'', cat: state.libCat, fw:'', mb:'', bw:'' });
+}
+
+  function openAddDayModal(di, ti) {
+  state.pickerCat = 'upper';
+  openModal({ mode: 'addDay', di: di, ti: ti });
+}
+
+function setPickerCat(cat) {
+  state.pickerCat = cat;
+  state.modal.pickerCat = cat;
+  render();
+}
+
+function addExToDay(di, ti, exId) {
+  var ex = state.library.find(function(e) { return e.id === exId; });
+  if (!ex) return;
+  state.days[di].tiers[ti].exercises.push({
+    name: ex.name,
+    fw: ex.fw,
+    mb: ex.mb,
+    bw: ex.bw
+  });
+  saveDays();
+  closeModal();
 }
  
 // ── Edit Exercise in Library ───────────────────────────────────────────────
@@ -764,10 +817,11 @@ function renderDay(index) {
     d.tiers.forEach(function(tier, ti) {
       html += '<div class="tier-section">'
         + '<div class="tier-label"><span class="tier-icon">'+tier.icon+'</span><span class="tier-name '+c+'">'+tier.label+'</span></div>';
- 
+
       if (tier.exercises.length === 0) {
-        html += '<div class="day-empty-tier">No exercises yet — add from Phase 5</div>';
-      } else {
+        html += '<div class="day-empty-tier">No exercises added yet</div>';
+      }
+        else {
         tier.exercises.forEach(function(ex, ei) {
           var key = index + '-' + ti + '-' + ei;
           var activeTab = state.equipTabs[key] || 0;
@@ -805,6 +859,9 @@ function renderDay(index) {
           html += '</div>';
         });
       }
+      html += '<button class="add-ex-btn" onclick="openAddDayModal(' + index + ',' + ti + ')">'
+        + '+ Add Exercise'
+        + '</button>';
       html += '</div>';
     });
   }
@@ -904,7 +961,42 @@ function renderLibrary() {
 function renderModal() {
   var m = state.modal;
   if (!m) return '';
- 
+
+  if (m.mode === 'addDay') {
+    var cats = ['upper','lower','power','core','recovery'];
+    var activeCat = state.pickerCat || 'upper';
+    var filtered = state.library.filter(function(e) {
+      return e.cat === activeCat;
+    });
+
+    var tabsHTML = cats.map(function(c) {
+      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+        + '" onclick="setPickerCat(\'' + c + '\')">'
+        + c.charAt(0).toUpperCase() + c.slice(1)
+        + '</button>';
+    }).join('');
+
+    var listHTML = filtered.length === 0
+      ? '<div class="lib-empty"><div class="lib-empty-icon">📋</div>No exercises in this category.</div>'
+      : filtered.map(function(ex) {
+          return '<button class="picker-ex-btn" onclick="addExToDay(' + m.di + ',' + m.ti + ',\'' + ex.id + '\')">'
+            + '<div class="picker-ex-name">' + ex.name + '</div>'
+            + '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>'
+            + '</button>';
+        }).join('');
+
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">Add Exercise</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<div style="margin-top:12px;">'
+      + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
+      + '</div>'
+      + '</div></div>';
+  }
+  
   var isEdit = m.mode === 'editLib' || m.mode === 'editDay';
   var title = isEdit ? 'Edit Exercise' : 'Add Exercise';
   var saveLabel = isEdit ? 'Save Changes' : 'Add to Library';

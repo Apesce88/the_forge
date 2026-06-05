@@ -822,9 +822,6 @@ function renderDay(index) {
   if (d.field) {
     html += '<div class="tier-section">';
     d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
-    if (ex.notes) {
-    html += '<div class="ex-notes">' + escHtml(ex.notes) + '</div>';
-    }
     html += '</div>';
   }
  

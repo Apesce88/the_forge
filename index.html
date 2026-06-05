@@ -353,7 +353,7 @@
 
     .picker-ex-opts {
       font-size: 11px; color: var(--text-mute);
-      font-family: 'Trebuchet MS', sans-serif; line-height: 1.4;
+      font-family: 'Trebuchet MS', sans-serif; line-height: 1.4; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--grey-mid); font-style: italic;
     }
 
     
@@ -410,6 +410,12 @@
       width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--grey-light);
       border-radius: 10px; padding: 11px 13px; color: var(--text-pri); font-size: 14px;
       outline: none; margin-bottom: 12px; font-family: 'Trebuchet MS', sans-serif;
+    }
+
+    .form-textarea {
+      resize: none;
+      height: 72px;
+      line-height: 1.5;
     }
  
     .form-input:focus { border-color: var(--lime); }
@@ -718,10 +724,10 @@ function saveLibExercise() {
   var m = state.modal;
   if (!m || !m.name.trim()) return;
   if (m.mode === 'addLib') {
-    state.library.push({ id: genId(), name: m.name.trim(), cat: m.cat, fw: m.fw.trim(), mb: m.mb.trim(), bw: m.bw.trim() });
+    state.library.push({ id: genId(), name: m.name.trim(), cat: m.cat, fw: m.fw.trim(), mb: m.mb.trim(), bw: m.bw.trim(), notes: (m.notes||'').trim() });
   } else if (m.mode === 'editLib') {
     state.library = state.library.map(function(e){
-      return e.id === m.id ? { id:e.id, name:m.name.trim(), cat:m.cat, fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim() } : e;
+      return e.id === m.id ? { id:e.id, name:m.name.trim(), cat:m.cat, fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim(), notes: (m.notes||'').trim() } : e;
     });
   }
   saveLibrary();
@@ -805,6 +811,9 @@ function renderDay(index) {
   if (d.field) {
     html += '<div class="tier-section">';
     d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
+    if (ex.notes) {
+    html += '<div class="ex-notes">' + escHtml(ex.notes) + '</div>';
+    }
     html += '</div>';
   }
  
@@ -942,6 +951,7 @@ function renderLibrary() {
         + '<div class="lib-ex-option">🤸 <span>'+ex.bw+'</span></div>'
         + '</div>'
         + '</div>';
+        + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
     });
   }
  
@@ -1017,7 +1027,9 @@ function renderModal() {
     + '<input class="form-input" type="text" placeholder="e.g. Barbell Good Mornings" value="'+escHtml(m.name)+'" oninput="updateModal(\'name\',this.value)"/>'
  
     + (showCat ? '<label class="form-label">Category</label><select class="form-select" onchange="updateModal(\'cat\',this.value)">'+catOptions+'</select>' : '')
- 
+
+    + '<label class="form-label">📝 Notes <span style="color:var(--text-mute);font-size:10px;font-family:\'Trebuchet MS\',sans-serif;">(optional · 120 chars)</span></label>'
+    + '<textarea class="form-input form-textarea" maxlength="120" placeholder="e.g. Superset with face pulls. Eccentric focus." oninput="updateModal(\'notes\',this.value)">' + escHtml(m.notes||'') + '</textarea>'
     + '<div class="form-section-label">Equipment Options</div>'
  
     + '<label class="form-label">🏋️ Free Weight</label>'

@@ -865,10 +865,15 @@ function renderDay(index) {
           } else {
             html += '<div class="equip-content">'+ex.fw+'</div>';
           }
- 
+
+          if (ex.notes) {
+            html += '<div class="ex-notes">' + escHtml(ex.notes) + '</div>';
+          }
+
           html += '</div>';
         });
       }
+      
       html += '<button class="add-ex-btn" onclick="openAddDayModal(' + index + ',' + ti + ')">'
         + '+ Add Exercise'
         + '</button>';
@@ -950,8 +955,8 @@ function renderLibrary() {
         + '<div class="lib-ex-option">⚙️ <span>'+ex.mb+'</span></div>'
         + '<div class="lib-ex-option">🤸 <span>'+ex.bw+'</span></div>'
         + '</div>'
-        + '</div>';
         + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
+        + '</div>';
     });
   }
  

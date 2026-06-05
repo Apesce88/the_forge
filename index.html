@@ -356,6 +356,16 @@
       font-family: 'Trebuchet MS', sans-serif; line-height: 1.4; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--grey-mid); font-style: italic;
     }
 
+    .ex-notes {
+      font-size: 12px;
+      color: var(--text-sec);
+      font-family: 'Trebuchet MS', sans-serif;
+      line-height: 1.5;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--grey-mid);
+      font-style: italic;
+    }
     
     .lib-ex-action {
       flex: 1; padding: 7px; border-radius: 10px; font-size: 12px;
@@ -699,6 +709,7 @@ function addExToDay(di, ti, exId) {
     fw: ex.fw,
     mb: ex.mb,
     bw: ex.bw
+    notes: ex.notes || ''
   });
   saveDays();
   closeModal();

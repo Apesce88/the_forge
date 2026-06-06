@@ -1089,7 +1089,20 @@ function renderModal() {
 }
  
 // ── Settings ───────────────────────────────────────────────────────────────
-function renderSettings() {
+function toggleAIConnector() {
+  var panel = document.getElementById('ai-connector-panel');
+  var chevron = document.getElementById('ai-chevron');
+
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    chevron.textContent = '▲';
+  } else {
+    panel.style.display = 'none';
+    chevron.textContent = '▼';
+  }
+}
+  
+  function renderSettings() {
   var settings = loadSettings();
   var hasKey = settings.Key && settings.Key.trim().length > 0;
 

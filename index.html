@@ -75,7 +75,18 @@
       text-transform: uppercase; transition: color 0.15s;
     }
  
-    .nav-btn.active { color: var(--gold-metal); }
+    .nav-btn.active { 
+      background: #2a1f05;
+      border: 1.5px solid #D4AF37;
+      color: #D4AF37;
+      box-shadow: 0 0 12px rgba(212,175,55,0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(212,175,55,0.4); }
+      50%       { box-shadow: 0 0 22px rgba(212,175,55,0.75); }
+    }
  
     .nav-btn svg {
       width: 24px; height: 24px; stroke: currentColor; fill: none;

@@ -608,8 +608,8 @@ var KEY_SETTINGS = 'forge_settings_v1';
 function loadSettings() {
   try {
     var s = localStorage.getItem(KEY_SETTINGS);
-    return s ? JSON.parse(s) : { geminiKey: '' };
-  } catch(e) { return { geminiKey: '' }; }
+    return s ? JSON.parse(s) : { Key: '' };
+  } catch(e) { return { Key: '' }; }
 }
 
 function saveSettings(settings) {
@@ -1091,7 +1091,7 @@ function renderModal() {
 // ── Settings ───────────────────────────────────────────────────────────────
 function renderSettings() {
   var settings = loadSettings();
-  var hasKey = settings.geminiKey && settings.geminiKey.trim().length > 0;
+  var hasKey = settings.Key && settings.Key.trim().length > 0;
 
   return '<div style="padding: 28px 20px 40px;">'
 
@@ -1099,11 +1099,23 @@ function renderSettings() {
     + '<div class="lib-title">Settings</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:16px 0 24px;"></div>'
 
-    // Gemini API section
+    //  API section
+    + '<div style="height:1px;background:var(--grey-mid);margin:16px 0 24px;"></div>'
+    
+    // AI Connector Button
+    + '<button class="settings-card" onclick="toggleAIConnector()">'
+    + '<span>⚡ AI CONNECTOR</span>'
+    + '<span id="ai-chevron">▼</span>'
+    + '</button>'
+
+    // Hidden Panel
+    + '<div id="ai-connector-panel" style="display:none;margin-top:16px;">'
+
+    //Gemini Code
     + '<div style="margin-bottom:24px;">'
-    + '<div class="form-section-label">Gemini API — Auto-fill</div>'
+    + '<div class="form-section-label"> API — Auto-fill</div>'
     + '<div style="font-size:12px;color:var(--text-mute);font-family:Trebuchet MS,sans-serif;line-height:1.6;margin-bottom:12px;">'
-    + 'Paste your free Gemini API key to enable AI-powered exercise auto-fill. '
+    + 'Paste your free  API key to enable AI-powered exercise auto-fill. '
     + 'Get yours free at <span style="color:var(--lime);">aistudio.google.com</span>'
     + '</div>'
 
@@ -1117,13 +1129,13 @@ function renderSettings() {
 
     // Key input
     + '<label class="form-label">API Key</label>'
-    + '<input class="form-input" type="password" id="gemini-key-input" '
-    + 'placeholder="Paste your Gemini API key here..." '
-    + 'value="' + escHtml(settings.geminiKey || '') + '"/>'
+    + '<input class="form-input" type="password" id="-key-input" '
+    + 'placeholder="Paste your  API key here..." '
+    + 'value="' + escHtml(settings.Key || '') + '"/>'
 
     // Save + Clear buttons
     + '<div class="form-row" style="margin-top:4px;">'
-    + '<button class="btn-cancel" onclick="clearGeminiKey()">Clear Key</button>'
+    + '<button class="btn-cancel" onclick="clearKey()">Clear Key</button>'
     + '<button class="btn-save" onclick="saveGeminiKey()">Save Key</button>'
     + '</div>'
     + '</div>'

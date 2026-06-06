@@ -471,12 +471,13 @@
  
     .btn-save:disabled { background: var(--grey-muted); color: var(--text-mute); cursor: not-allowed; }
 
-/* ── Coming Soon ── */
+  /* ── Settings ── */
   .settings-btn {
-    width: 100%;
-    display: flex;
+    display: inline-flex;
     justify-content: space-between;
     align-items: center;
+
+    width: 220px; /* adjust to taste */
 
     padding: 10px 14px;
     margin-bottom: 10px;
@@ -496,16 +497,17 @@
     transition: all 0.15s;
   }
 
-.settings-btn:hover {
-  border-color: var(--lime);
-  color: var(--lime);
-}
+  .settings-btn:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+  }
 
-.settings-btn.active {
-  background: var(--lime-dim);
-  border-color: var(--lime);
-  color: var(--lime);
-}
+  .settings-btn.active {
+    width: 100%;
+    background: var(--lime-dim);
+    border-color: var(--lime);
+    color: var(--lime);
+  }
     
     /* ── Coming Soon ── */
     .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 40px 20px; text-align: center; gap: 12px; }
@@ -1127,13 +1129,16 @@ function renderModal() {
 // ── Settings ───────────────────────────────────────────────────────────────
 function toggleAIConnector() {
   var panel = document.getElementById('ai-connector-panel');
+  var button = document.querySelector('.settings-btn');
   var chevron = document.getElementById('ai-chevron');
 
   if (panel.style.display === 'none') {
     panel.style.display = 'block';
+    button.classList.add('active');
     chevron.textContent = '▲';
   } else {
     panel.style.display = 'none';
+    button.classList.remove('active');
     chevron.textContent = '▼';
   }
 }

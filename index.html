@@ -600,9 +600,25 @@ var state = {
 // ── localStorage Keys ──────────────────────────────────────────────────────
 var KEY_LIBRARY = 'forge_library_v1';
 var KEY_DAYS    = 'forge_days_v1';
- 
+var KEY_SETTINGS = 'forge_settings_v1';
+
+
+  
 // ── Load / Save ────────────────────────────────────────────────────────────
-function loadData() {
+function loadSettings() {
+  try {
+    var s = localStorage.getItem(KEY_SETTINGS);
+    return s ? JSON.parse(s) : { geminiKey: '' };
+  } catch(e) { return { geminiKey: '' }; }
+}
+
+function saveSettings(settings) {
+  try {
+    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+  } catch(e) {}
+}
+  
+  function loadData() {
   try {
     var lib = localStorage.getItem(KEY_LIBRARY);
     if (lib) {
@@ -1074,11 +1090,54 @@ function renderModal() {
  
 // ── Settings ───────────────────────────────────────────────────────────────
 function renderSettings() {
-  return '<div class="coming-soon">'
-    + '<div class="coming-soon-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>'
-    + '<h2>Settings</h2>'
-    + '<p>Gemini API key, auto-fill preferences, and app options will live here.</p>'
-    + '<div class="forge-mark">Coming in Phase 6</div>'
+  var settings = loadSettings();
+  var hasKey = settings.geminiKey && settings.geminiKey.trim().length > 0;
+
+  return '<div style="padding: 28px 20px 40px;">'
+
+    + '<div class="home-eyebrow">Configuration</div>'
+    + '<div class="lib-title">Settings</div>'
+    + '<div style="height:1px;background:var(--grey-mid);margin:16px 0 24px;"></div>'
+
+    // Gemini API section
+    + '<div style="margin-bottom:24px;">'
+    + '<div class="form-section-label">Gemini API — Auto-fill</div>'
+    + '<div style="font-size:12px;color:var(--text-mute);font-family:Trebuchet MS,sans-serif;line-height:1.6;margin-bottom:12px;">'
+    + 'Paste your free Gemini API key to enable AI-powered exercise auto-fill. '
+    + 'Get yours free at <span style="color:var(--lime);">aistudio.google.com</span>'
+    + '</div>'
+
+    // Key status badge
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+    + '<div style="width:8px;height:8px;border-radius:50%;background:' + (hasKey ? 'var(--lime)' : 'var(--grey-muted)') + ';"></div>'
+    + '<span style="font-size:12px;font-family:var(--font-body);letter-spacing:0.06em;color:' + (hasKey ? 'var(--lime)' : 'var(--text-mute)') + ';">'
+    + (hasKey ? 'API KEY ACTIVE' : 'NO KEY SET — USING BUILT-IN DATABASE')
+    + '</span>'
+    + '</div>'
+
+    // Key input
+    + '<label class="form-label">API Key</label>'
+    + '<input class="form-input" type="password" id="gemini-key-input" '
+    + 'placeholder="Paste your Gemini API key here..." '
+    + 'value="' + escHtml(settings.geminiKey || '') + '"/>'
+
+    // Save + Clear buttons
+    + '<div class="form-row" style="margin-top:4px;">'
+    + '<button class="btn-cancel" onclick="clearGeminiKey()">Clear Key</button>'
+    + '<button class="btn-save" onclick="saveGeminiKey()">Save Key</button>'
+    + '</div>'
+    + '</div>'
+
+    // Divider
+    + '<div style="height:1px;background:var(--grey-mid);margin:8px 0 24px;"></div>'
+
+    // App info
+    + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);line-height:2;">'
+    + 'THE FORGE &nbsp;·&nbsp; BETA v0.6<br/>'
+    + 'BUILT FOR PERSONAL USE<br/>'
+    + 'DATA STORED LOCALLY ON YOUR DEVICE'
+    + '</div>'
+
     + '</div>';
 }
  

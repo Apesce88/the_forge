@@ -758,8 +758,13 @@ function saveGeminiKey() {
   var settings = loadSettings();
   settings.geminiKey = key;
   saveSettings(settings);
-  state.view = 'settings';
-  navigate('settings');
+  // Re-render settings screen with active nav
+  document.querySelectorAll('.nav-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  var btn = document.getElementById('nav-settings');
+  if (btn) btn.classList.add('active');
+  document.getElementById('screen').innerHTML = renderSettings();
 }
 
 function clearGeminiKey() {

@@ -750,7 +750,7 @@ function setLibCat(cat) {
 function openModal(modal) { state.modal = modal; render(); }
 function closeModal() { state.modal = null; render(); }
 
-function saveGeminiKey() {
+function savegeminiKey() {
   var input = document.getElementById('gemini-key-input');
   if (!input) return;
   var key = input.value.trim();
@@ -767,7 +767,7 @@ function saveGeminiKey() {
   document.getElementById('screen').innerHTML = renderSettings();
 }
 
-function clearGeminiKey() {
+function cleargeminiKey() {
   var settings = loadSettings();
   settings.geminiKey = '';
   saveSettings(settings);
@@ -1244,12 +1244,12 @@ function toggleAIConnector() {
     + '</div>'
 
 + (hasKey
-  ? '<button style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--grey-light);background:transparent;color:var(--text-sec);font-size:12px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-top:4px;" onclick="clearGeminiKey()">Clear API Key</button>'
+  ? '<button style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--grey-light);background:transparent;color:var(--text-sec);font-size:12px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-top:4px;" onclick="cleargeminiKey()">Clear API Key</button>'
   : '<label class="form-label">API Key</label>'
     + '<input class="form-input" type="password" id="gemini-key-input" placeholder="Paste your Gemini API key here..." value=""/>'
     + '<div class="form-row" style="margin-top:4px;">'
     + '<button class="btn-cancel" onclick="navigate(\'settings\')">Cancel</button>'
-    + '<button class="btn-save" onclick="saveGeminiKey()">Save Key</button>'
+    + '<button class="btn-save" onclick="savegeminiKey()">Save Key</button>'
     + '</div>'
 )
     + '</div>'

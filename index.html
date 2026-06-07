@@ -749,6 +749,22 @@ function setLibCat(cat) {
 // ── Modal ──────────────────────────────────────────────────────────────────
 function openModal(modal) { state.modal = modal; render(); }
 function closeModal() { state.modal = null; render(); }
+
+function saveGeminiKey() {
+  var input = document.getElementById('gemini-key-input');
+  if (!input) return;
+  var settings = loadSettings();
+  settings.geminiKey = input.value.trim();
+  saveSettings(settings);
+  render(); // re-render to update the status badge
+}
+
+function clearGeminiKey() {
+  var settings = loadSettings();
+  settings.geminiKey = '';
+  saveSettings(settings);
+  render();
+}
  
 // ── Add Exercise to Library ────────────────────────────────────────────────
 function openAddLibModal() {
@@ -1208,7 +1224,70 @@ function toggleAIConnector() {
 }
  
 // ── Utility ────────────────────────────────────────────────────────────────
-function escHtml(s) {
+async function geminiAutoFill(name, fw, mb, bw) {
+  var settings = loadSettings();
+  if (!settings.geminiKey) return null;
+
+  // Build list of what's already filled and what's missing
+  var filled = [];
+  var missing = [];
+  if (fw.trim()) filled.push('free weight: "' + fw.trim() + '"');
+  else missing.push({ key: 'fw', label: 'free weight (barbell/dumbbell)' });
+  if (mb.trim()) filled.push('machine/band: "' + mb.trim() + '"');
+  else missing.push({ key: 'mb', label: 'machine or resistance band' });
+  if (bw.trim()) filled.push('bodyweight: "' + bw.trim() + '"');
+  else missing.push({ key: 'bw', label: 'bodyweight only (no equipment)' });
+
+  if (missing.length === 0) return null;
+
+  var filledDesc = filled.length > 0
+    ? 'The user already provided: ' + filled.join('; ') + '. Use these as your reference for which muscles to target.'
+    : '';
+
+  var missingDesc = missing.map(function(m) {
+    return '"' + m.key + '": ' + m.label + ' exercise';
+  }).join(', ');
+
+  var prompt = 'You are a certified strength and conditioning coach.\n'
+    + 'Exercise name: "' + name + '"\n'
+    + filledDesc + '\n'
+    + 'Look at the exercise(s) already provided above, identify the PRIMARY muscles being trained, '
+    + 'and return ONLY the missing alternatives that train those EXACT same muscles.\n'
+    + 'Missing fields needed: ' + missingDesc + '\n'
+    + 'Rules:\n'
+    + '- Each answer must be one specific exercise, under 10 words\n'
+    + '- Must be practical for a Planet Fitness commercial gym\n'
+    + '- Must target the same primary muscles as the provided exercise\n'
+    + '- Do NOT repeat any exercise already listed\n'
+    + '- Return ONLY a raw JSON object, no markdown, no explanation\n'
+    + 'Example: {"mb": "Cable pull-through 3x12", "bw": "Single-leg RDL slow tempo"}';
+
+  try {
+    var response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + settings.geminiKey,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      }
+    );
+
+    if (!response.ok) return null;
+
+    var data = await response.json();
+    var text = data.candidates[0].content.parts[0].text;
+    var clean = text.replace(/```json|```/g, '').trim();
+    var parsed = JSON.parse(clean);
+    return parsed;
+
+  } catch(e) {
+    return null;
+  }
+}
+  
+  function escHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
  

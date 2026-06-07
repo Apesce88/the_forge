@@ -765,6 +765,38 @@ function clearGeminiKey() {
   saveSettings(settings);
   render();
 }
+
+async function doAutoFill() {
+  if (!state.modal) return;
+  var m = state.modal;
+  if (!m.name.trim()) return;
+
+  // Show loading state on button
+  var btn = document.querySelector('.autofill-btn');
+  if (btn) { btn.textContent = '⏳ Filling...'; btn.disabled = true; }
+
+  // Try Gemini first
+  var result = await geminiAutoFill(m.name.trim(), m.fw||'', m.mb||'', m.bw||'');
+
+  // Fall back to built-in database
+  if (!result) {
+    result = autoFill(m.name, m.fw||'', m.mb||'', m.bw||'');
+  }
+
+  if (result) {
+    if (result.fw && !m.fw) { m.fw = result.fw; }
+    if (result.mb && !m.mb) { m.mb = result.mb; }
+    if (result.bw && !m.bw) { m.bw = result.bw; }
+  }
+
+  // Re-render the modal with filled values
+  var existing = document.getElementById('modal-layer');
+  if (existing) existing.remove();
+  var div = document.createElement('div');
+  div.id = 'modal-layer';
+  div.innerHTML = renderModal();
+  document.getElementById('app').appendChild(div);
+}
  
 // ── Add Exercise to Library ────────────────────────────────────────────────
 function openAddLibModal() {
@@ -1124,6 +1156,7 @@ function renderModal() {
 
     + '<label class="form-label">📝 Notes <span style="color:var(--text-mute);font-size:10px;font-family:\'Trebuchet MS\',sans-serif;">(optional · 120 chars)</span></label>'
     + '<textarea class="form-input form-textarea" maxlength="120" placeholder="e.g. Superset with face pulls. Eccentric focus." oninput="updateModal(\'notes\',this.value)">' + escHtml(m.notes||'') + '</textarea>'
+    + '<button class="autofill-btn" onclick="doAutoFill()" style="width:100%;padding:11px;border-radius:12px;border:1px solid var(--lime-dark);background:var(--lime-dim);color:var(--lime);font-size:13px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-bottom:12px;">✨ Auto-fill missing options</button>'
     + '<div class="form-section-label">Equipment Options</div>'
  
     + '<label class="form-label">🏋️ Free Weight</label>'

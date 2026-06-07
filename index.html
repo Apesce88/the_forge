@@ -753,10 +753,13 @@ function closeModal() { state.modal = null; render(); }
 function saveGeminiKey() {
   var input = document.getElementById('gemini-key-input');
   if (!input) return;
+  var key = input.value.trim();
+  if (!key) return;
   var settings = loadSettings();
-  settings.geminiKey = input.value.trim();
+  settings.geminiKey = key;
   saveSettings(settings);
-  render(); // re-render to update the status badge
+  state.view = 'settings';
+  navigate('settings');
 }
 
 function clearGeminiKey() {
@@ -1223,24 +1226,27 @@ function toggleAIConnector() {
     + '</div>'
 
     // Key status badge
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
-    + '<div style="width:8px;height:8px;border-radius:50%;background:' + (hasKey ? 'var(--lime)' : 'var(--grey-muted)') + ';"></div>'
+    + '<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;margin-bottom:12px;'
+    + (hasKey
+      ? 'border:1px solid var(--lime);background:var(--lime-dim);box-shadow:0 0 8px rgba(163,230,53,0.25);'
+      : 'border:1px solid var(--grey-muted);background:transparent;')
+    + '">'
+    + '<div style="width:8px;height:8px;border-radius:50%;background:' + (hasKey ? 'var(--lime)' : 'var(--grey-muted)') + ';'
+    + (hasKey ? 'box-shadow:0 0 6px rgba(163,230,53,0.8);' : '') + '"></div>'
     + '<span style="font-size:12px;font-family:var(--font-body);letter-spacing:0.06em;color:' + (hasKey ? 'var(--lime)' : 'var(--text-mute)') + ';">'
-    + (hasKey ? 'API KEY ACTIVE' : 'NO KEY SET — USING BUILT-IN DATABASE')
+    + (hasKey ? 'API KEY ACTIVE' : 'NO KEY SET')
     + '</span>'
     + '</div>'
 
-    // Key input
-    + '<label class="form-label">API Key</label>'
-    + '<input class="form-input" type="password" id="-key-input" '
-    + 'placeholder="Paste your  API key here..." '
-    + 'value="' + escHtml(settings.Key || '') + '"/>'
-
-    // Save + Clear buttons
++ (hasKey
+  ? '<button style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--grey-light);background:transparent;color:var(--text-sec);font-size:12px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-top:4px;" onclick="clearGeminiKey()">Clear API Key</button>'
+  : '<label class="form-label">API Key</label>'
+    + '<input class="form-input" type="password" id="gemini-key-input" placeholder="Paste your Gemini API key here..." value=""/>'
     + '<div class="form-row" style="margin-top:4px;">'
-    + '<button class="btn-cancel" onclick="clearKey()">Clear Key</button>'
+    + '<button class="btn-cancel" onclick="navigate(\'settings\')">Cancel</button>'
     + '<button class="btn-save" onclick="saveGeminiKey()">Save Key</button>'
     + '</div>'
+)
     + '</div>'
 
     // Divider

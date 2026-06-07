@@ -1202,7 +1202,7 @@ function toggleAIConnector() {
   
   function renderSettings() {
   var settings = loadSettings();
-  var hasKey = settings.Key && settings.Key.trim().length > 0;
+  var hasKey = settings.geminiKey && settings.geminiKey.trim().length > 0;
 
   return '<div style="padding: 28px 20px 40px;">'
 

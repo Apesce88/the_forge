@@ -777,27 +777,45 @@ function cleargeminiKey() {
 async function doAutoFill() {
   if (!state.modal) return;
   var m = state.modal;
-  if (!m.name.trim()) return;
 
-  // Show loading state on button
+  // Read directly from DOM inputs — most reliable source
+  var nameInput = document.querySelector('#modal-layer input[oninput*="name"]');
+  var fwInput   = document.querySelector('#modal-layer input[oninput*="fw"]');
+  var mbInput   = document.querySelector('#modal-layer input[oninput*="mb"]');
+  var bwInput   = document.querySelector('#modal-layer input[oninput*="bw"]');
+
+  var name = nameInput ? nameInput.value.trim() : m.name.trim();
+  var fw   = fwInput   ? fwInput.value.trim()   : (m.fw||'');
+  var mb   = mbInput   ? mbInput.value.trim()   : (m.mb||'');
+  var bw   = bwInput   ? bwInput.value.trim()   : (m.bw||'');
+
+  if (!name) return;
+
+  // Update state with current values
+  m.name = name;
+  m.fw = fw;
+  m.mb = mb;
+  m.bw = bw;
+
+  // Show loading
   var btn = document.querySelector('.autofill-btn');
   if (btn) { btn.textContent = '⏳ Filling...'; btn.disabled = true; }
 
   // Try Gemini first
-  var result = await geminiAutoFill(m.name.trim(), m.fw||'', m.mb||'', m.bw||'');
+  var result = await geminiAutoFill(name, fw, mb, bw);
 
   // Fall back to built-in database
   if (!result) {
-    result = autoFill(m.name, m.fw||'', m.mb||'', m.bw||'');
+    result = autoFill(name, fw, mb, bw);
   }
 
   if (result) {
-    if (result.fw && !m.fw) { m.fw = result.fw; }
-    if (result.mb && !m.mb) { m.mb = result.mb; }
-    if (result.bw && !m.bw) { m.bw = result.bw; }
+    if (result.fw && !fw) m.fw = result.fw;
+    if (result.mb && !mb) m.mb = result.mb;
+    if (result.bw && !bw) m.bw = result.bw;
   }
 
-  // Re-render the modal with filled values
+  // Re-render modal with filled values
   var existing = document.getElementById('modal-layer');
   if (existing) existing.remove();
   var div = document.createElement('div');
@@ -1307,6 +1325,7 @@ async function geminiAutoFill(name, fw, mb, bw) {
     + 'Example: {"mb": "Cable pull-through 3x12", "bw": "Single-leg RDL slow tempo"}';
 
   try {
+    console.log('Calling Gemini with name:', name, 'key:', settings.geminiKey ? 'SET' : 'MISSING');
     var response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + settings.geminiKey,
       {

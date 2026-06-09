@@ -646,8 +646,8 @@ var KEY_SETTINGS = 'forge_settings_v1';
 function loadSettings() {
   try {
     var s = localStorage.getItem(KEY_SETTINGS);
-    return s ? JSON.parse(s) : { Key: '' };
-  } catch(e) { return { Key: '' }; }
+    return s ? JSON.parse(s) : { geminiKey: '' };
+  } catch(e) { return { geminiKey: '' }; }
 }
 
 function saveSettings(settings) {
@@ -807,7 +807,7 @@ async function doAutoFill() {
 
   // Fall back to built-in database
   if (!result) {
-    result = autofill(name, fw, mb, bw);
+    result = autoFill(name, fw, mb, bw);
   }
 
   if (result) {
@@ -1283,7 +1283,8 @@ function toggleAIConnector() {
     + 'DATA STORED LOCALLY ON YOUR DEVICE'
     + '</div>'
 
-    + '</div>';
+    + '</div>'   // closes ai-connector-panel
+    + '</div>';  // closes outer padding div
 }
  
 // ── Utility ────────────────────────────────────────────────────────────────
@@ -1359,6 +1360,110 @@ async function geminiAutoFill(name, fw, mb, bw) {
     return null;
   }
 }
+
+var EXERCISE_DB = {
+  chest: {
+    fw:["Barbell bench press","Dumbbell flat press","Dumbbell incline press","Dumbbell fly"],
+    mb:["Chest press machine","Incline chest press machine","Pec deck fly","Cable crossover"],
+    bw:["Push-ups","Wide-grip push-ups","Decline push-ups","Diamond push-ups"],
+  },
+  shoulders:{
+    fw:["Dumbbell overhead press","Barbell OHP","Dumbbell lateral raises","Dumbbell rear delt fly","Arnold press"],
+    mb:["Shoulder press machine","Cable lateral raise","Cable rear delt fly","Resistance band OHP"],
+    bw:["Pike push-ups","Feet-elevated pike push-ups","Prone Y/T/W raises"],
+  },
+  back:{
+    fw:["Barbell bent-over row","Dumbbell row","Meadows row","Barbell deadlift","Dumbbell pullover"],
+    mb:["Lat pulldown","Seated cable row","Cable face pull","Chest-supported row machine"],
+    bw:["Pull-ups","Chin-ups","Inverted row","Superman hold"],
+  },
+  biceps:{
+    fw:["Barbell curl","Dumbbell curl","Hammer curl","Incline dumbbell curl","Reverse grip curl"],
+    mb:["Cable curl","Cable hammer curl","Preacher curl machine","Resistance band curl"],
+    bw:["Chin-ups","Close-grip chin-ups"],
+  },
+  triceps:{
+    fw:["Skull crushers EZ bar","Dumbbell overhead extension","Close-grip bench press"],
+    mb:["Cable pushdown straight bar","Cable pushdown rope","Resistance band pushdown"],
+    bw:["Diamond push-ups","Bench dips","Close-grip push-ups"],
+  },
+  quads:{
+    fw:["Barbell back squat","Dumbbell goblet squat","Bulgarian split squat","Dumbbell lunge"],
+    mb:["Leg press machine","Hack squat machine","Leg extension machine"],
+    bw:["Bodyweight squat","Jump squat","Pistol squat","Wall sit"],
+  },
+  hamstrings:{
+    fw:["Barbell RDL","Dumbbell RDL","Barbell good mornings","Single-leg RDL"],
+    mb:["Lying hamstring curl machine","Seated hamstring curl","Cable pull-through"],
+    bw:["Nordic curl","Single-leg RDL bodyweight","Glute bridge"],
+  },
+  glutes:{
+    fw:["Barbell hip thrust","Dumbbell sumo squat","Dumbbell step-up"],
+    mb:["Hip abductor machine","Cable kickback","Resistance band glute bridge"],
+    bw:["Glute bridge","Single-leg glute bridge","Donkey kick"],
+  },
+  core:{
+    fw:["Dumbbell Russian twist","Weighted sit-up","Ab wheel rollout"],
+    mb:["Cable crunch","Cable woodchop","Rotary torso machine"],
+    bw:["Plank","Side plank","Leg raises","Bicycle crunches","V-ups","Hollow hold"],
+  },
+  traps:{
+    fw:["Barbell shrug","Dumbbell shrug","Barbell upright row","Farmer carry"],
+    mb:["Smith machine shrug","Cable upright row","Cable shrug"],
+    bw:["Scapular shrug","Prone T raises"],
+  },
+  explosiveness:{
+    fw:["Dumbbell box jump","Kettlebell swing","Dumbbell jump squat"],
+    mb:["Resistance band squat jump"],
+    bw:["Box jumps","Broad jumps","Lateral bounds","Pogos","Tuck jumps"],
+  },
+  calves:{
+    fw:["Standing DB calf raise","Seated DB calf raise"],
+    mb:["Standing calf raise machine","Seated calf raise machine"],
+    bw:["Single-leg calf raise","Pogo hops"],
+  },
+};
+
+var KEYWORDS=[
+  {w:["bench","chest press","fly","pec","incline press","decline press","push-up","pushup","pullover"],g:"chest"},
+  {w:["overhead press","shoulder press","lateral raise","front raise","rear delt","arnold","ohp","ytw","pike push"],g:"shoulders"},
+  {w:["upright row","shrug","trap","farmer"],g:"traps"},
+  {w:["row","pulldown","pull-up","pullup","chin-up","chinup","lat pull","meadows","face pull"],g:"back"},
+  {w:["deadlift","rdl","romanian","good morning","nordic","hamstring curl","leg curl","swing","kettlebell"],g:"hamstrings"},
+  {w:["squat","lunge","leg press","split squat","hack squat","step-up","goblet"],g:"quads"},
+  {w:["glute","hip thrust","donkey kick","fire hydrant","clamshell","abductor"],g:"glutes"},
+  {w:["curl","bicep","hammer curl","reverse curl","preacher"],g:"biceps"},
+  {w:["tricep","pushdown","skull crusher","dip","close-grip","overhead extension"],g:"triceps"},
+  {w:["calf","calf raise","pogo"],g:"calves"},
+  {w:["plank","crunch","sit-up","russian twist","leg raise","hollow","v-up","oblique","woodchop","ab ","core"],g:"core"},
+  {w:["jump","box jump","broad jump","bound","explosive","power clean","lateral bound"],g:"explosiveness"},
+];
+
+function detectGroup(t){
+  if(!t) return null;
+  var l=t.toLowerCase();
+  for(var i=0;i<KEYWORDS.length;i++){
+    if(KEYWORDS[i].w.some(function(k){return l.includes(k);})) return KEYWORDS[i].g;
+  }
+  return null;
+}
+
+  function autoFill(name,fw,mb,bw){
+    var g=detectGroup(name)||detectGroup(fw)||detectGroup(mb)||detectGroup(bw);
+    if(!g||!EXERCISE_DB[g]) return null;
+    var db=EXERCISE_DB[g];
+    var used=[fw,mb,bw].filter(Boolean).map(function(s){return s.toLowerCase();});
+    var pick=function(arr){
+      var av=arr.filter(function(e){
+        return !used.some(function(u){
+          return e.toLowerCase().includes(u.slice(0,5))||u.includes(e.toLowerCase().slice(0,5));
+        });
+      });
+      var pool=av.length?av:arr;
+      return pool[Math.floor(Math.random()*pool.length)];
+    };
+    return{fw:fw||pick(db.fw),mb:mb||pick(db.mb),bw:bw||pick(db.bw)};
+  }
   
   function escHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

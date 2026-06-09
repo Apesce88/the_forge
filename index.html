@@ -775,6 +775,7 @@ function cleargeminiKey() {
 }
 
 async function doAutoFill() {
+  console.log('DO AUTOFILL START');
   if (!state.modal) return;
   var m = state.modal;
 
@@ -1287,6 +1288,7 @@ function toggleAIConnector() {
  
 // ── Utility ────────────────────────────────────────────────────────────────
 async function geminiAutoFill(name, fw, mb, bw) {
+  console.log('GEMINI CALL START', name);
   var settings = loadSettings();
   if (!settings.geminiKey) return null;
 

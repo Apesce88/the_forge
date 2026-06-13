@@ -508,6 +508,39 @@
     border-color: var(--lime);
     color: var(--lime);
   }
+
+    /* ── Proving Grounds ── */
+    .pg-head { padding: 24px 20px 12px; }
+    .pg-eye { font-size: 10px; letter-spacing: 0.2em; color: var(--gold-metal); text-transform: uppercase; margin-bottom: 4px; font-family: var(--font-body); }
+    .pg-title { font-size: 28px; font-weight: 900; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; margin-bottom: 4px; }
+    .pg-sub { font-size: 10px; color: var(--text-mute); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-body); }
+    .pg-divider { display: flex; align-items: center; gap: 8px; padding: 10px 20px; }
+    .pg-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold-metal), transparent); }
+    .pg-divider-mark { color: var(--gold-metal); font-size: 12px; opacity: 0.5; }
+    .pg-cards { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 12px; }
+    .pg-card { border-radius: 14px; padding: 20px 18px 16px; position: relative; cursor: pointer; transition: transform 0.12s; }
+    .pg-card:active { transform: scale(0.98); }
+    .pg-card.gauntlet { background: #1a0808; border: 1px solid rgba(239,68,68,0.35); }
+    .pg-card.signet { background: #1a1408; border: 1px solid rgba(200,146,42,0.4); }
+    .pg-card-tag { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; font-family: var(--font-body); }
+    .pg-card.gauntlet .pg-card-tag { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+    .pg-card.signet .pg-card-tag { background: rgba(200,146,42,0.12); border: 1px solid rgba(200,146,42,0.3); color: var(--gold-metal); }
+    .pg-card-title { font-size: 22px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 8px; }
+    .pg-card.gauntlet .pg-card-title { text-shadow: 0 0 20px rgba(239,68,68,0.25); }
+    .pg-card.signet .pg-card-title { text-shadow: 0 0 20px rgba(200,146,42,0.25); }
+    .pg-card-desc { font-size: 11px; color: var(--text-sec); line-height: 1.6; margin-bottom: 14px; }
+    .pg-card-cta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-body); }
+    .pg-card.gauntlet .pg-card-cta { color: var(--red); }
+    .pg-card.signet .pg-card-cta { color: var(--gold-metal); }
+    .pg-card-glow { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+    .pg-card.gauntlet .pg-card-glow { background: linear-gradient(to right, transparent, var(--red), transparent); }
+    .pg-card.signet .pg-card-glow { background: linear-gradient(to right, transparent, var(--gold-metal), transparent); }
+    .pg-soon { position: absolute; top: 14px; right: 14px; font-size: 9px; color: var(--text-mute); background: var(--grey-mid); border: 1px solid var(--grey-light); border-radius: 8px; padding: 2px 7px; text-transform: uppercase; font-family: var(--font-body); }
+    .pg-lore { text-align: center; font-size: 10px; color: var(--text-mute); letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 0 12px; font-family: var(--font-body); }
+    .pg-coming { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; padding: 40px 20px; text-align: center; gap: 10px; }
+    .pg-coming h2 { font-size: 20px; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .pg-coming p { font-size: 13px; color: var(--text-sec); line-height: 1.6; max-width: 260px; }
+    .pg-back-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--grey-mid); border: 1px solid var(--grey-light); color: var(--text-sec); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: var(--font-body); letter-spacing: 0.06em; cursor: pointer; margin: 20px 20px 0; }
     
     /* ── Coming Soon ── */
     .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 40px 20px; text-align: center; gap: 12px; }
@@ -945,6 +978,7 @@ function render() {
   if (state.view === 'day')       screen.innerHTML = renderDay(state.dayIndex);
   if (state.view === 'exercises') screen.innerHTML = renderLibrary();
   if (state.view === 'settings')  screen.innerHTML = renderSettings();
+  if (state.view === 'grounds')   screen.innerHTML = renderGrounds();
  
   // Render modal on top if needed
   var existing = document.getElementById('modal-layer');
@@ -1253,6 +1287,66 @@ function toggleAIConnector() {
     button.classList.remove('active');
     chevron.textContent = '▼';
   }
+}
+
+function renderGrounds() {
+  return '<div>'
+    + '<div class="pg-head">'
+    +   '<div class="pg-eye">Enter The Arena</div>'
+    +   '<div class="pg-title">The Proving<br/>Grounds</div>'
+    +   '<div class="pg-sub">Choose your path · Face the challenge</div>'
+    + '</div>'
+    + '<div class="pg-divider">'
+    +   '<div class="pg-divider-line"></div>'
+    +   '<div class="pg-divider-mark">⚔</div>'
+    +   '<div class="pg-divider-line"></div>'
+    + '</div>'
+    + '<div class="pg-cards">'
+
+    // Gauntlet card
+    +   '<div class="pg-card gauntlet" onclick="openGroundsSection(\'gauntlet\')">'
+    +     '<div class="pg-soon">Coming Soon</div>'
+    +     '<div class="pg-card-tag">⚔️ Challenge Space</div>'
+    +     '<div class="pg-card-title">The Gauntlet</div>'
+    +     '<div class="pg-card-desc">Personal challenges. Gym events. Local races. Global battles — Hyrox, Spartan, and beyond. Find your next test.</div>'
+    +     '<div class="pg-card-cta">Enter The Gauntlet →</div>'
+    +     '<div class="pg-card-glow"></div>'
+    +   '</div>'
+
+    // Signet card
+    +   '<div class="pg-card signet" onclick="openGroundsSection(\'signet\')">'
+    +     '<div class="pg-soon">Coming Soon</div>'
+    +     '<div class="pg-card-tag">🛡️ Your Path</div>'
+    +     '<div class="pg-card-title">The Signet</div>'
+    +     '<div class="pg-card-desc">Choose your archetype. Power, Size, Longevity, Speed, Hybrid — your path shapes your training.</div>'
+    +     '<div class="pg-card-cta">Forge Your Path →</div>'
+    +     '<div class="pg-card-glow"></div>'
+    +   '</div>'
+
+    + '</div>'
+    + '<div class="pg-lore">The Proving Grounds · Where Iron Meets Will<br/>'
+    +   '<span style="color:var(--text-mute);font-size:10px;letter-spacing:0.08em;">The chains will break</span>'
+    + '</div>'
+    + '</div>';
+}
+
+function openGroundsSection(section) {
+  var titles = { gauntlet: 'The Gauntlet', signet: 'The Signet' };
+  var descs = {
+    gauntlet: 'Challenge events, local races, and global battles are coming. The Gauntlet will be your arena to find, track, and conquer.',
+    signet:   'Choose your training archetype and forge your path. The Signet will shape your splits and build your legacy.'
+  };
+  document.getElementById('screen').innerHTML = ''
+    + '<button class="pg-back-btn" onclick="navigate(\'grounds\')">'
+    +   '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
+    +   'Back'
+    + '</button>'
+    + '<div class="pg-coming">'
+    +   '<div style="font-size:40px;margin-bottom:8px;">' + (section === 'gauntlet' ? '⚔️' : '🛡️') + '</div>'
+    +   '<h2>' + titles[section] + '</h2>'
+    +   '<p>' + descs[section] + '</p>'
+    +   '<div class="forge-mark" style="margin-top:12px;">In Development</div>'
+    + '</div>';
 }
   
   function renderSettings() {

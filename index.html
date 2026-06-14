@@ -532,8 +532,8 @@
   }
 
   @keyframes signet-pulse {
-    0%, 100% { box-shadow: 0 0 8px 2px rgba(163,230,53,0.10), 0 0 24px 4px rgba(163,230,53,0.04); }
-    50%       { box-shadow: 0 0 18px 6px rgba(163,230,53,0.30), 0 0 40px 10px rgba(163,230,53,0.10); }
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(239,68,68,0.15), 0 0 24px 4px rgba(239,68,68,0.05); }
+    50%       { box-shadow: 0 0 18px 6px rgba(239,68,68,0.35), 0 0 40px 10px rgba(200,146,42,0.15); }
   }
 
     .pg-card.gauntlet { animation: gauntlet-pulse 3s ease-in-out infinite;}
@@ -543,7 +543,7 @@
       animation: signet-pulse 3s ease-in-out infinite;
       animation-delay: 1.5s;
     }
-    .pg-cards { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 48px; }
+    .pg-cards { padding: 0 12px 24px; display: flex; flex-direction: column; gap: 32px; }
     .pg-card { border-radius: 14px; padding: 20px 18px 16px; position: relative; cursor: pointer; transition: transform 0.12s; }
     .pg-card:active { transform: scale(0.98); }
     .pg-card.gauntlet { background: #1a0808; border: 1px solid rgba(239,68,68,0.35); }
@@ -562,7 +562,7 @@
     .pg-card.gauntlet .pg-card-glow { background: linear-gradient(to right, transparent, var(--red), transparent); }
     .pg-card.signet .pg-card-glow { background: linear-gradient(to right, transparent, var(--gold-metal), transparent); }
     .pg-soon { position: absolute; top: 14px; right: 14px; font-size: 9px; color: var(--text-mute); background: var(--grey-mid); border: 1px solid var(--grey-light); border-radius: 8px; padding: 2px 7px; text-transform: uppercase; font-family: var(--font-body); }
-    .pg-lore { text-align: center; font-size: 10px; color: var(--text-mute); letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 0 12px; font-family: var(--font-body); }
+    .pg-lore { text-align: center; font-size: 10px; color: var(--text-mute); letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 0 16px; font-family: var(--font-body); }
     .pg-coming { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; padding: 40px 20px; text-align: center; gap: 10px; }
     .pg-coming h2 { font-size: 20px; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .pg-coming p { font-size: 13px; color: var(--text-sec); line-height: 1.6; max-width: 260px; }

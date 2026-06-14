@@ -5,7 +5,7 @@
 // That version mismatch is what triggers the old cache to clear.
 // ============================================================
 
-const CACHE_NAME = 'forge-v6.3';
+const CACHE_NAME = 'forge-v6.4';
 
 // These are the files we pre-cache when the SW first installs.
 // The app can load fully from cache even with no network.
@@ -48,16 +48,39 @@ self.addEventListener('activate', event => {
 // Strategy: Cache First, then Network fallback.
 // Try the cache → if miss, hit the network → cache the response.
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // ── Network First for HTML ──────────────────────────────
+  // Always try to fetch the latest index.html from the network.
+  // Only fall back to cache if the network is unavailable (offline).
+  // This means code changes show up immediately on every reload.
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Got a fresh response — update the cache copy too
+          const toCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, toCache));
+          return response;
+        })
+        .catch(() => {
+          // Network failed (offline) — serve cached version as fallback
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // ── Cache First for everything else ────────────────────
+  // Fonts, icons, and other static assets rarely change.
+  // Serve from cache instantly, update cache in background.
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        // Only cache valid responses (not errors, not opaque cross-origin)
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
-        // Clone the response — it's a stream, can only be consumed once.
-        // One copy goes to the cache, one goes to the browser.
         const toCache = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, toCache));
         return response;

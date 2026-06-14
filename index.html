@@ -1109,13 +1109,13 @@ function removeDayEx(di, ti, ei) {
 // ── Edit exercise in day ───────────────────────────────────────────────────
 function openEditDayModal(di, ti, ei) {
   var ex = state.days[di].tiers[ti].exercises[ei];
-  openModal({ mode:'editDay', di:di, ti:ti, ei:ei, name:ex.name, cat:'upper', fw:ex.fw, mb:ex.mb, bw:ex.bw });
+  openModal({ mode:'editDay', di:di, ti:ti, ei:ei, name:ex.name, cat:'upper', fw:ex.fw, mb:ex.mb, bw:ex.bw, notes:ex.notes||'' });
 }
  
 function saveEditDayExercise() {
   var m = state.modal;
   if (!m || !m.name.trim()) return;
-  state.days[m.di].tiers[m.ti].exercises[m.ei] = { name:m.name.trim(), fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim() };
+  state.days[m.di].tiers[m.ti].exercises[m.ei] = { name:m.name.trim(), fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim(), notes:(m.notes||'').trim() };
   saveDays();
   closeModal();
 }

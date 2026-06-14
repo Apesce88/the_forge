@@ -517,6 +517,32 @@
     .pg-divider { display: flex; align-items: center; gap: 8px; padding: 10px 20px; }
     .pg-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold-metal), transparent); }
     .pg-divider-mark { color: var(--gold-metal); font-size: 12px; opacity: 0.5; }
+
+    /* ============================================================
+   PROVING GROUNDS — Alternating card glow
+   Two @keyframes: one pulses the Gauntlet (red/gold),
+   one pulses the Signet (lime green).
+   animation-delay on .signet offsets it so they never
+   peak at the same time — gives a breathing, alive feel.
+   ============================================================ */
+
+  @keyframes gauntlet-pulse {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(239,68,68,0.15), 0 0 24px 4px rgba(239,68,68,0.05); }
+    50%       { box-shadow: 0 0 18px 6px rgba(239,68,68,0.35), 0 0 40px 10px rgba(200,146,42,0.15); }
+  }
+
+  @keyframes signet-pulse {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(163,230,53,0.10), 0 0 24px 4px rgba(163,230,53,0.04); }
+    50%       { box-shadow: 0 0 18px 6px rgba(163,230,53,0.30), 0 0 40px 10px rgba(163,230,53,0.10); }
+  }
+
+    .pg-card.gauntlet { animation: gauntlet-pulse 3s ease-in-out infinite;}
+    .pg-card.signet {
+    /* animation-delay: 1.5s = exactly half of 3s cycle
+     so when gauntlet peaks, signet is at its dimmest */
+      animation: signet-pulse 3s ease-in-out infinite;
+      animation-delay: 1.5s;
+    }
     .pg-cards { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 12px; }
     .pg-card { border-radius: 14px; padding: 20px 18px 16px; position: relative; cursor: pointer; transition: transform 0.12s; }
     .pg-card:active { transform: scale(0.98); }
@@ -1590,5 +1616,21 @@ function detectGroup(t){
 loadData();
 render();
 </script>
+
+<script>
+  // ============================================================
+  // SERVICE WORKER REGISTRATION
+  // Tells the browser to use sw.js as the cache controller.
+  // The path must match exactly where sw.js lives in your repo.
+  // ============================================================
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/the_forge/sw.js')
+        .then(reg => console.log('[SW] Registered:', reg.scope))
+        .catch(err => console.warn('[SW] Registration failed:', err));
+    });
+  }
+</script>
+  
 </body>
 </html>

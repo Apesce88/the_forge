@@ -738,6 +738,7 @@ var state = {
   equipTabs: {},
   openMenuId: null,   // which exercise ••• menu is open
   modal: null,        // null | { mode:'addLib'|'editLib'|'editDay', ... }
+  gauntletView: 'map' // tracks last active gauntlet view: 'map' | 'list'
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
@@ -1390,6 +1391,55 @@ function renderGrounds() {
     + '</div>';
 }
 
+// ── Gauntlet Events ────────────────────────────────────────────────────────
+var GAUNTLET_EVENTS = [
+  {
+    type: 'OBSTACLE RACE',
+    name: 'Spartan Race',
+    meta: '5K–21K · 20+ obstacles · Regional events',
+    desc: 'Mud, walls, rope climbs, and barbed wire. The Spartan series tests raw grit across Sprint, Super, and Beast distances.',
+    tags: ['Endurance', 'Grip Strength', 'Mental Toughness'],
+    color: 'red',
+    wp: { x: 25, y: 32 }
+  },
+  {
+    type: 'FITNESS RACE',
+    name: 'Hyrox',
+    meta: '8km Run + 8 Stations · Indoor arena',
+    desc: 'Run 1km, complete a functional fitness station, repeat 8 times. Sled push, rowing, burpee broad jumps — the world\'s fastest growing fitness race.',
+    tags: ['Running', 'Sled Push', 'Rowing', 'Functional Fitness'],
+    color: 'gold',
+    wp: { x: 65, y: 20 }
+  },
+  {
+    type: 'TEAM SPORT',
+    name: 'Flag Football',
+    meta: 'Weekly league · 7v7 · Your primary sport',
+    desc: 'Your arena. Every Windrunner and Gladiator rep is built for this — speed off the line, route running, reading the field.',
+    tags: ['Speed', 'Agility', 'Explosiveness', 'Team Sport'],
+    color: 'lime',
+    wp: { x: 78, y: 55 }
+  },
+  {
+    type: 'TEAM SPORT',
+    name: 'Basketball',
+    meta: 'Pick-up · League · Rec',
+    desc: 'Lateral quickness, vertical, conditioning. Every sprint baseline to baseline is a test of your lower body work paying off.',
+    tags: ['Lateral Speed', 'Vertical', 'Conditioning'],
+    color: 'gold',
+    wp: { x: 38, y: 68 }
+  },
+  {
+    type: 'RUNNING EVENT',
+    name: '5K Run',
+    meta: '3.1 miles · Road or trail',
+    desc: 'The benchmark. Whether it\'s a timed time trial or a local race, 5K is where Stonelung signets prove their engine.',
+    tags: ['Endurance', 'Pacing', 'Cardio Base'],
+    color: 'lime',
+    wp: { x: 18, y: 72 }
+  }
+];
+  
 function openGroundsSection(section) {
   var titles = { gauntlet: 'The Gauntlet', signet: 'The Signet' };
   var descs = {

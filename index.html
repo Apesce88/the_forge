@@ -1533,6 +1533,155 @@ var GAUNTLET_EVENTS = [
     wp: { x: 18, y: 72 }
   }
 ];
+
+// ── Gauntlet Events ────────────────────────────────────────────────────────
+var GAUNTLET_EVENTS = [
+  {
+    type: 'OBSTACLE RACE',
+    name: 'Spartan Race',
+    meta: '5K–21K · 20+ obstacles · Regional events',
+    desc: 'Mud, walls, rope climbs, and barbed wire. The Spartan series tests raw grit across Sprint, Super, and Beast distances.',
+    tags: ['Endurance', 'Grip Strength', 'Mental Toughness'],
+    color: 'red',
+    wp: { x: 25, y: 32 }
+  },
+  {
+    type: 'FITNESS RACE',
+    name: 'Hyrox',
+    meta: '8km Run + 8 Stations · Indoor arena',
+    desc: 'Run 1km, complete a functional fitness station, repeat 8 times. Sled push, rowing, burpee broad jumps — the world\'s fastest growing fitness race.',
+    tags: ['Running', 'Sled Push', 'Rowing', 'Functional Fitness'],
+    color: 'gold',
+    wp: { x: 65, y: 20 }
+  },
+  {
+    type: 'TEAM SPORT',
+    name: 'Flag Football',
+    meta: 'Weekly league · 7v7 · Your primary sport',
+    desc: 'Your arena. Every Windrunner and Gladiator rep is built for this — speed off the line, route running, reading the field.',
+    tags: ['Speed', 'Agility', 'Explosiveness', 'Team Sport'],
+    color: 'lime',
+    wp: { x: 78, y: 55 }
+  },
+  {
+    type: 'TEAM SPORT',
+    name: 'Basketball',
+    meta: 'Pick-up · League · Rec',
+    desc: 'Lateral quickness, vertical, conditioning. Every sprint baseline to baseline is a test of your lower body work paying off.',
+    tags: ['Lateral Speed', 'Vertical', 'Conditioning'],
+    color: 'gold',
+    wp: { x: 38, y: 68 }
+  },
+  {
+    type: 'RUNNING EVENT',
+    name: '5K Run',
+    meta: '3.1 miles · Road or trail',
+    desc: 'The benchmark. Whether it\'s a timed time trial or a local race, 5K is where Stonelung signets prove their engine.',
+    tags: ['Endurance', 'Pacing', 'Cardio Base'],
+    color: 'lime',
+    wp: { x: 18, y: 72 }
+  }
+];
+
+function renderGauntlet(view) {
+  state.gauntletView = view;
+
+  var backBtn = '<button class="pg-back-btn" onclick="navigate(\'grounds\')">'
+    + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
+    + 'Back</button>';
+
+  var header = '<div class="gnt-header">'
+    + '<div class="pg-eye">Challenge Arena</div>'
+    + '<div class="gnt-title">The Gauntlet</div>'
+    + '<div class="gnt-sub">Find your next test · Own the map</div>'
+    + '</div>';
+
+  var toggle = '<div class="gnt-toggle">'
+    + '<button class="gnt-toggle-btn' + (view === 'map' ? ' active' : '') + '" onclick="renderGauntlet(\'map\')">🗺 MAP</button>'
+    + '<button class="gnt-toggle-btn' + (view === 'list' ? ' active' : '') + '" onclick="renderGauntlet(\'list\')">☰ LIST</button>'
+    + '</div>';
+
+  var content = view === 'map' ? buildGauntletMap() : buildGauntletList();
+
+  document.getElementById('screen').innerHTML = backBtn + header + toggle + content
+    + '<div class="forge-mark">The Gauntlet · Find Your Test</div>';
+}
+
+function buildGauntletMap() {
+  var pairs = [[0,1],[1,2],[2,3],[3,4],[0,4],[1,3]];
+  var lines = pairs.map(function(p) {
+    var a = GAUNTLET_EVENTS[p[0]].wp, b = GAUNTLET_EVENTS[p[1]].wp;
+    return '<line x1="' + a.x + '%" y1="' + a.y + '%" x2="' + b.x + '%" y2="' + b.y + '%"'
+      + ' stroke="rgba(163,230,53,0.12)" stroke-width="1" stroke-dasharray="4 7"/>';
+  }).join('');
+
+  var waypoints = GAUNTLET_EVENTS.map(function(ev, i) {
+    return '<div class="gnt-wp gnt-wp-' + ev.color + '" style="left:' + ev.wp.x + '%;top:' + ev.wp.y + '%;" onclick="showGauntletEvent(' + i + ')">'
+      + '<div class="gnt-wp-ring"></div>'
+      + '<div class="gnt-wp-dot"></div>'
+      + '<div class="gnt-wp-label">' + ev.name + '</div>'
+      + '</div>';
+  }).join('');
+
+  return '<div class="gnt-map-wrap">'
+    + '<div class="gnt-scan"></div>'
+    + '<div class="gnt-corner gnt-tl"></div>'
+    + '<div class="gnt-corner gnt-tr"></div>'
+    + '<div class="gnt-corner gnt-bl"></div>'
+    + '<div class="gnt-corner gnt-br"></div>'
+    + '<div class="gnt-hud-tl">34°03\'N 118°14\'W</div>'
+    + '<div class="gnt-hud-tr">EVENTS: ' + GAUNTLET_EVENTS.length + '<br/>STATUS: LIVE</div>'
+    + '<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;">' + lines + '</svg>'
+    + waypoints
+    + '</div>'
+    + '<div class="gnt-legend">'
+    + '<div class="gnt-leg-item"><div class="gnt-leg-dot" style="background:var(--lime);box-shadow:0 0 5px rgba(163,230,53,0.7);"></div><span>Athletics</span></div>'
+    + '<div class="gnt-leg-item"><div class="gnt-leg-dot" style="background:var(--red);box-shadow:0 0 5px rgba(239,68,68,0.7);"></div><span>Obstacle</span></div>'
+    + '<div class="gnt-leg-item"><div class="gnt-leg-dot" style="background:var(--gold);box-shadow:0 0 5px rgba(245,158,11,0.7);"></div><span>Fitness Race</span></div>'
+    + '</div>';
+}
+
+function buildGauntletList() {
+  return '<div class="gnt-list">'
+    + GAUNTLET_EVENTS.map(function(ev, i) {
+        return '<div class="gnt-event-card gnt-ev-' + ev.color + '" onclick="showGauntletEvent(' + i + ')">'
+          + '<div class="gnt-event-inner">'
+          + '<div class="gnt-event-type">' + ev.type + '</div>'
+          + '<div class="gnt-event-name">' + ev.name + '</div>'
+          + '<div class="gnt-event-meta">' + ev.meta + '</div>'
+          + '<div class="gnt-event-desc">' + ev.desc + '</div>'
+          + '<div class="gnt-event-tags">'
+          + ev.tags.map(function(t) { return '<span class="gnt-event-tag">' + t + '</span>'; }).join('')
+          + '</div>'
+          + '</div>'
+          + '<div class="gnt-event-glow"></div>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+}
+
+function showGauntletEvent(idx) {
+  var ev = GAUNTLET_EVENTS[idx];
+  var accentVar = ev.color === 'red' ? 'var(--red)' : ev.color === 'gold' ? 'var(--gold)' : 'var(--lime)';
+
+  document.getElementById('screen').innerHTML = ''
+    + '<button class="pg-back-btn" onclick="renderGauntlet(state.gauntletView)">'
+    + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
+    + 'Back</button>'
+    + '<div style="padding:20px 20px 12px;">'
+    + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.14em;color:' + accentVar + ';margin-bottom:6px;">' + ev.type + '</div>'
+    + '<div style="font-size:26px;font-weight:700;font-family:var(--font-title);color:var(--text-pri);margin-bottom:4px;">' + ev.name + '</div>'
+    + '<div style="font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:16px;">' + ev.meta + '</div>'
+    + '<div style="font-size:13px;color:var(--text-sec);line-height:1.7;margin-bottom:20px;">' + ev.desc + '</div>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;">'
+    + ev.tags.map(function(t) {
+        return '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px solid var(--grey-light);color:var(--text-sec);">' + t + '</span>';
+      }).join('')
+    + '</div>'
+    + '<div style="padding:14px;border-radius:12px;border:1px dashed var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
+    + '</div>'
+    + '<div class="forge-mark">The Gauntlet · Test Your Limits</div>';
+}
   
 function openGroundsSection(section) {
   if (section === 'gauntlet') {

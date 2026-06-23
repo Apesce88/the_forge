@@ -590,6 +590,86 @@
     .pg-coming h2 { font-size: 20px; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .pg-coming p { font-size: 13px; color: var(--text-sec); line-height: 1.6; max-width: 260px; }
     .pg-back-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--grey-mid); border: 1px solid var(--grey-light); color: var(--text-sec); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-family: var(--font-body); letter-spacing: 0.06em; cursor: pointer; margin: 20px 20px 0; }
+
+    /* ── Signet Screen ── */
+    .sgt-header { padding: 20px 20px 8px; }
+    .sgt-title { font-size: 26px; font-weight: 700; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; margin-bottom: 4px; }
+    .sgt-sub { font-size: 11px; color: var(--text-sec); line-height: 1.5; font-family: var(--font-body); letter-spacing: 0.04em; }
+
+    .sgt-divider { display: flex; align-items: center; gap: 8px; padding: 12px 20px 16px; }
+    .sgt-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold-metal), transparent); }
+    .sgt-divider-text { font-size: 9px; font-family: var(--font-body); letter-spacing: 0.18em; color: var(--gold-metal); white-space: nowrap; opacity: 0.6; }
+
+    /* 2-col grid — Commander spans full width via .sgt-full */
+    .sgt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px 24px; }
+
+    .sgt-card {
+      border-radius: 14px; padding: 16px 12px 14px; cursor: pointer;
+      transition: transform 0.12s; position: relative; overflow: hidden;
+      background: #0e0b07; border: 1px solid rgba(200,146,42,0.2);
+      text-align: center;
+    }
+    .sgt-card:active { transform: scale(0.96); }
+
+    /* Commander full-width card */
+    .sgt-full { grid-column: 1 / -1; text-align: left; display: flex; align-items: center; gap: 14px; }
+    .sgt-full .sgt-emblem { margin: 0; flex-shrink: 0; }
+
+    /* Emblem circle — color pulled from --sa set inline per card */
+    .sgt-emblem {
+      width: 52px; height: 52px; border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      background: var(--sa2); border: 1.5px solid var(--sa);
+      box-shadow: 0 0 12px var(--sa2);
+    }
+
+    .sgt-card-name { font-size: 13px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 3px; line-height: 1.1; }
+    .sgt-card-adv  { font-size: 9px; font-family: var(--font-body); letter-spacing: 0.1em; color: var(--sa); margin-bottom: 4px; }
+    .sgt-card-tag  { font-size: 10px; font-family: var(--font-body); letter-spacing: 0.04em; color: var(--text-mute); line-height: 1.4; }
+
+    /* Bottom glow bar — color from --sa */
+    .sgt-card-glow { position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px; background: linear-gradient(to right, transparent, var(--sa), transparent); }
+
+    /* ── Signet Detail ── */
+    .sgt-detail-header { padding: 20px 20px 14px; }
+    .sgt-detail-emblem {
+      width: 80px; height: 80px; border-radius: 50%; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 38px;
+      background: var(--sa2); border: 2px solid var(--sa); box-shadow: 0 0 28px var(--sa2);
+    }
+    .sgt-detail-name { font-size: 28px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); line-height: 1; margin-bottom: 4px; }
+    .sgt-detail-adv  { font-size: 11px; font-family: var(--font-body); letter-spacing: 0.12em; color: var(--sa); margin-bottom: 8px; }
+    .sgt-detail-tagline { font-size: 13px; color: var(--text-sec); line-height: 1.5; }
+
+    /* Stat pip block */
+    .sgt-stats-block { margin: 0 16px 20px; background: #0a0807; border: 1px solid rgba(200,146,42,0.15); border-radius: 14px; padding: 16px; }
+    .sgt-stats-title { font-size: 10px; font-family: var(--font-body); letter-spacing: 0.14em; color: var(--gold-metal); margin-bottom: 14px; }
+    .sgt-stat-row    { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+    .sgt-stat-label  { font-size: 10px; font-family: var(--font-body); letter-spacing: 0.06em; color: var(--text-sec); width: 72px; flex-shrink: 0; }
+    .sgt-stat-pips   { display: flex; gap: 3px; flex: 1; }
+
+    /* Each pip is a small rectangle — filled ones glow in signet accent color */
+    .sgt-pip        { width: 14px; height: 8px; border-radius: 2px; background: var(--grey-mid); border: 1px solid var(--grey-light); }
+    .sgt-pip-filled { background: var(--sa); border-color: var(--sa); box-shadow: 0 0 4px var(--sa); }
+
+    .sgt-stat-level { font-size: 9px; font-family: var(--font-body); letter-spacing: 0.06em; color: var(--text-mute); width: 56px; text-align: right; }
+
+    /* Description block */
+    .sgt-desc-block { margin: 0 16px 20px; }
+    .sgt-desc-title { font-size: 10px; font-family: var(--font-body); letter-spacing: 0.14em; color: var(--gold-metal); margin-bottom: 8px; }
+    .sgt-desc-text  { font-size: 12px; color: var(--text-sec); line-height: 1.7; }
+
+    /* Forge CTA button — background is the signet accent color */
+    .sgt-forge-btn {
+      margin: 0 16px 32px; padding: 14px; border-radius: 14px; border: none;
+      width: calc(100% - 32px); font-size: 14px; font-family: var(--font-body);
+      letter-spacing: 0.1em; cursor: pointer; display: block;
+      background: var(--sa); color: var(--black); font-weight: 700;
+      box-shadow: 0 0 20px var(--sa2); transition: opacity 0.15s;
+    }
+    .sgt-forge-btn:active { opacity: 0.8; }
     
 /* ── Gauntlet Screen ── */
     @keyframes waypoint-ping {
@@ -1682,23 +1762,178 @@ function showGauntletEvent(idx) {
     + '</div>'
     + '<div class="forge-mark">The Gauntlet · Test Your Limits</div>';
 }
+
+// ── Signet Data ────────────────────────────────────────────────────────────
+// TO CHANGE STATS: find the signet by name below, edit the numbers in stats: {}
+// Scale is 1–5: 1=Very Low, 2=Low, 3=Medium, 4=High, 5=Extreme
+// Commander is all 0s — his stats are custom/user-defined (future feature)
+var SIGNETS = [
+  {
+    id: 'ironheart', name: 'Ironheart', advantage: 'Strength',
+    icon: '🔨', color: '#c0392b', colorDim: 'rgba(192,57,43,0.15)',
+    tagline: 'Unbreakable will. Relentless strength.',
+    desc: 'Ironheart is built for those who live under the bar. Progressive overload every week — maximal strength through compound lifts, heavy singles, and iron discipline. Your split pushes your 1RM higher every cycle.',
+    stats: { Power:3, Strength:5, Size:3, Speed:1, Endurance:2, Mobility:1, Dexterity:1, Balance:2 }
+  },
+  {
+    id: 'colossus', name: 'Colossus', advantage: 'Size',
+    icon: '🏛️', color: '#c8922a', colorDim: 'rgba(200,146,42,0.15)',
+    tagline: 'Built through volume. Stand above the rest.',
+    desc: 'Colossus is bodybuilding in its purest form. High volume, controlled tempo, hypertrophy-focused splits. Every set is designed to maximize time under tension and metabolic stress.',
+    stats: { Power:2, Strength:3, Size:5, Speed:1, Endurance:3, Mobility:1, Dexterity:1, Balance:2 }
+  },
+  {
+    id: 'windrunner', name: 'Windrunner', advantage: 'Speed',
+    icon: '💨', color: '#00c9b1', colorDim: 'rgba(0,201,177,0.12)',
+    tagline: 'Move like the wind. Leave everything behind.',
+    desc: 'Windrunner trains for pure athletic speed — acceleration, top-end velocity, reactive agility. Plyometrics, sprint mechanics, and change-of-direction drills define your week. Built for the field, not the mirror.',
+    stats: { Power:4, Strength:2, Size:1, Speed:5, Endurance:3, Mobility:4, Dexterity:4, Balance:3 }
+  },
+  {
+    id: 'tempest', name: 'Tempest', advantage: 'Power',
+    icon: '⚡', color: '#7c3aed', colorDim: 'rgba(124,58,237,0.15)',
+    tagline: 'Raw power. Strike with force.',
+    desc: 'Tempest is explosive output — Olympic-style lifts, power cleans, plyometric chains. You train to generate maximum force in minimum time. Every session sharpens your ability to explode off the line.',
+    stats: { Power:5, Strength:4, Size:2, Speed:4, Endurance:2, Mobility:2, Dexterity:3, Balance:2 }
+  },
+  {
+    id: 'stonelung', name: 'Stonelung', advantage: 'Endurance',
+    icon: '🫁', color: '#3b82f6', colorDim: 'rgba(59,130,246,0.12)',
+    tagline: 'Breathe deep. Outlast all.',
+    desc: 'Stonelung is built for those who never quit. Zone 2 cardio foundations, lactate threshold work, and aerobic capacity training. Your engine outlasts everyone in the room — and on the course.',
+    stats: { Power:1, Strength:2, Size:1, Speed:3, Endurance:5, Mobility:2, Dexterity:2, Balance:3 }
+  },
+  {
+    id: 'centurion', name: 'Centurion', advantage: 'Longevity',
+    icon: '🛡️', color: '#16a34a', colorDim: 'rgba(22,163,74,0.12)',
+    tagline: 'Built to last. Stronger with time.',
+    desc: 'Centurion trains for decades, not seasons. Joint health, movement quality, and sustainable strength are the pillars. You\'re building a body that performs at 40, 50, and beyond.',
+    stats: { Power:2, Strength:3, Size:2, Speed:2, Endurance:4, Mobility:4, Dexterity:3, Balance:5 }
+  },
+  {
+    id: 'warrior', name: 'Warrior', advantage: 'Balance',
+    icon: '⚖️', color: '#d97706', colorDim: 'rgba(217,119,6,0.12)',
+    tagline: 'Master of all. Weak to none.',
+    desc: 'Warrior is the true generalist — well-rounded across every physical domain. Science-backed periodization across strength, conditioning, and athleticism. The path of the complete athlete.',
+    stats: { Power:3, Strength:3, Size:3, Speed:3, Endurance:3, Mobility:3, Dexterity:3, Balance:4 }
+  },
+  {
+    id: 'gladiator', name: 'Gladiator', advantage: 'Athlete Hybrid',
+    icon: '⚔️', color: '#dc2626', colorDim: 'rgba(220,38,38,0.12)',
+    tagline: 'Train for every edge. Perform anywhere.',
+    desc: 'Gladiator is the sport-performance archetype. Strength meets conditioning meets athleticism in a program designed to make you dangerous in any arena — gym, field, or competition floor.',
+    stats: { Power:4, Strength:3, Size:2, Speed:4, Endurance:3, Mobility:3, Dexterity:4, Balance:3 }
+  },
+  {
+    id: 'monk', name: 'Monk', advantage: 'Mobility',
+    icon: '🧘', color: '#0d9488', colorDim: 'rgba(13,148,136,0.12)',
+    tagline: 'Fluid in motion. Control your body, control the battle.',
+    desc: 'Monk trains the body as a precision instrument. Mobility, body control, and movement mastery are prioritized. Calisthenics, flow patterns, and structural balance define the split.',
+    stats: { Power:2, Strength:2, Size:1, Speed:3, Endurance:3, Mobility:5, Dexterity:5, Balance:5 }
+  },
+  {
+    id: 'commander', name: 'Commander', advantage: 'Custom',
+    icon: '🧭', color: '#f59e0b', colorDim: 'rgba(245,158,11,0.12)',
+    tagline: 'Your plan. Your rules. Master your path.',
+    desc: 'Commander is fully customizable. Allocate your focus across all stats and build your own training split from the ground up. No preset path — you define the archetype.',
+    stats: { Power:0, Strength:0, Size:0, Speed:0, Endurance:0, Mobility:0, Dexterity:0, Balance:0 }
+  }
+];
+
+// ── Signet Hub Screen ──────────────────────────────────────────────────────
+// Builds the 2-column selection grid of all 10 archetypes.
+// Commander gets full-width (grid-column span) because he's the special case.
+function renderSignetHub() {
+  var grid = '';
+
+  SIGNETS.forEach(function(s) {
+    var isCommander = s.id === 'commander';
+    grid += '<div class="sgt-card' + (isCommander ? ' sgt-full' : '') + '" '
+      + 'style="--sa:' + s.color + ';--sa2:' + s.colorDim + ';" '
+      + 'onclick="openSignet(\'' + s.id + '\')">'
+      + '<div class="sgt-emblem">' + s.icon + '</div>'
+      + '<div class="sgt-card-name">' + s.name + '</div>'
+      + '<div class="sgt-card-adv">Advantage: ' + s.advantage + '</div>'
+      + (isCommander ? '<div class="sgt-card-tag">' + s.tagline + '</div>' : '')
+      + '<div class="sgt-card-glow"></div>'
+      + '</div>';
+  });
+
+  document.getElementById('screen').innerHTML = ''
+    + '<button class="pg-back-btn" onclick="navigate(\'grounds\')">'
+    + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
+    + 'Back</button>'
+    + '<div class="sgt-header">'
+    + '<div class="pg-eye">Choose Your Archetype</div>'
+    + '<div class="sgt-title">The Signet</div>'
+    + '<div class="sgt-sub">Your Signet defines your training path. Select the one that resonates.</div>'
+    + '</div>'
+    + '<div class="sgt-divider">'
+    + '<div class="sgt-divider-line"></div>'
+    + '<div class="sgt-divider-text">CHOOSE YOUR SIGNET</div>'
+    + '<div class="sgt-divider-line"></div>'
+    + '</div>'
+    + '<div class="sgt-grid">' + grid + '</div>'
+    + '<div class="forge-mark" style="padding-bottom:20px;">Your Signet · Your Legacy</div>';
+}
+
+// ── Signet Detail Screen ───────────────────────────────────────────────────
+// Called when user taps a signet card.
+// Finds the signet by id, renders emblem + stats + description + CTA.
+// Stat pips: loop 1–5, fill if i <= stat value.
+// Back button returns to the hub (not the Proving Grounds home).
+function openSignet(id) {
+  var s = SIGNETS.find(function(x) { return x.id === id; });
+  if (!s) return;
+
+  var LEVEL_LABELS = ['', 'VERY LOW', 'LOW', 'MEDIUM', 'HIGH', 'EXTREME'];
+
+  var statsHTML = Object.keys(s.stats).map(function(stat) {
+    var val = s.stats[stat];
+    var pips = '';
+    for (var i = 1; i <= 5; i++) {
+      pips += '<div class="sgt-pip' + (i <= val ? ' sgt-pip-filled' : '') + '"></div>';
+    }
+    var label = val === 0 ? 'CUSTOM' : LEVEL_LABELS[val];
+    return '<div class="sgt-stat-row">'
+      + '<div class="sgt-stat-label">' + stat + '</div>'
+      + '<div class="sgt-stat-pips">' + pips + '</div>'
+      + '<div class="sgt-stat-level">' + label + '</div>'
+      + '</div>';
+  }).join('');
+
+  var isCommander = id === 'commander';
+
+  document.getElementById('screen').innerHTML = ''
+    + '<button class="pg-back-btn" onclick="renderSignetHub()">'
+    + '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
+    + 'Signets</button>'
+    + '<div class="sgt-detail-header" style="--sa:' + s.color + ';--sa2:' + s.colorDim + ';">'
+    + '<div class="sgt-detail-emblem">' + s.icon + '</div>'
+    + '<div class="sgt-detail-name">' + s.name + '</div>'
+    + '<div class="sgt-detail-adv">' + s.advantage + '</div>'
+    + '<div class="sgt-detail-tagline">' + s.tagline + '</div>'
+    + '</div>'
+    + '<div class="sgt-stats-block" style="--sa:' + s.color + ';--sa2:' + s.colorDim + ';">'
+    + '<div class="sgt-stats-title">STAT PROFILE</div>'
+    + statsHTML
+    + '</div>'
+    + '<div class="sgt-desc-block">'
+    + '<div class="sgt-desc-title">TRAINING PHILOSOPHY</div>'
+    + '<div class="sgt-desc-text">' + s.desc + '</div>'
+    + '</div>'
+    + '<button class="sgt-forge-btn" style="--sa:' + s.color + ';--sa2:' + s.colorDim + ';" '
+    + 'onclick="alert(\'Signet forging coming in Phase 9 — your split will be built here.\')">'
+    + (isCommander ? '🧭 Build Your Own Path' : '⚔️ Forge This Path')
+    + '</button>'
+    + '<div class="forge-mark" style="padding-bottom:20px;">Your Signet · Your Legacy</div>';
+}
   
 function openGroundsSection(section) {
   if (section === 'gauntlet') {
     renderGauntlet(state.gauntletView);
-  } else {
-    // Signet coming in Step 3
-    document.getElementById('screen').innerHTML = ''
-      + '<button class="pg-back-btn" onclick="navigate(\'grounds\')">'
-      +   '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>'
-      +   'Back'
-      + '</button>'
-      + '<div class="pg-coming">'
-      +   '<div style="font-size:40px;margin-bottom:8px;">🛡️</div>'
-      +   '<h2>The Signet</h2>'
-      +   '<p>Choose your training archetype and forge your path. Coming in the next build.</p>'
-      +   '<div class="forge-mark" style="margin-top:12px;">In Development</div>'
-      + '</div>';
+  } else if (section === 'signet') {
+    renderSignetHub();
   }
 }
 

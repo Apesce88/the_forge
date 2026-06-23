@@ -1848,13 +1848,13 @@ function renderSignetHub() {
 
   SIGNETS.forEach(function(s) {
     var isCommander = s.id === 'commander';
-    grid += '<div class="sgt-card' + (isCommander ? ' sgt-full' : '') + '" '
+    grid += '<div class="sgt-card" '
       + 'style="--sa:' + s.color + ';--sa2:' + s.colorDim + ';" '
       + 'onclick="openSignet(\'' + s.id + '\')">'
       + '<div class="sgt-emblem">' + s.icon + '</div>'
       + '<div class="sgt-card-name">' + s.name + '</div>'
       + '<div class="sgt-card-adv">Advantage: ' + s.advantage + '</div>'
-      + (isCommander ? '<div class="sgt-card-tag">' + s.tagline + '</div>' : '')
+      + ''
       + '<div class="sgt-card-glow"></div>'
       + '</div>';
   });

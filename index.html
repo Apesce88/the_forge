@@ -2704,8 +2704,11 @@ function renderActiveWorkout() {
           + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
       } else {
-        html += '<div style="text-align:center;font-size:11px;font-family:var(--font-body);'
-          + 'letter-spacing:0.08em;color:var(--lime);padding-top:8px;">LOCKED IN ✓</div>';
+        html += '<button onclick="unlockExercise(' + ei + ')" '
+          + 'style="width:100%;padding:9px;border-radius:10px;margin-top:6px;'
+          + 'border:1px solid var(--grey-light);background:transparent;'
+          + 'color:var(--text-sec);font-size:12px;font-family:var(--font-body);'
+          + 'letter-spacing:0.08em;cursor:pointer;">✏️ Edit</button>';
       }
 
       html += '</div>';
@@ -2731,11 +2734,16 @@ function renderActiveWorkout() {
   return html;
 }
 
+function unlockExercise(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].completed = false;
+  render();
+}
+  
 function completeExercise(ei) {
   if (!state.activeSession) return;
   state.activeSession.exercises[ei].completed = true;
   render();
-  document.getElementById('screen').scrollTop = 0;
 }
 
 function backFromWorkout() {

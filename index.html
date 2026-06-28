@@ -2568,11 +2568,14 @@ function saveGeminiKey(val) {
 }  
 
 // ── Workout Logging ────────────────────────────────────────────────────────
-  function resumeWorkout() {
-    state.view = 'workout';
-    render();
-    document.getElementById('screen').scrollTop = 0;
-  }
+function resumeWorkout() {
+  state.view = 'workout';
+  state.openMenuId = null;
+  state.modal = null;
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
   
   function startWorkout(dayIndex) {
   var d = state.days[dayIndex];
@@ -2637,7 +2640,7 @@ function renderActiveWorkout() {
     html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
       + 'padding-bottom:8px;border-bottom:1px solid var(--grey-mid);">'
       + '<span style="font-size:11px;font-weight:700;font-family:var(--font-body);'
-      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-metal);">' + tierName + '</span>'
+      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);">' + tierName + '</span>'
       + '</div>';
 
     tierMap[tierName].forEach(function(item) {

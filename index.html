@@ -1065,16 +1065,18 @@ var state = {
   libCat: 'upper',
   pickerCat: 'upper',
   equipTabs: {},
-  openMenuId: null,   // which exercise ••• menu is open
-  modal: null,        // null | { mode:'addLib'|'editLib'|'editDay', ... }
-  gauntletView: 'map' // tracks last active gauntlet view: 'map' | 'list'
+  openMenuId: null,
+  modal: null,
+  gauntletView: 'map',
+  activeSession: null,
+  profileSheet: false
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
 var KEY_LIBRARY = 'forge_library_v1';
 var KEY_DAYS    = 'forge_days_v1';
 var KEY_SETTINGS = 'forge_settings_v1';
-
+var KEY_LOGS     = 'forge_logs_v1';
 
   
 // ── Load / Save ────────────────────────────────────────────────────────────
@@ -1088,6 +1090,19 @@ function loadSettings() {
 function saveSettings(settings) {
   try {
     localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+  } catch(e) {}
+}
+
+function loadLogs() {
+  try {
+    var l = localStorage.getItem(KEY_LOGS);
+    return l ? JSON.parse(l) : [];
+  } catch(e) { return []; }
+}
+
+function saveLogs(logs) {
+  try {
+    localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
   } catch(e) {}
 }
   
@@ -1345,6 +1360,7 @@ function render() {
   if (state.view === 'exercises') screen.innerHTML = renderLibrary();
   if (state.view === 'tracker')  screen.innerHTML = renderTracker();
   if (state.view === 'grounds')   screen.innerHTML = renderGrounds();
+  if (state.view === 'workout')   screen.innerHTML = renderActiveWorkout();
  
   // Render modal on top if needed
   var existing = document.getElementById('modal-layer');
@@ -1394,7 +1410,18 @@ function renderDay(index) {
     + '</div></div>'
     + '<div class="day-focus-text">' + d.focus + '</div>'
     + '<div class="detail-divider"></div>';
- 
+
+  if (d.tiers) {
+    html += '<div style="padding: 0 16px 16px;">'
+      + '<button onclick="startWorkout(' + index + ')" style="'
+      + 'width:100%;padding:14px;border-radius:14px;border:none;'
+      + 'background:var(--lime);color:var(--black);'
+      + 'font-size:15px;font-family:var(--font-body);letter-spacing:0.1em;'
+      + 'font-weight:700;cursor:pointer;'
+      + 'box-shadow:0 0 16px rgba(163,230,53,0.3);">⚡ START WORKOUT</button>'
+      + '</div>';
+  }
+  
   if (d.field) {
     html += '<div class="tier-section">';
     d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
@@ -2515,6 +2542,160 @@ function saveGeminiKey(val) {
   s.geminiKey = val;
   localStorage.setItem('forge_settings_v1', JSON.stringify(s));
 }  
+
+// ── Workout Logging ────────────────────────────────────────────────────────
+function startWorkout(dayIndex) {
+  var d = state.days[dayIndex];
+  var exercises = [];
+  d.tiers.forEach(function(tier) {
+    tier.exercises.forEach(function(ex) {
+      exercises.push({
+        exName: ex.name,
+        tier: tier.label,
+        sets: []
+      });
+    });
+  });
+  state.activeSession = {
+    id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    dayIndex: dayIndex,
+    dayName: d.title,
+    startedAt: Date.now(),
+    completedAt: null,
+    user_id: null,
+    exercises: exercises
+  };
+  state.view = 'workout';
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function renderActiveWorkout() {
+  var s = state.activeSession;
+  if (!s) return '<div class="lib-header"><div class="lib-title">No Active Session</div></div>';
+
+  var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
+
+  var html = '<div class="lib-header">'
+    + '<div class="home-eyebrow">Active Session · Day ' + (s.dayIndex + 1) + '</div>'
+    + '<div class="lib-title">' + s.dayName + '</div>'
+    + '<div class="lib-sub">' + elapsed + ' min elapsed · ' + s.exercises.length + ' exercises</div>'
+    + '</div>'
+    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 20px;"></div>';
+
+  s.exercises.forEach(function(ex, ei) {
+    var totalVol = ex.sets.reduce(function(acc, set) {
+      return acc + ((parseFloat(set.weight) || 0) * (parseInt(set.reps) || 0));
+    }, 0);
+
+    html += '<div style="margin:0 16px 20px;background:#0d0d0d;border:1px solid var(--grey-light);border-radius:14px;padding:14px;">'
+
+      // Exercise header
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+      + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + ex.exName + '</div>'
+      + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + ex.tier.toUpperCase() + '</div>'
+      + '</div>'
+
+      // Volume line
+      + (totalVol > 0
+          ? '<div style="font-size:10px;color:var(--lime);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
+          : '<div style="height:10px;margin-bottom:4px;"></div>')
+
+      // Column headers
+      + '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
+      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LBS</div>'
+      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">REPS</div>'
+      + '<div></div>'
+      + '</div>';
+
+    // Set rows
+    ex.sets.forEach(function(set, si) {
+      html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
+        + '<div style="font-size:11px;font-family:var(--font-body);color:var(--lime);text-align:center;">' + (si + 1) + '</div>'
+        + '<input type="number" inputmode="decimal" placeholder="0" value="' + (set.weight || '') + '" '
+        + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
+        + 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"/>'
+        + '<input type="number" inputmode="numeric" placeholder="0" value="' + (set.reps || '') + '" '
+        + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
+        + 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"/>'
+        + '<button onclick="removeSet(' + ei + ',' + si + ')" '
+        + 'style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>'
+        + '</div>';
+    });
+
+    // Add set button
+    html += '<button onclick="addSet(' + ei + ')" '
+      + 'style="width:100%;padding:8px;border-radius:10px;margin-top:4px;'
+      + 'border:1.5px dashed var(--grey-muted);background:transparent;'
+      + 'color:var(--text-mute);font-size:12px;font-family:var(--font-body);'
+      + 'letter-spacing:0.06em;cursor:pointer;">+ Add Set</button>'
+      + '</div>';
+  });
+
+  // Finish workout button
+  html += '<div style="padding:0 16px 16px;">'
+    + '<button onclick="finishWorkout()" style="'
+    + 'width:100%;padding:14px;border-radius:14px;border:none;'
+    + 'background:var(--lime);color:var(--black);'
+    + 'font-size:15px;font-family:var(--font-body);letter-spacing:0.1em;'
+    + 'font-weight:700;cursor:pointer;margin-bottom:10px;'
+    + 'box-shadow:0 0 16px rgba(163,230,53,0.3);">✓ FINISH WORKOUT</button>'
+    + '<button onclick="cancelWorkout()" style="'
+    + 'width:100%;padding:12px;border-radius:14px;'
+    + 'border:1px solid var(--grey-light);background:transparent;'
+    + 'color:var(--text-sec);font-size:13px;font-family:var(--font-body);'
+    + 'letter-spacing:0.06em;cursor:pointer;">Cancel Session</button>'
+    + '</div>'
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
+
+  return html;
+}
+
+function addSet(ei) {
+  if (!state.activeSession) return;
+  var lastSet = state.activeSession.exercises[ei].sets.slice(-1)[0];
+  state.activeSession.exercises[ei].sets.push({
+    reps: lastSet ? lastSet.reps : '',
+    weight: lastSet ? lastSet.weight : '',
+    note: ''
+  });
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function updateSet(ei, si, field, value) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].sets[si][field] = value;
+}
+
+function removeSet(ei, si) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].sets.splice(si, 1);
+  render();
+}
+
+function finishWorkout() {
+  if (!state.activeSession) return;
+  state.activeSession.completedAt = Date.now();
+  var logs = loadLogs();
+  logs.push(state.activeSession);
+  saveLogs(logs);
+  var dayIndex = state.activeSession.dayIndex;
+  state.activeSession = null;
+  state.view = 'day';
+  state.dayIndex = dayIndex;
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function cancelWorkout() {
+  if (!state.activeSession) return;
+  state.activeSession = null;
+  state.view = 'day';
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
   
 </script>
 

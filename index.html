@@ -765,19 +765,167 @@
     .gnt-ev-gold .gnt-event-glow { background: linear-gradient(to right, transparent, var(--gold), transparent); }
     .gnt-ev-lime .gnt-event-glow { background: linear-gradient(to right, transparent, var(--lime), transparent); }
     
-    /* ── Coming Soon ── */
+    /* ── Coming Soon ── */ 
+    /* ── Profile ── */
     .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 40px 20px; text-align: center; gap: 12px; }
     .coming-soon-icon { width: 64px; height: 64px; border-radius: 20px; background: #0d0d0d; border: 1px solid var(--grey-light); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
     .coming-soon-icon svg { width: 32px; height: 32px; stroke: var(--gold-metal); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
     .coming-soon h2 { font-size: 18px; font-weight: 700; font-family: var(--font-title); background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .coming-soon p { font-size: 13px; color: var(--text-sec); max-width: 260px; line-height: 1.6; }
+
+  /* ── Profile Shell Button ── */
+  .profile-shell-btn {
+    position: fixed;
+    top: calc(12px + var(--sat));
+    right: calc(12px + var(--sar));
+    z-index: 200;
+    background: rgba(200,146,42,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .profile-shell-btn:active { background: rgba(200,146,42,0.25); }
+
+  /* ── Profile Slide-Up Sheet ── */
+  .profile-sheet-backdrop {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .profile-sheet-backdrop.open { opacity: 1; pointer-events: all; }
+  .profile-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: 301;
+    background: #111;
+    border-top: 1px solid #c8922a44;
+    border-radius: 18px 18px 0 0;
+    padding: 0 0 calc(16px + var(--sab));
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  }
+  .profile-sheet.open { transform: translateY(0); }
+  .profile-sheet-handle {
+    width: 36px; height: 4px;
+    background: #333; border-radius: 2px;
+    margin: 12px auto 20px;
+  }
+  .profile-sheet-title {
+    font-family: var(--font-title); font-size: 11px;
+    letter-spacing: 4px; color: #c8922a;
+    text-align: center; margin-bottom: 16px;
+  }
+  .profile-sheet-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 24px;
+    border-top: 1px solid #1a1a1a;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .profile-sheet-option:active { background: #1a1a1a; }
+  .profile-sheet-opt-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .profile-sheet-opt-label {
+    font-family: var(--font-title); font-size: 13px;
+    letter-spacing: 2px; color: #e8e0cc;
+  }
+  .profile-sheet-opt-sub {
+    font-size: 11px; color: #555;
+    letter-spacing: 1px; margin-top: 2px;
+  }
+
+  /* ── Profile Sub-Screens ── */
+  .profile-sub-screen {
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: calc(16px + var(--sat)) 20px calc(40px + var(--sab));
+  }
+  .profile-sub-back {
+    display: flex; align-items: center; gap: 8px;
+    background: none; border: none;
+    color: #c8922a; font-family: var(--font-body);
+    font-size: 14px; letter-spacing: 2px;
+    cursor: pointer; padding: 0 0 20px;
+  }
+  .profile-sub-title {
+    font-family: var(--font-title); font-size: 20px;
+    letter-spacing: 3px;
+    background: linear-gradient(to bottom, #F2D57A 0%, #D4AF37 45%, #8B6A1F 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 28px;
+  }
+  .profile-coming-soon {
+    border: 1px solid #1e1e1e; border-radius: 10px;
+    padding: 32px 20px; text-align: center;
+    background: #111; margin-bottom: 16px;
+  }
+  .profile-coming-soon-label {
+    font-family: var(--font-title); font-size: 11px;
+    letter-spacing: 4px; color: #3a3020; margin-bottom: 10px;
+  }
+  .profile-coming-soon-desc {
+    font-size: 12px; color: #333;
+    letter-spacing: 1px; line-height: 1.6;
+  }
+    
   </style>
 </head>
 <body>
 <div id="app">
   <div id="screen"></div>
 
+<button class="profile-shell-btn" onclick="openProfileSheet()" aria-label="Profile">
+  <svg viewBox="0 0 24 22" width="22" height="20" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="helmetGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F2D57A"/>
+        <stop offset="45%" stop-color="#D4AF37"/>
+        <stop offset="100%" stop-color="#8B6A1F"/>
+      </linearGradient>
+    </defs>
+    <path d="M12 0.5 C8 0.5 5.5 2.5 5.5 5 L5.5 7 C3.5 7.5 2 9.5 2 11.5 L2 16 C2 18 3.5 19.5 5.5 19.5 L5.5 21 L18.5 21 L18.5 19.5 C20.5 19.5 22 18 22 16 L22 11.5 C22 9.5 20.5 7.5 18.5 7 L18.5 5 C18.5 2.5 16 0.5 12 0.5Z" fill="url(#helmetGrad)"/>
+    <rect x="6.5" y="11" width="11" height="3" rx="1" fill="#0a0a0a"/>
+    <rect x="9.5" y="5" width="5" height="9" rx="1.5" fill="#0a0a0a"/>
+  </svg>
+</button>
 
+<div class="profile-sheet-backdrop" id="profileBackdrop" onclick="closeProfileSheet()"></div>
+<div class="profile-sheet" id="profileSheet">
+  <div class="profile-sheet-handle"></div>
+  <div class="profile-sheet-title">COMMAND</div>
+  <div class="profile-sheet-option" onclick="openProfileSection('profile')">
+    <div class="profile-sheet-opt-icon">⚔</div>
+    <div>
+      <div class="profile-sheet-opt-label">PROFILE</div>
+      <div class="profile-sheet-opt-sub">Identity · Signet · Records</div>
+    </div>
+  </div>
+  <div class="profile-sheet-option" onclick="openProfileSection('settings')">
+    <div class="profile-sheet-opt-icon">⚙</div>
+    <div>
+      <div class="profile-sheet-opt-label">SETTINGS</div>
+      <div class="profile-sheet-opt-sub">API key · Preferences</div>
+    </div>
+  </div>
+  <div class="profile-sheet-option" onclick="openProfileSection('help')">
+    <div class="profile-sheet-opt-icon">?</div>
+    <div>
+      <div class="profile-sheet-opt-label">HELP</div>
+      <div class="profile-sheet-opt-sub">Guide · Tips · About</div>
+    </div>
+  </div>
+</div>
+  
   <nav id="bottom-nav">
 
     <button class="nav-btn active" id="nav-plan" onclick="navigate('plan')">
@@ -805,11 +953,15 @@
       </svg>
     </button>
 
-    <button class="nav-btn" id="nav-settings" onclick="navigate('settings')">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    <button class="nav-btn" onclick="navigate('tracker')" id="nav-tracker">
+      <svg viewBox="0 0 22 18" width="22" height="18" xmlns="http://www.w3.org/2000/svg">
+        <line x1="3"  y1="1" x2="3"  y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="8"  y1="1" x2="8"  y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="13" y1="1" x2="13" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="18" y1="1" x2="18" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="1"  y1="16" x2="21" y2="2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
+      <span>Tracker</span>
     </button>
 
   </nav>
@@ -1188,7 +1340,7 @@ function render() {
   if (state.view === 'plan')      screen.innerHTML = renderPlan();
   if (state.view === 'day')       screen.innerHTML = renderDay(state.dayIndex);
   if (state.view === 'exercises') screen.innerHTML = renderLibrary();
-  if (state.view === 'settings')  screen.innerHTML = renderSettings();
+  if (state.view === 'tracker')  screen.innerHTML = renderTracker();
   if (state.view === 'grounds')   screen.innerHTML = renderGrounds();
  
   // Render modal on top if needed
@@ -2291,6 +2443,73 @@ function detectGroup(t){
 // ── Boot ───────────────────────────────────────────────────────────────────
 loadData();
 render();
+
+// ── Tracker Screen ──
+function renderTracker() {
+  return '<div style="padding: calc(20px + var(--sat)) 20px 40px;">'
+    + '<div style="font-family:var(--font-title);font-size:22px;letter-spacing:3px;background:linear-gradient(to bottom,#F2D57A,#D4AF37,#8B6A1F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;">TRACKER</div>'
+    + '<div style="font-size:12px;color:#555;letter-spacing:2px;margin-bottom:32px;">YOUR FORGE LOG</div>'
+    + '<div style="border:1px solid #1e1e1e;border-radius:10px;padding:40px 20px;text-align:center;background:#111;">'
+    + '<div style="font-family:var(--font-title);font-size:11px;letter-spacing:4px;color:#3a3020;margin-bottom:10px;">PHASE 9 — COMING SOON</div>'
+    + '<div style="font-size:12px;color:#333;letter-spacing:1px;line-height:1.6;">Workout logging, volume tracking,<br>1RM calculator, and nutrition tools<br>will live here.</div>'
+    + '</div>'
+    + '</div>';
+}
+
+// ── Profile Sheet ──
+function openProfileSheet() {
+  document.getElementById('profileBackdrop').classList.add('open');
+  document.getElementById('profileSheet').classList.add('open');
+  state.profileSheet = true;
+}
+function closeProfileSheet() {
+  document.getElementById('profileBackdrop').classList.remove('open');
+  document.getElementById('profileSheet').classList.remove('open');
+  state.profileSheet = false;
+}
+
+// ── Profile Sub-Screens ──
+function openProfileSection(section) {
+  closeProfileSheet();
+  if (section === 'profile') {
+    document.getElementById('screen').innerHTML =
+      '<div class="profile-sub-screen">'
+      + '<button class="profile-sub-back" onclick="closeProfileSection()">‹ BACK</button>'
+      + '<div class="profile-sub-title">PROFILE</div>'
+      + '<div class="profile-coming-soon">'
+      + '<div class="profile-coming-soon-label">COMING SOON</div>'
+      + '<div class="profile-coming-soon-desc">Your identity, selected Signet, personal records,<br>and training history will live here.</div>'
+      + '</div>'
+      + '</div>';
+  } else if (section === 'settings') {
+    document.getElementById('screen').innerHTML =
+      '<div class="profile-sub-screen">'
+      + '<button class="profile-sub-back" onclick="closeProfileSection()">‹ BACK</button>'
+      + renderSettings()
+      + '</div>';
+  } else if (section === 'help') {
+    document.getElementById('screen').innerHTML =
+      '<div class="profile-sub-screen">'
+      + '<button class="profile-sub-back" onclick="closeProfileSection()">‹ BACK</button>'
+      + '<div class="profile-sub-title">HELP</div>'
+      + '<div class="profile-coming-soon">'
+      + '<div class="profile-coming-soon-label">COMING SOON</div>'
+      + '<div class="profile-coming-soon-desc">Tips, walkthrough guides, and app info<br>will live here.</div>'
+      + '</div>'
+      + '</div>';
+  }
+}
+
+function closeProfileSection() {
+  render();
+}
+
+function saveGeminiKey(val) {
+  var s = loadSettings();
+  s.geminiKey = val;
+  localStorage.setItem('forge_settings_v1', JSON.stringify(s));
+}  
+  
 </script>
 
 <script>

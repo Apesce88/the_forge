@@ -2477,15 +2477,39 @@ render();
       
 // ── Tracker Screen ──
 function renderTracker() {
+  var sessionHTML = '';
+  if (state.activeSession) {
+    var s = state.activeSession;
+    var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
+    var totalSets = s.exercises.reduce(function(acc, ex) { return acc + ex.sets.length; }, 0);
+    var completedEx = s.exercises.filter(function(ex) { return ex.completed; }).length;
+    sessionHTML = '<div style="margin:0 16px 20px;background:#0d0d0d;'
+      + 'border:1px solid var(--lime);border-radius:14px;padding:16px;'
+      + 'box-shadow:0 0 16px rgba(163,230,53,0.15);">'
+      + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.12em;color:var(--lime);margin-bottom:6px;">SESSION ACTIVE</div>'
+      + '<div style="font-family:var(--font-title);font-size:16px;color:var(--text-pri);margin-bottom:10px;">' + s.dayName + '</div>'
+      + '<div style="display:flex;gap:16px;margin-bottom:14px;">'
+      + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + elapsed + ' MIN</div>'
+      + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + totalSets + ' SETS</div>'
+      + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + completedEx + '/' + s.exercises.length + ' EXERCISES</div>'
+      + '</div>'
+      + '<button onclick="resumeWorkout()" style="width:100%;padding:12px;border-radius:12px;border:none;'
+      + 'background:var(--lime);color:var(--black);font-size:14px;font-family:var(--font-body);'
+      + 'letter-spacing:0.08em;font-weight:700;cursor:pointer;">RESUME WORKOUT</button>'
+      + '</div>';
+  } else {
+    sessionHTML = '<div class="lib-section-pad">'
+      + '<div class="day-empty-tier">No active session.<br>Start a workout from any day card.</div>'
+      + '</div>';
+  }
+
   return '<div class="lib-header">'
     + '<div class="home-eyebrow">Forge Log</div>'
     + '<div class="lib-title">Tracker</div>'
     + '<div class="lib-sub">Workout logging · Volume · Progress</div>'
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
-    + '<div class="lib-section-pad">'
-    + '<div class="day-empty-tier">Phase 9 — Workout logging, volume tracking,<br>1RM calculator, and nutrition tools<br>will live here.</div>'
-    + '</div>'
+    + sessionHTML
     + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
 }
 
@@ -2544,7 +2568,13 @@ function saveGeminiKey(val) {
 }  
 
 // ── Workout Logging ────────────────────────────────────────────────────────
-function startWorkout(dayIndex) {
+  function resumeWorkout() {
+    state.view = 'workout';
+    render();
+    document.getElementById('screen').scrollTop = 0;
+  }
+  
+  function startWorkout(dayIndex) {
   var d = state.days[dayIndex];
   var exercises = [];
   d.tiers.forEach(function(tier) {
@@ -2581,59 +2611,108 @@ function renderActiveWorkout() {
     + '<div class="lib-title">' + s.dayName + '</div>'
     + '<div class="lib-sub">' + elapsed + ' min elapsed · ' + s.exercises.length + ' exercises</div>'
     + '</div>'
-    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 20px;"></div>';
+    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 20px;"></div>'
 
+    // Back button
+    + '<div style="padding:0 16px 16px;">'
+    + '<button onclick="backFromWorkout()" style="display:inline-flex;align-items:center;gap:6px;'
+    + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-sec);'
+    + 'border-radius:20px;padding:6px 14px;font-size:13px;font-family:var(--font-body);'
+    + 'letter-spacing:0.06em;cursor:pointer;">‹ Back to Day</button>'
+    + '</div>';
+
+  // Group exercises by tier
+  var tiers = [];
+  var tierMap = {};
   s.exercises.forEach(function(ex, ei) {
-    var totalVol = ex.sets.reduce(function(acc, set) {
-      return acc + ((parseFloat(set.weight) || 0) * (parseInt(set.reps) || 0));
-    }, 0);
-
-    html += '<div style="margin:0 16px 20px;background:#0d0d0d;border:1px solid var(--grey-light);border-radius:14px;padding:14px;">'
-
-      // Exercise header
-      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
-      + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + ex.exName + '</div>'
-      + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + ex.tier.toUpperCase() + '</div>'
-      + '</div>'
-
-      // Volume line
-      + (totalVol > 0
-          ? '<div style="font-size:10px;color:var(--lime);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
-          : '<div style="height:10px;margin-bottom:4px;"></div>')
-
-      // Column headers
-      + '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
-      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
-      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LBS</div>'
-      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">REPS</div>'
-      + '<div></div>'
-      + '</div>';
-
-    // Set rows
-    ex.sets.forEach(function(set, si) {
-      html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-        + '<div style="font-size:11px;font-family:var(--font-body);color:var(--lime);text-align:center;">' + (si + 1) + '</div>'
-        + '<input type="number" inputmode="decimal" placeholder="0" value="' + (set.weight || '') + '" '
-        + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
-        + 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"/>'
-        + '<input type="number" inputmode="numeric" placeholder="0" value="' + (set.reps || '') + '" '
-        + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
-        + 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"/>'
-        + '<button onclick="removeSet(' + ei + ',' + si + ')" '
-        + 'style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>'
-        + '</div>';
-    });
-
-    // Add set button
-    html += '<button onclick="addSet(' + ei + ')" '
-      + 'style="width:100%;padding:8px;border-radius:10px;margin-top:4px;'
-      + 'border:1.5px dashed var(--grey-muted);background:transparent;'
-      + 'color:var(--text-mute);font-size:12px;font-family:var(--font-body);'
-      + 'letter-spacing:0.06em;cursor:pointer;">+ Add Set</button>'
-      + '</div>';
+    if (!tierMap[ex.tier]) {
+      tierMap[ex.tier] = [];
+      tiers.push(ex.tier);
+    }
+    tierMap[ex.tier].push({ ex: ex, ei: ei });
   });
 
-  // Finish workout button
+  tiers.forEach(function(tierName) {
+    // Tier header
+    html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
+      + 'padding-bottom:8px;border-bottom:1px solid var(--grey-mid);">'
+      + '<span style="font-size:11px;font-weight:700;font-family:var(--font-body);'
+      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-metal);">' + tierName + '</span>'
+      + '</div>';
+
+    tierMap[tierName].forEach(function(item) {
+      var ex = item.ex;
+      var ei = item.ei;
+      var isComplete = ex.completed === true;
+
+      var totalVol = ex.sets.reduce(function(acc, set) {
+        return acc + ((parseFloat(set.weight) || 0) * (parseInt(set.reps) || 0));
+      }, 0);
+
+      var borderColor = isComplete ? 'var(--lime)' : 'var(--grey-light)';
+      var glowStyle = isComplete
+        ? 'box-shadow:0 0 10px 2px rgba(163,230,53,0.2),0 0 24px 4px rgba(163,230,53,0.08);'
+        : 'box-shadow:0 0 10px 2px rgba(255,255,255,0.04),0 0 24px 4px rgba(255,255,255,0.02);';
+
+      html += '<div style="margin:0 16px 16px;background:#0d0d0d;border:1px solid ' + borderColor + ';'
+        + 'border-radius:14px;padding:14px;' + glowStyle + '">'
+
+        // Exercise header
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+        + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + ex.exName + '</div>'
+        + (isComplete ? '<div style="font-size:12px;color:var(--lime);">✓</div>' : '')
+        + '</div>'
+
+        // Volume
+        + (totalVol > 0
+            ? '<div style="font-size:10px;color:var(--lime);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
+            : '<div style="height:6px;"></div>')
+
+        // Column headers
+        + '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
+        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LBS</div>'
+        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">REPS</div>'
+        + '<div></div>'
+        + '</div>';
+
+      // Set rows
+      ex.sets.forEach(function(set, si) {
+        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
+          + '<div style="font-size:11px;font-family:var(--font-body);color:var(--lime);text-align:center;">' + (si + 1) + '</div>'
+          + '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.weight || '') + '" '
+          + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
+          + 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"/>'
+          + '<input type="number" inputmode="numeric" min="1" placeholder="--" value="' + (set.reps || '') + '" '
+          + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
+          + 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"/>'
+          + '<button onclick="removeSet(' + ei + ',' + si + ')" '
+          + 'style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>'
+          + '</div>';
+      });
+
+      // Add set + Complete buttons
+      if (!isComplete) {
+        html += '<button onclick="addSet(' + ei + ')" '
+          + 'style="width:100%;padding:8px;border-radius:10px;margin-top:6px;'
+          + 'border:1.5px dashed var(--grey-muted);background:transparent;'
+          + 'color:var(--text-mute);font-size:12px;font-family:var(--font-body);'
+          + 'letter-spacing:0.06em;cursor:pointer;margin-bottom:8px;">+ Add Set</button>'
+          + '<button onclick="completeExercise(' + ei + ')" '
+          + 'style="width:100%;padding:9px;border-radius:10px;'
+          + 'border:1px solid var(--gold-metal);background:rgba(200,146,42,0.08);'
+          + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
+          + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
+      } else {
+        html += '<div style="text-align:center;font-size:11px;font-family:var(--font-body);'
+          + 'letter-spacing:0.08em;color:var(--lime);padding-top:8px;">LOCKED IN ✓</div>';
+      }
+
+      html += '</div>';
+    });
+  });
+
+  // Finish + Cancel
   html += '<div style="padding:0 16px 16px;">'
     + '<button onclick="finishWorkout()" style="'
     + 'width:100%;padding:14px;border-radius:14px;border:none;'
@@ -2652,6 +2731,20 @@ function renderActiveWorkout() {
   return html;
 }
 
+function completeExercise(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].completed = true;
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function backFromWorkout() {
+  state.view = 'day';
+  state.dayIndex = state.activeSession.dayIndex;
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+  
 function addSet(ei) {
   if (!state.activeSession) return;
   var lastSet = state.activeSession.exercises[ei].sets.slice(-1)[0];

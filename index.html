@@ -2450,14 +2450,16 @@ render();
       
 // ── Tracker Screen ──
 function renderTracker() {
-  return '<div style="padding: calc(20px + var(--sat)) 20px 40px;">'
-    + '<div style="font-family:var(--font-title);font-size:22px;letter-spacing:3px;background: var(--gold-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;">TRACKER</div>'
-    + '<div style="font-size:12px;color:#555;letter-spacing:2px;margin-bottom:32px;">YOUR FORGE LOG</div>'
-    + '<div style="border:1px solid #1e1e1e;border-radius:10px;padding:40px 20px;text-align:center;background:#111;">'
-    + '<div style="font-family:var(--font-title);font-size:11px;letter-spacing:4px;color:#3a3020;margin-bottom:10px;">PHASE 9 — COMING SOON</div>'
-    + '<div style="font-size:12px;color:#333;letter-spacing:1px;line-height:1.6;">Workout logging, volume tracking,<br>1RM calculator, and nutrition tools<br>will live here.</div>'
+  return '<div class="lib-header">'
+    + '<div class="home-eyebrow">Forge Log</div>'
+    + '<div class="lib-title">Tracker</div>'
+    + '<div class="lib-sub">Workout logging · Volume · Progress</div>'
     + '</div>'
-    + '</div>';
+    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
+    + '<div class="lib-section-pad">'
+    + '<div class="day-empty-tier">Phase 9 — Workout logging, volume tracking,<br>1RM calculator, and nutrition tools<br>will live here.</div>'
+    + '</div>'
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
 }
 
 // ── Profile Sheet ──

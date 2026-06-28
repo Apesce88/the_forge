@@ -5,7 +5,7 @@
 // That version mismatch is what triggers the old cache to clear.
 // ============================================================
 
-const CACHE_NAME = 'forge-v9.10';
+const CACHE_NAME = 'forge-v9.11';
 
 // These are the files we pre-cache when the SW first installs.
 // The app can load fully from cache even with no network.

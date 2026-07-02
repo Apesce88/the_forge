@@ -2688,19 +2688,27 @@ function renderActiveWorkout() {
 
       // Set rows
       ex.sets.forEach(function(set, si) {
+        var lockedInputStyle = isComplete
+          ? 'background:var(--grey-dark);border:1px solid var(--grey-mid);border-radius:8px;padding:8px;color:var(--text-mute);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;cursor:not-allowed;'
+          : 'background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;';
         html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-          + '<div style="font-size:11px;font-family:var(--font-body);color:var(--lime);text-align:center;">' + (si + 1) + '</div>'
+          + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--lime)') + ';text-align:center;">' + (si + 1) + '</div>'
           + '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.weight || '') + '" '
-          + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
-          + 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"/>'
+          + (isComplete ? 'disabled ' : '')
+          + 'style="' + lockedInputStyle + '" '
+          + (isComplete ? '' : 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"')
+          + '/>'
           + '<input type="number" inputmode="numeric" min="1" placeholder="--" value="' + (set.reps || '') + '" '
-          + 'style="background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;" '
-          + 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"/>'
-          + '<button onclick="removeSet(' + ei + ',' + si + ')" '
-          + 'style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>'
+          + (isComplete ? 'disabled ' : '')
+          + 'style="' + lockedInputStyle + '" '
+          + (isComplete ? '' : 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"')
+          + '/>'
+          + (isComplete
+              ? '<div></div>'
+              : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
           + '</div>';
       });
-
+      
       // Add set + Complete buttons
       if (!isComplete) {
         html += '<button onclick="addSet(' + ei + ')" '
@@ -2759,6 +2767,7 @@ function completeExercise(ei) {
 function backFromWorkout() {
   state.view = 'day';
   state.dayIndex = state.activeSession.dayIndex;
+  closeProfileSheet();
   render();
   document.getElementById('screen').scrollTop = 0;
 }
@@ -2795,6 +2804,7 @@ function finishWorkout() {
   state.activeSession = null;
   state.view = 'day';
   state.dayIndex = dayIndex;
+  closeProfileSheet();
   render();
   document.getElementById('screen').scrollTop = 0;
 }
@@ -2809,6 +2819,7 @@ function cancelWorkout() {
     state.view = 'plan';
     state.dayIndex = null;
   }
+  closeProfileSheet();
   render();
   document.getElementById('screen').scrollTop = 0;
 }

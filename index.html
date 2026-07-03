@@ -2515,8 +2515,10 @@ function renderTracker() {
 
 // ── Profile Sheet ──
 function openProfileSheet() {
-  document.getElementById('profileBackdrop').classList.add('open');
-  document.getElementById('profileSheet').classList.add('open');
+  var backdrop = document.getElementById('profileBackdrop');
+  var sheet = document.getElementById('profileSheet');
+  if (backdrop) { backdrop.style.pointerEvents = ''; backdrop.classList.add('open'); }
+  if (sheet) sheet.classList.add('open');
   state.profileSheet = true;
 }
 function closeProfileSheet() {

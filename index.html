@@ -904,7 +904,7 @@
 </button>
 
 <div class="profile-sheet-backdrop" id="profileBackdrop" onclick="closeProfileSheet()"></div>
-<div class="profile-sheet" id="profileSheet">
+<div class="profile-sheet" id="profileSheet" onclick="event.stopPropagation()">
   <div class="profile-sheet-handle"></div>
   <div class="profile-sheet-title">COMMAND</div>
   <div class="profile-sheet-option" onclick="openProfileSection('profile')">

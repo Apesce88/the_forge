@@ -2520,8 +2520,10 @@ function openProfileSheet() {
   state.profileSheet = true;
 }
 function closeProfileSheet() {
-  document.getElementById('profileBackdrop').classList.remove('open');
-  document.getElementById('profileSheet').classList.remove('open');
+  var backdrop = document.getElementById('profileBackdrop');
+  var sheet = document.getElementById('profileSheet');
+  if (backdrop) { backdrop.classList.remove('open'); backdrop.style.pointerEvents = 'none'; }
+  if (sheet) sheet.classList.remove('open');
   state.profileSheet = false;
 }
 

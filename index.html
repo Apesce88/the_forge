@@ -2609,6 +2609,7 @@ function resumeWorkout() {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     dayIndex: dayIndex,
     dayName: d.title,
+    dayColor: d.color,
     startedAt: Date.now(),
     completedAt: null,
     user_id: null,
@@ -2623,8 +2624,13 @@ function renderActiveWorkout() {
   var s = state.activeSession;
   if (!s) return '<div class="lib-header"><div class="lib-title">No Active Session</div></div>';
 
-  var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
-
+var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
+  var dc = s.dayColor || 'lime';
+  var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
+  var acBg    = dc === 'red' ? 'rgba(239,68,68,0.06)'   : dc === 'grey' ? 'rgba(160,160,160,0.06)'  : 'rgba(163,230,53,0.06)';
+  var acGlow  = dc === 'red' ? 'rgba(239,68,68,0.25)'   : dc === 'grey' ? 'rgba(160,160,160,0.15)'  : 'rgba(163,230,53,0.25)';
+  var acBorder= dc === 'red' ? 'rgba(239,68,68,0.3)'    : dc === 'grey' ? 'rgba(160,160,160,0.2)'   : 'rgba(163,230,53,0.3)';
+  var acGlowComplete = dc === 'red' ? 'box-shadow:0 0 10px 2px rgba(239,68,68,0.2),0 0 24px 4px rgba(239,68,68,0.08);' : dc === 'grey' ? 'box-shadow:0 0 10px 2px rgba(160,160,160,0.1),0 0 24px 4px rgba(160,160,160,0.04);' : 'box-shadow:0 0 10px 2px rgba(163,230,53,0.2),0 0 24px 4px rgba(163,230,53,0.08);';
   var html = '<div class="lib-header">'
     + '<div class="home-eyebrow">Active Session · Day ' + (s.dayIndex + 1) + '</div>'
     + '<div class="lib-title">' + s.dayName + '</div>'
@@ -2656,7 +2662,7 @@ function renderActiveWorkout() {
     html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
       + 'padding-bottom:8px;border-bottom:1px solid var(--grey-mid);">'
       + '<span style="font-size:11px;font-weight:700;font-family:var(--font-body);'
-      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);">' + tierName + '</span>'
+      + 'letter-spacing:0.1em;text-transform:uppercase;color:' + acColor + ';">' + tierName + '</span>'
       + '</div>';
 
     tierMap[tierName].forEach(function(item) {
@@ -2668,9 +2674,8 @@ function renderActiveWorkout() {
         return acc + ((parseFloat(set.weight) || 0) * (parseInt(set.reps) || 0));
       }, 0);
 
-      var borderColor = isComplete ? 'var(--lime)' : 'var(--grey-light)';
-      var glowStyle = isComplete
-        ? 'box-shadow:0 0 10px 2px rgba(163,230,53,0.2),0 0 24px 4px rgba(163,230,53,0.08);'
+      var borderColor = isComplete ? acColor : 'var(--grey-light)';
+      var glowStyle = isComplete ? acGlowComplete
         : 'box-shadow:0 0 10px 2px rgba(255,255,255,0.04),0 0 24px 4px rgba(255,255,255,0.02);';
 
       html += '<div style="margin:0 16px 16px;background:#0d0d0d;border:1px solid ' + borderColor + ';'
@@ -2679,12 +2684,12 @@ function renderActiveWorkout() {
         // Exercise header
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
         + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + ex.exName + '</div>'
-        + (isComplete ? '<div style="font-size:12px;color:var(--lime);">✓</div>' : '')
+        + (isComplete ? '<div style="font-size:12px;color:' + acColor + ';">✓</div>' : '')
         + '</div>'
 
         // Volume
         + (totalVol > 0
-            ? '<div style="font-size:10px;color:var(--lime);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
+            ? '<div style="font-size:10px;color:' + acColor + ';font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
             : '<div style="height:6px;"></div>')
 
         // Column headers
@@ -2701,7 +2706,7 @@ function renderActiveWorkout() {
           ? 'background:var(--grey-dark);border:1px solid var(--grey-mid);border-radius:8px;padding:8px;color:var(--text-mute);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;cursor:not-allowed;'
           : 'background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;';
         html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-          + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--lime)') + ';text-align:center;">' + (si + 1) + '</div>'
+          + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : acColor) + ';text-align:center;">' + (si + 1) + '</div>'
           + '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.weight || '') + '" '
           + (isComplete ? 'disabled ' : '')
           + 'style="' + lockedInputStyle + '" '
@@ -2722,13 +2727,13 @@ function renderActiveWorkout() {
       if (!isComplete) {
         html += '<button onclick="addSet(' + ei + ')" '
           + 'style="width:100%;padding:8px;border-radius:10px;margin-top:6px;'
-          + 'border:1.5px dashed var(--grey-muted);background:transparent;'
-          + 'color:var(--text-mute);font-size:12px;font-family:var(--font-body);'
+          + 'border:1.5px dashed ' + acBorder + ';background:transparent;'
+          + 'color:' + acColor + ';font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.06em;cursor:pointer;margin-bottom:8px;">+ Add Set</button>'
           + '<button onclick="completeExercise(' + ei + ')" '
           + 'style="width:100%;padding:9px;border-radius:10px;'
-          + 'border:1px solid var(--gold-metal);background:rgba(200,146,42,0.08);'
-          + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
+          + 'border:1px solid ' + acColor + ';background:' + acBg + ';'
+          + 'color:' + acColor + ';font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
       } else {
         html += '<button onclick="unlockExercise(' + ei + ')" '
@@ -2745,11 +2750,11 @@ function renderActiveWorkout() {
   // Finish + Cancel
   html += '<div style="padding:0 16px 16px;">'
     + '<button onclick="finishWorkout()" style="'
-    + 'width:100%;padding:14px;border-radius:14px;border:none;'
-    + 'background:var(--lime);color:var(--black);'
+    + 'width:100%;padding:14px;border-radius:14px;'
+    + 'border:1.5px solid ' + acColor + ';background:' + acBg + ';color:' + acColor + ';'
     + 'font-size:15px;font-family:var(--font-body);letter-spacing:0.1em;'
     + 'font-weight:700;cursor:pointer;margin-bottom:10px;'
-    + 'box-shadow:0 0 16px rgba(163,230,53,0.3);">✓ FINISH WORKOUT</button>'
+    + 'box-shadow:0 0 16px ' + acGlow + ';">✓ FINISH WORKOUT</button>'
     + '<button onclick="cancelWorkout()" style="'
     + 'width:100%;padding:12px;border-radius:14px;'
     + 'border:1px solid var(--grey-light);background:transparent;'

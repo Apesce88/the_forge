@@ -2662,7 +2662,7 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
     html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
       + 'padding-bottom:8px;border-bottom:1px solid var(--grey-mid);">'
       + '<span style="font-size:11px;font-weight:700;font-family:var(--font-body);'
-      + 'letter-spacing:0.1em;text-transform:uppercase;color:' + acColor + ';">' + tierName + '</span>'
+      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-metal);">' + tierName + '</span>'
       + '</div>';
 
     tierMap[tierName].forEach(function(item) {
@@ -2689,7 +2689,7 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
 
         // Volume
         + (totalVol > 0
-            ? '<div style="font-size:10px;color:' + acColor + ';font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
+            ? '<div style="font-size:10px;color:var(--gold-metal);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
             : '<div style="height:6px;"></div>')
 
         // Column headers
@@ -2727,13 +2727,13 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       if (!isComplete) {
         html += '<button onclick="addSet(' + ei + ')" '
           + 'style="width:100%;padding:8px;border-radius:10px;margin-top:6px;'
-          + 'border:1.5px dashed ' + acBorder + ';background:transparent;'
-          + 'color:' + acColor + ';font-size:12px;font-family:var(--font-body);'
+          + 'border:1.5px dashed var(--gold-metal);background:transparent;'
+          + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.06em;cursor:pointer;margin-bottom:8px;">+ Add Set</button>'
           + '<button onclick="completeExercise(' + ei + ')" '
           + 'style="width:100%;padding:9px;border-radius:10px;'
-          + 'border:1px solid ' + acColor + ';background:' + acBg + ';'
-          + 'color:' + acColor + ';font-size:12px;font-family:var(--font-body);'
+          + 'border:1px solid var(--gold-metal);background:rgba(200,146,42,0.08);'
+          + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
       } else {
         html += '<button onclick="unlockExercise(' + ei + ')" '

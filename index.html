@@ -2577,6 +2577,12 @@ function saveGeminiKey(val) {
 }  
 
 // ── Workout Logging ────────────────────────────────────────────────────────
+function detectExType(name) {
+  var runWords = ['run','jog','sprint','tempo','cardio','walk','5k','bound','acceleration','shuffle','backpedal','treadmill','mile','distance'];
+  var n = (name || '').toLowerCase();
+  return runWords.some(function(w) { return n.includes(w); }) ? 'running' : 'standard';
+}
+
 function resumeWorkout() {
   state.view = 'workout';
   state.openMenuId = null;
@@ -2601,6 +2607,7 @@ function resumeWorkout() {
       exercises.push({
         exName: ex.name,
         tier: tier.label,
+        type: detectExType(ex.name),
         sets: []
       });
     });
@@ -2692,35 +2699,84 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
             ? '<div style="font-size:10px;color:var(--gold-metal);font-family:var(--font-body);letter-spacing:0.06em;margin-bottom:10px;">VOL: ' + totalVol.toLocaleString() + ' lbs</div>'
             : '<div style="height:6px;"></div>')
 
-        // Column headers
-        + '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
-        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
-        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LBS</div>'
-        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">REPS</div>'
-        + '<div></div>'
-        + '</div>';
+      // Column headers
+      if (ex.type === 'running') {
+        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (mi)</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
+          + '<div></div>'
+          + '</div>';
+      } else {
+        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LOAD</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">EFFORT</div>'
+          + '<div></div>'
+          + '</div>';
+      }
 
       // Set rows
+      var inputBase = 'border-radius:8px;padding:7px 4px;font-size:13px;font-family:var(--font-body);text-align:center;width:100%;';
+      var inputActive = inputBase + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);';
+      var inputLocked = inputBase + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
+      var selectStyle = 'border-radius:8px;padding:7px 2px;font-size:11px;font-family:var(--font-body);text-align:center;width:100%;-webkit-appearance:none;cursor:pointer;';
+      var selectActive = selectStyle + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);';
+      var selectLocked = selectStyle + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
+
       ex.sets.forEach(function(set, si) {
-        var lockedInputStyle = isComplete
-          ? 'background:var(--grey-dark);border:1px solid var(--grey-mid);border-radius:8px;padding:8px;color:var(--text-mute);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;cursor:not-allowed;'
-          : 'background:var(--grey-mid);border:1px solid var(--grey-light);border-radius:8px;padding:8px;color:var(--text-pri);font-size:14px;font-family:var(--font-body);text-align:center;width:100%;';
-        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-          + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : acColor) + ';text-align:center;">' + (si + 1) + '</div>'
-          + '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.weight || '') + '" '
-          + (isComplete ? 'disabled ' : '')
-          + 'style="' + lockedInputStyle + '" '
-          + (isComplete ? '' : 'onchange="updateSet(' + ei + ',' + si + ',\'weight\',this.value)"')
-          + '/>'
-          + '<input type="number" inputmode="numeric" min="1" placeholder="--" value="' + (set.reps || '') + '" '
-          + (isComplete ? 'disabled ' : '')
-          + 'style="' + lockedInputStyle + '" '
-          + (isComplete ? '' : 'onchange="updateSet(' + ei + ',' + si + ',\'reps\',this.value)"')
-          + '/>'
-          + (isComplete
-              ? '<div></div>'
-              : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
-          + '</div>';
+        var setNum = '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--gold-metal)') + ';text-align:center;">' + (si + 1) + '</div>';
+        var removeBtn = isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>';
+
+        if (ex.type === 'running') {
+          html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
+            + setNum
+            + '<input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="' + (set.distance || '') + '" '
+            + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'distance\',this.value)" ')
+            + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
+            + '<input type="text" inputmode="numeric" placeholder="00:00" value="' + (set.time || '') + '" '
+            + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'time\',this.value)" ')
+            + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
+            + removeBtn
+            + '</div>';
+        } else {
+          var loadTypeVal = set.loadType || 'weight';
+          var effortTypeVal = set.effortType || 'reps';
+          html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
+            + setNum
+
+            // LOAD column — dropdown + number stacked
+            + '<div style="display:flex;flex-direction:column;gap:3px;">'
+            + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'loadType\',this.value)" ')
+            + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
+            + '<option value="weight"' + (loadTypeVal === 'weight' ? ' selected' : '') + '>Weight</option>'
+            + '<option value="band"'  + (loadTypeVal === 'band'   ? ' selected' : '') + '>Band</option>'
+            + '<option value="bw"'    + (loadTypeVal === 'bw'     ? ' selected' : '') + '>BW</option>'
+            + '</select>'
+            + (loadTypeVal === 'bw'
+              ? '<div style="' + (isComplete ? inputLocked : inputBase + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-mute);') + '">—</div>'
+              : '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.load || '') + '" '
+                + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'load\',this.value)" ')
+                + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>')
+            + '</div>'
+
+            // EFFORT column — dropdown + input stacked
+            + '<div style="display:flex;flex-direction:column;gap:3px;">'
+            + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effortType\',this.value)" ')
+            + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
+            + '<option value="reps"' + (effortTypeVal === 'reps' ? ' selected' : '') + '>Reps</option>'
+            + '<option value="time"' + (effortTypeVal === 'time' ? ' selected' : '') + '>Time</option>'
+            + '</select>'
+            + '<input type="' + (effortTypeVal === 'time' ? 'text' : 'number') + '" '
+            + (effortTypeVal === 'time' ? 'placeholder="00:00" ' : 'inputmode="numeric" min="1" placeholder="--" ')
+            + 'value="' + (set.effort || '') + '" '
+            + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effort\',this.value)" ')
+            + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
+            + '</div>'
+
+            + removeBtn
+            + '</div>';
+        }
       });
       
       // Add set + Complete buttons
@@ -2788,12 +2844,21 @@ function backFromWorkout() {
   
 function addSet(ei) {
   if (!state.activeSession) return;
-  var lastSet = state.activeSession.exercises[ei].sets.slice(-1)[0];
-  state.activeSession.exercises[ei].sets.push({
-    reps: lastSet ? lastSet.reps : '',
-    weight: lastSet ? lastSet.weight : '',
-    note: ''
-  });
+  var ex = state.activeSession.exercises[ei];
+  var lastSet = ex.sets.slice(-1)[0];
+  if (ex.type === 'running') {
+    ex.sets.push({
+      distance: lastSet ? lastSet.distance : '',
+      time: lastSet ? lastSet.time : ''
+    });
+  } else {
+    ex.sets.push({
+      load: lastSet ? lastSet.load : '',
+      loadType: lastSet ? lastSet.loadType : 'weight',
+      effort: lastSet ? lastSet.effort : '',
+      effortType: lastSet ? lastSet.effortType : 'reps'
+    });
+  }
   render();
 }
 

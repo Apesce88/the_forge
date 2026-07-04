@@ -1474,7 +1474,8 @@ function renderDay(index) {
     }
 
     // Static cooldown
-    html += '<div class="field-step" style="margin-top:8px;"><div class="field-step-icon">' + d.field[1].icon + '</div><div class="field-step-text">' + d.field[1].text + '</div></div>'
+    var lastField = d.field[d.field.length - 1];
+    html += '<div class="field-step" style="margin-top:8px;"><div class="field-step-icon">' + lastField.icon + '</div><div class="field-step-text">' + lastField.text + '</div></div>'
       + '</div>';
   }
  

@@ -1038,6 +1038,12 @@ var DEFAULT_LIBRARY = [
   { name:'Side Plank',             cat:'core',  fw:'Side plank hold 30 sec each',       mb:'Side plank hold 30 sec each',       bw:'Side plank hold 30 sec each' },
   { name:'Synergy Ab Circuit',     cat:'core',  fw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds', mb:'Cable crunch + machine rotation', bw:'Plank→Leg raises→Bicycle→Hollow hold · 3 rounds' },
   { name:'Obliques',               cat:'core',  fw:'DB or plate Russian twists',         mb:'Cable woodchop',                    bw:'Russian twists or side plank dips' },
+
+// DYNAMIC
+  { name:'10-Yard Acceleration Bursts', cat:'dynamic', fw:'10-yard sprint from stance × 6', mb:'10-yard sprint from stance × 6', bw:'10-yard sprint from stance × 6' },
+  { name:'Lateral Shuffle',             cat:'dynamic', fw:'Lateral shuffle × 4 each side',  mb:'Lateral shuffle × 4 each side',  bw:'Lateral shuffle × 4 each side' },
+  { name:'300 Yard Total Distance Sprints', cat:'dynamic', fw:'Max effort sprints totaling 300 yards — e.g. 10 × 30yd full rest between', mb:'Max effort sprints totaling 300 yards — e.g. 10 × 30yd full rest between', bw:'Max effort sprints totaling 300 yards — e.g. 10 × 30yd full rest between' },  
+  
   // RECOVERY
   { name:'Active Recovery Run',    cat:'recovery', fw:'20–30 min easy jog',             mb:'20–30 min easy jog',                bw:'20–30 min easy jog' },
   { name:'Foam Rolling',           cat:'recovery', fw:'Full body foam roll 15 min',     mb:'Full body foam roll 15 min',        bw:'Full body foam roll 15 min' },
@@ -1428,6 +1434,15 @@ function renderDay(index) {
   }
   
   if (d.field) {
+    html += '<div style="padding: 0 16px 16px;display:flex;justify-content:center;">'
+      + '<button onclick="startWorkout(' + index + ')" style="'
+      + 'width:70%;padding:11px;border-radius:14px;'
+      + 'border:1.5px solid var(--red);'
+      + 'background:rgba(239,68,68,0.06);color:var(--red);'
+      + 'font-size:14px;font-family:var(--font-body);letter-spacing:0.1em;'
+      + 'font-weight:700;cursor:pointer;'
+      + 'box-shadow:0 0 12px rgba(239,68,68,0.25);">START WORKOUT</button>'
+      + '</div>';
     html += '<div class="tier-section">';
     d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
     html += '</div>';
@@ -1536,8 +1551,9 @@ function renderLibrary() {
   var cats = [
     { id:'upper',    label:'Upper',    color:'lime' },
     { id:'lower',    label:'Lower',    color:'red' },
-    { id:'power',    label:'Power',    color:'gold' },
-    { id:'core',     label:'Core',     color:'purple' },
+    { id:'power',    label:'Power',    color:'lime' },
+    { id:'dynamics', label:'Dynamic', color:'red' },
+    { id:'core',     label:'Core',     color:'gold' },
     { id:'recovery', label:'Recovery', color:'grey' },
   ];
  
@@ -1595,7 +1611,7 @@ function renderModal() {
   if (!m) return '';
 
   if (m.mode === 'addDay') {
-    var cats = ['upper','lower','power','core','recovery'];
+    var cats = ['upper','lower','power','dynamic','core','recovery'];
     var activeCat = state.pickerCat || 'upper';
     var filtered = state.library.filter(function(e) {
       return e.cat === activeCat;
@@ -2599,19 +2615,42 @@ function resumeWorkout() {
   document.getElementById('screen').scrollTop = 0;
 }
   
-  function startWorkout(dayIndex) {
+function startWorkout(dayIndex) {
   var d = state.days[dayIndex];
   var exercises = [];
-  d.tiers.forEach(function(tier) {
-    tier.exercises.forEach(function(ex) {
+
+  if (d.field) {
+    // Field day — fixed exercise list, warmup and cooldown are static
+    var fieldExercises = [
+      { exName: '10-Yard Acceleration Bursts', type: 'running', unit: 'yd', static: false },
+      { exName: 'Lateral Shuffle',             type: 'running', unit: 'yd', static: false },
+      { exName: '300 Yard Total Distance Sprints', type: 'running', unit: 'yd', static: false }
+    ];
+    fieldExercises.forEach(function(ex) {
       exercises.push({
-        exName: ex.name,
-        tier: tier.label,
-        type: detectExType(ex.name),
+        exName: ex.exName,
+        tier: 'Speed & Agility',
+        type: ex.type,
+        unit: ex.unit,
+        static: false,
         sets: []
       });
     });
-  });
+  } else if (d.tiers) {
+    d.tiers.forEach(function(tier) {
+      tier.exercises.forEach(function(ex) {
+        exercises.push({
+          exName: ex.name,
+          tier: tier.label,
+          type: detectExType(ex.name),
+          unit: 'mi',
+          static: false,
+          sets: []
+        });
+      });
+    });
+  }
+
   state.activeSession = {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     dayIndex: dayIndex,
@@ -2664,6 +2703,14 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
     tierMap[ex.tier].push({ ex: ex, ei: ei });
   });
 
+  // Static warmup card for field days
+  if (state.activeSession.exercises.length > 0 && state.activeSession.exercises[0].tier === 'Speed & Agility') {
+    html += '<div style="margin:0 16px 12px;background:#0d0d0d;border:1px solid var(--grey-mid);border-radius:14px;padding:14px;">'
+      + '<div style="font-family:var(--font-title);font-size:13px;color:var(--text-mute);margin-bottom:4px;">Dynamic Warmup</div>'
+      + '<div style="font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.06em;">A-skips · High knees · Leg swings · 5 min — not logged</div>'
+      + '</div>';
+  }
+  
   tiers.forEach(function(tierName) {
     // Tier header
     html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
@@ -2701,9 +2748,10 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
 
       // Column headers
       if (ex.type === 'running') {
+        var distUnit = ex.unit === 'yd' ? 'yd' : 'mi';
         html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (mi)</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + distUnit + ')</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
           + '<div></div>'
           + '</div>';
@@ -2803,6 +2851,14 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
     });
   });
 
+  // Static cooldown card for field days
+  if (state.activeSession.exercises.length > 0 && state.activeSession.exercises[0].tier === 'Speed & Agility') {
+    html += '<div style="margin:0 16px 16px;background:#0d0d0d;border:1px solid var(--grey-mid);border-radius:14px;padding:14px;">'
+      + '<div style="font-family:var(--font-title);font-size:13px;color:var(--text-mute);margin-bottom:4px;">Cool Down</div>'
+      + '<div style="font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.06em;">Light stretch · Walk it out — not logged</div>'
+      + '</div>';
+  }
+  
   // Finish + Cancel
   html += '<div style="padding:0 16px 16px;">'
     + '<button onclick="finishWorkout()" style="'

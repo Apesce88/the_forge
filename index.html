@@ -1059,8 +1059,7 @@ var DAYS = [
   { num:'01', title:'Back & Chest',          sub:'Max / Power + Arms',   color:'lime', focus:'Heavy compounds · back thickness · arm volume',         tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
   { num:'02', title:'Lower Body',            sub:'Power + Hamstring',    color:'red',  focus:'Explosiveness · injury prevention · eccentric focus',    tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
   { num:'03', title:'Chest & Shoulders',     sub:'Hypertrophy',          color:'lime', focus:'Width + thickness · volume priority',                   tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
-  { num:'04', title:'Speed & Agility',       sub:'Athletic Movement',    color:'red', focus:'Football-specific · acceleration · change of direction', field:[{icon:'⚡',text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)'},{icon:'🏃',text:'10-yard acceleration bursts × 6'},{icon:'↔️',text:'Lateral shuffle + break drills × 4 each side'},{icon:'🔄',text:'Backpedal to turn-and-run × 4 each side'},{icon:'📐',text:'Cone / agility drill of choice (10 min)'},{icon:'🧘',text:'Cool down + light stretch'}] },
-  { num:'05', title:'Extra / Aux',           sub:'Volume & Size',        color:'lime', focus:'Unilateral volume · weak point mass · conditioning',     tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'04', title:'Speed & Agility',       sub:'Athletic Movement',    color:'red', focus:'Football-specific · acceleration · change of direction', field:[{icon:'⚡',text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)'},{icon:'🧘',text:'Cool down + light stretch'}], exercises:[] },  { num:'05', title:'Extra / Aux',           sub:'Volume & Size',        color:'lime', focus:'Unilateral volume · weak point mass · conditioning',     tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
   { num:'06', title:'Lower Explosive',       sub:'Plyos + Tempo Run',    color:'red',  focus:'Fast-twitch development · aerobic base',                 tiers:[{label:'Plyometric Block — do first',icon:'⚡',exercises:[]}], note:'🏃 Finish with 20–30 min tempo run at conversational pace' },
   { num:'07', title:'Recovery',              sub:'True Rest',            color:'grey', focus:'Rest or active recovery — listen to your body',          recovery:[{icon:'😴',title:'True Rest',desc:'Full off day. Sleep in, eat well, let your body repair.'},{icon:'🚶',title:'Active Recovery',desc:'Easy 20–30 min walk or light jog, foam rolling, yoga.'},{icon:'🧘',title:'Mobility Focus',desc:'30 min yoga: couch stretch, pigeon pose, cat-cow, world\'s greatest stretch.'}] },
 ];
@@ -1443,9 +1442,40 @@ function renderDay(index) {
       + 'font-weight:700;cursor:pointer;'
       + 'box-shadow:0 0 12px rgba(239,68,68,0.25);">START WORKOUT</button>'
       + '</div>';
-    html += '<div class="tier-section">';
-    d.field.forEach(function(s){ html += '<div class="field-step"><div class="field-step-icon">'+s.icon+'</div><div class="field-step-text">'+s.text+'</div></div>'; });
-    html += '</div>';
+
+    // Static warmup
+    html += '<div class="tier-section">'
+      + '<div class="field-step"><div class="field-step-icon">' + d.field[0].icon + '</div><div class="field-step-text">' + d.field[0].text + '</div></div>';
+
+    // Customizable exercises (up to 3)
+    var fieldExes = d.exercises || [];
+    if (fieldExes.length === 0) {
+      html += '<div class="day-empty-tier">No exercises added yet</div>';
+    } else {
+      fieldExes.forEach(function(ex, ei) {
+        var key = 'field-' + index + '-' + ei;
+        var menuOpen = state.openMenuId === key;
+        html += '<div class="ex-card">'
+          + '<div class="ex-card-header">'
+          + '<div class="ex-name">' + ex.name + '</div>'
+          + '<button class="ex-menu-btn" onclick="toggleMenu(\'' + key + '\')">•••</button>'
+          + '</div>';
+        if (menuOpen) {
+          html += '<div class="ex-actions">'
+            + '<button class="ex-action-btn ex-action-remove" onclick="removeFieldEx(' + index + ',' + ei + ')">📋 Remove</button>'
+            + '</div>';
+        }
+        html += '</div>';
+      });
+    }
+
+    if (fieldExes.length < 3) {
+      html += '<button class="add-ex-btn" onclick="openFieldExModal(' + index + ')">+ Add Exercise</button>';
+    }
+
+    // Static cooldown
+    html += '<div class="field-step" style="margin-top:8px;"><div class="field-step-icon">' + d.field[1].icon + '</div><div class="field-step-text">' + d.field[1].text + '</div></div>'
+      + '</div>';
   }
  
   if (d.recovery) {
@@ -1610,6 +1640,38 @@ function renderModal() {
   var m = state.modal;
   if (!m) return '';
 
+  if (m.mode === 'addField') {
+    var cats = ['upper','lower','power','dynamics','core','recovery'];
+    var activeCat = state.pickerCat || 'dynamics';
+    var filtered = state.library.filter(function(e) {
+      return e.cat === activeCat;
+    });
+    var tabsHTML = cats.map(function(c) {
+      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+        + '" onclick="setPickerCat(\'' + c + '\')">'
+        + c.charAt(0).toUpperCase() + c.slice(1)
+        + '</button>';
+    }).join('');
+    var listHTML = filtered.length === 0
+      ? '<div class="lib-empty"><div class="lib-empty-icon">📋</div>No exercises in this category.</div>'
+      : filtered.map(function(ex) {
+          return '<button class="picker-ex-btn" onclick="addFieldEx(' + m.di + ',\'' + ex.id + '\')">'
+            + '<div class="picker-ex-name">' + ex.name + '</div>'
+            + '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>'
+            + '</button>';
+        }).join('');
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">Add Exercise</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<div style="margin-top:12px;">'
+      + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
+      + '</div>'
+      + '</div></div>';
+  }
+  
   if (m.mode === 'addDay') {
     var cats = ['upper','lower','power','dynamic','core','recovery'];
     var activeCat = state.pickerCat || 'upper';
@@ -2592,6 +2654,33 @@ function saveGeminiKey(val) {
   localStorage.setItem('forge_settings_v1', JSON.stringify(s));
 }  
 
+function openFieldExModal(dayIndex) {
+  state.pickerCat = 'dynamics';
+  openModal({ mode: 'addField', di: dayIndex });
+}
+
+function addFieldEx(dayIndex, exId) {
+  var ex = state.library.find(function(e) { return e.id === exId; });
+  if (!ex) return;
+  if (!state.days[dayIndex].exercises) state.days[dayIndex].exercises = [];
+  if (state.days[dayIndex].exercises.length >= 3) return;
+  state.days[dayIndex].exercises.push({
+    name: ex.name,
+    fw: ex.fw,
+    mb: ex.mb,
+    bw: ex.bw
+  });
+  saveDays();
+  closeModal();
+}
+
+function removeFieldEx(dayIndex, ei) {
+  state.days[dayIndex].exercises.splice(ei, 1);
+  saveDays();
+  state.openMenuId = null;
+  render();
+}
+  
 // ── Workout Logging ────────────────────────────────────────────────────────
 function detectExType(name) {
   var runWords = ['run','jog','sprint','tempo','cardio','walk','5k','bound','acceleration','shuffle','backpedal','treadmill','mile','distance'];
@@ -2620,18 +2709,13 @@ function startWorkout(dayIndex) {
   var exercises = [];
 
   if (d.field) {
-    // Field day — fixed exercise list, warmup and cooldown are static
-    var fieldExercises = [
-      { exName: '10-Yard Acceleration Bursts', type: 'running', unit: 'yd', static: false },
-      { exName: 'Lateral Shuffle',             type: 'running', unit: 'yd', static: false },
-      { exName: '300 Yard Total Distance Sprints', type: 'running', unit: 'yd', static: false }
-    ];
-    fieldExercises.forEach(function(ex) {
+    var fieldExes = d.exercises || [];
+    fieldExes.forEach(function(ex) {
       exercises.push({
-        exName: ex.exName,
+        exName: ex.name,
         tier: 'Speed & Agility',
-        type: ex.type,
-        unit: ex.unit,
+        type: detectExType(ex.name),
+        unit: 'yd',
         static: false,
         sets: []
       });

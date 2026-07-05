@@ -885,7 +885,7 @@
 <div id="app">
   <div id="screen"></div>
 
-<button class="profile-shell-btn" onclick="openProfileSheet()" aria-label="Profile">
+<button class="profile-shell-btn" onclick="openProfileSheet()" aria-label="Command">
   <svg viewBox="0 0 24 22" width="22" height="20" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="helmetGrad" x1="0" y1="0" x2="0" y2="1">
@@ -911,7 +911,7 @@
   <div class="profile-sheet-option" onclick="openProfileSection('profile')">
     <div class="profile-sheet-opt-icon">⚔</div>
     <div>
-      <div class="profile-sheet-opt-label">PROFILE</div>
+      <div class="profile-sheet-opt-label">HERO</div>
       <div class="profile-sheet-opt-sub">Identity · Signet · Records</div>
     </div>
   </div>
@@ -958,7 +958,7 @@
       </svg>
     </button>
 
-    <button class="nav-btn" onclick="navigate('tracker')" id="nav-tracker">
+    <button class="nav-btn" onclick="navigate('journey')" id="nav-journey">
       <svg viewBox="0 0 22 18" xmlns="http://www.w3.org/2000/svg">
         <line x1="3"  y1="1" x2="3"  y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
         <line x1="8"  y1="1" x2="8"  y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
@@ -1364,7 +1364,7 @@ function render() {
   if (state.view === 'plan')      screen.innerHTML = renderPlan();
   if (state.view === 'day')       screen.innerHTML = renderDay(state.dayIndex);
   if (state.view === 'exercises') screen.innerHTML = renderLibrary();
-  if (state.view === 'tracker')  screen.innerHTML = renderTracker();
+  if (state.view === 'journey')  screen.innerHTML = renderJourney();
   if (state.view === 'grounds')   screen.innerHTML = renderGrounds();
   if (state.view === 'workout')   screen.innerHTML = renderActiveWorkout();
  
@@ -2560,7 +2560,7 @@ render();
 
       
 // ── Tracker Screen ──
-function renderTracker() {
+function renderJourney() {
   var sessionHTML = '';
   if (state.activeSession) {
     var s = state.activeSession;
@@ -2588,9 +2588,9 @@ function renderTracker() {
   }
 
   return '<div class="lib-header">'
-    + '<div class="home-eyebrow">Forge Log</div>'
-    + '<div class="lib-title">Tracker</div>'
-    + '<div class="lib-sub">Workout logging · Volume · Progress</div>'
+    + '<div class="home-eyebrow">The Hero\'s Path</div>'
+    + '<div class="lib-title">Journey</div>'
+    + '<div class="lib-sub">Workout log · Volume · Progress</div>'
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
     + sessionHTML
@@ -2604,6 +2604,7 @@ function openProfileSheet() {
   if (backdrop) { backdrop.style.pointerEvents = ''; backdrop.classList.add('open'); }
   if (sheet) sheet.classList.add('open');
   state.profileSheet = true;
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
 }
 function closeProfileSheet() {
   var backdrop = document.getElementById('profileBackdrop');
@@ -2620,7 +2621,7 @@ function openProfileSection(section) {
     document.getElementById('screen').innerHTML =
       '<div class="profile-sub-screen">'
       + '<button class="profile-sub-back" onclick="closeProfileSection()">‹ BACK</button>'
-      + '<div class="profile-sub-title">PROFILE</div>'
+      + '<div class="profile-sub-title">HERO</div>'
       + '<div class="profile-coming-soon">'
       + '<div class="profile-coming-soon-label">COMING SOON</div>'
       + '<div class="profile-coming-soon-desc">Your identity, selected Signet, personal records,<br>and training history will live here.</div>'
@@ -2647,6 +2648,8 @@ function openProfileSection(section) {
 
 function closeProfileSection() {
   render();
+  var btn = document.getElementById('nav-' + state.view);
+  if (btn) btn.classList.add('active');
 }
 
 function saveGeminiKey(val) {

@@ -780,8 +780,8 @@
     top: calc(12px + var(--sat));
     right: calc(12px + var(--sar));
     z-index: 200;
-    background: rgba(200,146,42,0.1);
-    border: 1px solid rgba(212,175,55,0.3);
+    background: #0a0a0a;
+    border: 1.5px solid #D4AF37;
     border-radius: 10px;
     width: 42px;
     height: 42px;
@@ -789,9 +789,11 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 0 12px rgba(212,175,55,0.4);
+    animation: pulse 2s infinite;
     transition: background 0.2s;
   }
-  .profile-shell-btn:active { background: rgba(200,146,42,0.25); }
+  .profile-shell-btn:active { background: #2a1f05; }
 
   /* ── Profile Slide-Up Sheet ── */
   .profile-sheet-backdrop {
@@ -2619,14 +2621,17 @@ function openProfileSection(section) {
   closeProfileSheet();
   if (section === 'profile') {
     document.getElementById('screen').innerHTML =
-      '<div class="profile-sub-screen">'
-      + '<button class="profile-sub-back" onclick="closeProfileSection()">‹ BACK</button>'
-      + '<div class="profile-sub-title">HERO</div>'
-      + '<div class="profile-coming-soon">'
-      + '<div class="profile-coming-soon-label">COMING SOON</div>'
-      + '<div class="profile-coming-soon-desc">Your identity, selected Signet, personal records,<br>and training history will live here.</div>'
+      '<button class="profile-sub-back" onclick="closeProfileSection()" style="padding:12px 20px 0;display:block;">‹ BACK</button>'
+      + '<div class="lib-header">'
+      + '<div class="home-eyebrow">Command Center</div>'
+      + '<div class="lib-title">Hero</div>'
+      + '<div class="lib-sub">Identity · Signet · Records · Journey</div>'
       + '</div>'
-      + '</div>';
+      + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
+      + '<div class="lib-section-pad">'
+      + '<div class="day-empty-tier">Your Hero profile is coming soon.<br>Signet selection, personal records,<br>and level progression will live here.</div>'
+      + '</div>'
+      + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
   } else if (section === 'settings') {
     document.getElementById('screen').innerHTML =
       '<div class="profile-sub-screen">'

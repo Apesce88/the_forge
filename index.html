@@ -1132,6 +1132,11 @@ function saveLogs(logs) {
     var days = localStorage.getItem(KEY_DAYS);
     if (days) {
       state.days = JSON.parse(days);
+      // Migration — fix Day 6 name if still old value
+      if (state.days[5] && state.days[5].title === 'Lower Explosiveness') {
+        state.days[5].title = 'Explosiveness';
+        saveDays();
+      }
     } else {
       state.days = JSON.parse(JSON.stringify(DAYS));
       saveDays();

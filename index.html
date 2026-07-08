@@ -1077,7 +1077,9 @@ var state = {
   modal: null,
   gauntletView: 'map',
   activeSession: null,
-  profileSheet: false
+  profileSheet: false,
+  journeyLogsShown: 10,
+  journeyExpanded: {}
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
@@ -1160,6 +1162,8 @@ function navigate(view) {
   state.dayIndex = null;
   state.openMenuId = null;
   state.modal = null;
+  state.journeyLogsShown = 10;
+  state.journeyExpanded = {};
   document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
   var btn = document.getElementById('nav-' + view);
   if (btn) btn.classList.add('active');
@@ -2568,6 +2572,7 @@ render();
       
 // ── Tracker Screen ──
 function renderJourney() {
+  // ── Active session card ──
   var sessionHTML = '';
   if (state.activeSession) {
     var s = state.activeSession;
@@ -2594,6 +2599,112 @@ function renderJourney() {
       + '</div>';
   }
 
+  // ── Log history ──
+  var logs = loadLogs().reverse();
+  var logsHTML = '';
+
+  if (logs.length === 0) {
+    logsHTML = '<div class="lib-section-pad">'
+      + '<div class="day-empty-tier">No workouts logged yet.<br>Complete a session to see your history.</div>'
+      + '</div>';
+  } else {
+    var visible = logs.slice(0, state.journeyLogsShown);
+
+    visible.forEach(function(log) {
+      var dc = log.dayColor || 'lime';
+      var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
+      var acBorder = dc === 'red' ? 'rgba(239,68,68,0.4)' : dc === 'grey' ? 'rgba(160,160,160,0.2)' : 'rgba(163,230,53,0.35)';
+      var acGlow = dc === 'red' ? 'rgba(239,68,68,0.08)' : dc === 'grey' ? 'rgba(160,160,160,0.04)' : 'rgba(163,230,53,0.08)';
+
+      // Date formatting
+      var d = new Date(log.completedAt || log.startedAt);
+      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dateStr = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+
+      // Stats
+      var duration = log.completedAt
+        ? Math.round((log.completedAt - log.startedAt) / 60000)
+        : '—';
+      var totalSets = log.exercises.reduce(function(acc, ex) { return acc + ex.sets.length; }, 0);
+      var totalVol = log.exercises.reduce(function(acc, ex) {
+        return acc + ex.sets.reduce(function(a, set) {
+          if (set.loadType === 'bw' || !set.load) return a;
+          return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+        }, 0);
+      }, 0);
+
+      var isExpanded = state.journeyExpanded[log.id] === true;
+
+      // Collapsed card
+      var cardHTML = '<div style="margin:0 16px 12px;background:#0d0d0d;'
+        + 'border:1px solid ' + acBorder + ';border-radius:14px;overflow:hidden;'
+        + 'box-shadow:0 0 16px ' + acGlow + ';cursor:pointer;"'
+        + ' onclick="toggleJourneyLog(\'' + log.id + '\')">'
+
+        // Card header
+        + '<div style="padding:14px 16px 12px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
+        + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + log.dayName + '</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:16px;">'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + duration + ' MIN</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + totalSets + ' SETS</div>'
+        + (totalVol > 0 ? '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:' + acColor + ';">' + totalVol.toLocaleString() + ' LBS</div>' : '')
+        + '<div style="margin-left:auto;font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + (isExpanded ? '▲' : '▼') + '</div>'
+        + '</div>'
+        + '</div>';
+
+      // Expanded detail
+      if (isExpanded) {
+        cardHTML += '<div style="border-top:1px solid #1a1a1a;padding:12px 16px;">';
+        log.exercises.forEach(function(ex) {
+          if (ex.sets.length === 0) return;
+          cardHTML += '<div style="margin-bottom:12px;">'
+            + '<div style="font-family:var(--font-title);font-size:12px;color:var(--text-sec);margin-bottom:6px;">' + ex.exName + '</div>';
+
+          ex.sets.forEach(function(set, si) {
+            var setLine = '';
+            if (ex.type === 'running') {
+              setLine = (set.distance || '—') + ' ' + (ex.unit || 'mi') + '  ·  ' + (set.time || '—');
+            } else {
+              var loadLabel = set.loadType === 'bw' ? 'BW' : set.loadType === 'band' ? 'Band' : (set.load || '—') + ' lbs';
+              var effortLabel = set.effortType === 'time' ? (set.effort || '—') + ' sec' : (set.effort || '—') + ' reps';
+              setLine = loadLabel + '  ·  ' + effortLabel;
+            }
+            cardHTML += '<div style="display:flex;gap:10px;margin-bottom:3px;align-items:center;">'
+              + '<div style="font-size:10px;font-family:var(--font-body);color:var(--gold-metal);width:20px;">' + (si + 1) + '</div>'
+              + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.04em;color:var(--text-mute);">' + setLine + '</div>'
+              + '</div>';
+          });
+          cardHTML += '</div>';
+        });
+        cardHTML += '</div>';
+      }
+
+      cardHTML += '</div>';
+      logsHTML += cardHTML;
+    });
+
+    // Show more button
+    if (logs.length > state.journeyLogsShown) {
+      logsHTML += '<div style="padding:0 16px 8px;">'
+        + '<button onclick="showMoreJourneyLogs()" style="width:100%;padding:12px;border-radius:12px;'
+        + 'border:1px solid var(--grey-light);background:transparent;'
+        + 'color:var(--text-mute);font-size:12px;font-family:var(--font-body);'
+        + 'letter-spacing:0.06em;cursor:pointer;">Show More</button>'
+        + '</div>';
+    }
+  }
+
+  // ── History header ──
+  var historyHeader = '<div style="display:flex;align-items:center;gap:8px;margin:4px 16px 14px;">'
+    + '<div style="flex:1;height:1px;background:var(--grey-mid);"></div>'
+    + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.14em;color:var(--text-mute);">WORKOUT HISTORY</div>'
+    + '<div style="flex:1;height:1px;background:var(--grey-mid);"></div>'
+    + '</div>';
+
   return '<div class="lib-header">'
     + '<div class="home-eyebrow">The Hero\'s Path</div>'
     + '<div class="lib-title">Journey</div>'
@@ -2601,6 +2712,8 @@ function renderJourney() {
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
     + sessionHTML
+    + historyHeader
+    + logsHTML
     + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
 }
 
@@ -2696,7 +2809,17 @@ function removeFieldEx(dayIndex, ei) {
 }
   
 // ── Workout Logging ────────────────────────────────────────────────────────
-function detectExType(name) {
+function toggleJourneyLog(id) {
+  state.journeyExpanded[id] = !state.journeyExpanded[id];
+  render();
+}
+
+function showMoreJourneyLogs() {
+  state.journeyLogsShown += 10;
+  render();
+}
+  
+  function detectExType(name) {
   var runWords = ['run','jog','sprint','tempo','cardio','walk','5k','bound','acceleration','shuffle','backpedal','treadmill','mile','distance'];
   var n = (name || '').toLowerCase();
   return runWords.some(function(w) { return n.includes(w); }) ? 'running' : 'standard';

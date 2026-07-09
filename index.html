@@ -2809,7 +2809,13 @@ function removeFieldEx(dayIndex, ei) {
 }
   
 // ── Workout Logging ────────────────────────────────────────────────────────
-function toggleJourneyLog(id) {
+function setSessionEquipTab(ei, tab) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].equipTab = tab;
+  render();
+}
+  
+  function toggleJourneyLog(id) {
   state.journeyExpanded[id] = !state.journeyExpanded[id];
   render();
 }
@@ -2858,19 +2864,26 @@ function startWorkout(dayIndex) {
       });
     });
   } else if (d.tiers) {
-    d.tiers.forEach(function(tier) {
-      tier.exercises.forEach(function(ex) {
+    d.tiers.forEach(function(tier, ti) {
+      tier.exercises.forEach(function(ex, ei) {
+        var tabKey = dayIndex + '-' + ti + '-' + ei;
+        var savedTab = state.equipTabs[tabKey] || 0;
         exercises.push({
           exName: ex.name,
           tier: tier.label,
           type: detectExType(ex.name),
           unit: 'mi',
           static: false,
+          fw: ex.fw,
+          mb: ex.mb,
+          bw: ex.bw,
+          equipTab: savedTab,
           sets: []
         });
       });
     });
   }
+
 
   state.activeSession = {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
@@ -2977,11 +2990,28 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
           + '<div></div>'
           + '</div>';
       } else {
-        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">LOAD</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">EFFORT</div>'
-          + '<div></div>'
+        // Equipment tabs
+        var tabLabels = ['FW', 'MB', 'BW'];
+        var tabEmojis = ['🏋️', '⚙️', '🤸'];
+        var currentTab = ex.equipTab || 0;
+        var equipVals = [ex.fw || '—', ex.mb || '—', ex.bw || '—'];
+        html += '<div style="display:flex;gap:6px;margin-bottom:8px;">';
+        tabLabels.forEach(function(label, ti) {
+          var isActive = ti === currentTab;
+          html += '<button onclick="setSessionEquipTab(' + ei + ',' + ti + ')" '
+            + 'style="flex:1;padding:5px 4px;border-radius:8px;border:none;cursor:pointer;'
+            + 'display:flex;flex-direction:column;align-items:center;gap:2px;'
+            + (isActive
+              ? 'background:var(--grey-card);border:1px solid var(--gold-metal);'
+              : 'background:var(--grey-mid);border:1px solid transparent;')
+            + '">'
+            + '<span style="font-size:13px;">' + tabEmojis[ti] + '</span>'
+            + '<span style="font-size:9px;font-family:var(--font-body);letter-spacing:0.04em;color:' + (isActive ? 'var(--text-pri)' : 'var(--text-mute)') + ';">' + label + '</span>'
+            + '</button>';
+        });
+        html += '</div>';
+        html += '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;margin-bottom:10px;padding:8px 10px;background:var(--grey-mid);border-radius:8px;">'
+          + equipVals[currentTab]
           + '</div>';
       }
 

@@ -2992,20 +2992,20 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       } else {
         // Equipment tabs
         var tabLabels = ['FW', 'MB', 'BW'];
+        var tabFull = ['Free Weight', 'Machine/Band', 'Bodyweight'];        
         var currentTab = ex.equipTab || 0;
         var equipVals = [ex.fw || '—', ex.mb || '—', ex.bw || '—'];
         html += '<div style="display:flex;gap:6px;margin-bottom:8px;">';
         tabLabels.forEach(function(label, ti) {
           var isActive = ti === currentTab;
           html += '<button onclick="setSessionEquipTab(' + ei + ',' + ti + ')" '
-            + 'style="flex:1;padding:5px 4px;border-radius:8px;border:none;cursor:pointer;'
-            + 'display:flex;flex-direction:column;align-items:center;gap:2px;'
+            + 'style="flex:1;padding:5px 4px;border-radius:8px;cursor:pointer;'
+            + 'display:flex;align-items:center;justify-content:center;'
             + (isActive
-              ? 'background:var(--grey-card);border:1px solid var(--gold-metal);'
-              : 'background:var(--grey-mid);border:1px solid transparent;')
-            + '">'
-            + '<span style="font-size:13px;">' + tabEmojis[ti] + '</span>'
-            + '<span style="font-size:9px;font-family:var(--font-body);letter-spacing:0.04em;color:' + (isActive ? 'var(--text-pri)' : 'var(--text-mute)') + ';">' + label + '</span>'
+              ? 'background:var(--grey-card);border:1px solid var(--gold-metal);color:var(--text-pri);'
+              : 'background:var(--grey-mid);border:1px solid transparent;color:var(--text-mute);')
+            + 'font-size:10px;font-family:var(--font-body);letter-spacing:0.04em;">'
+            + label
             + '</button>';
         });
         html += '</div>';

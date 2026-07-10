@@ -1058,12 +1058,12 @@ var DEFAULT_LIBRARY = [
  
 // ── Day Data ───────────────────────────────────────────────────────────────
 var DAYS = [
-  { num:'01', title:'Back & Chest',          sub:'Max / Power + Arms',   color:'lime', focus:'Heavy compounds · back thickness · arm volume',         tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
-  { num:'02', title:'Lower Body',            sub:'Power + Hamstring',    color:'red',  focus:'Explosiveness · injury prevention · eccentric focus',    tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
-  { num:'03', title:'Chest & Shoulders',     sub:'Hypertrophy',          color:'lime', focus:'Width + thickness · volume priority',                   tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
-  { num:'04', title:'Speed & Agility',       sub:'Athletic Movement',    color:'red', focus:'Football-specific · acceleration · change of direction', field:[{icon:'⚡',text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)'},{icon:'🧘',text:'Cool down + light stretch'}], exercises:[] },  { num:'05', title:'Extra / Aux',           sub:'Volume & Size',        color:'lime', focus:'Unilateral volume · weak point mass · conditioning',     tiers:[{label:'Primary',icon:'🔥',exercises:[]},{label:'Secondary',icon:'💪',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
-  { num:'06', title:'Explosiveness',       sub:'Plyos + Tempo Run',    color:'red',  focus:'Fast-twitch development · aerobic base',                 tiers:[{label:'Plyometric Block — do first',icon:'⚡',exercises:[]}], note:'🏃 Finish with 20–30 min tempo run at conversational pace' },
-  { num:'07', title:'Recovery',              sub:'True Rest',            color:'grey', focus:'Rest or active recovery — listen to your body',          recovery:[{icon:'😴',title:'True Rest',desc:'Full off day. Sleep in, eat well, let your body repair.'},{icon:'🚶',title:'Active Recovery',desc:'Easy 20–30 min walk or light jog, foam rolling, yoga.'},{icon:'🧘',title:'Mobility Focus',desc:'30 min yoga: couch stretch, pigeon pose, cat-cow, world\'s greatest stretch.'}] },
+  { num:'01', title:'Back & Chest',          sub:'Max / Power + Arms',   color:'lime', focus:'Heavy compounds · back thickness · arm volume',         tiers:[{label:'Primary',exercises:[]},{label:'Secondary',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'02', title:'Lower Body',            sub:'Power + Hamstring',    color:'red',  focus:'Explosiveness · injury prevention · eccentric focus',    tiers:[{label:'Primary',exercises:[]},{label:'Secondary',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'03', title:'Chest & Shoulders',     sub:'Hypertrophy',          color:'lime', focus:'Width + thickness · volume priority',                   tiers:[{label:'Primary',exercises:[]},{label:'Secondary',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'04', title:'Speed & Agility',       sub:'Athletic Movement',    color:'red', focus:'Football-specific · acceleration · change of direction', field:[{text:'Dynamic warmup — A-skips, high knees, leg swings (5 min)'},{text:'Cool down + light stretch'}], exercises:[] },  { num:'05', title:'Extra / Aux',           sub:'Volume & Size',        color:'lime', focus:'Unilateral volume · weak point mass · conditioning',     tiers:[{label:'Primary',exercises:[]},{label:'Secondary',exercises:[]},{label:'Accessory',icon:'✦',exercises:[]}] },
+  { num:'06', title:'Explosiveness',       sub:'Plyos + Tempo Run',    color:'red',  focus:'Fast-twitch development · aerobic base',                 tiers:[{label:'Plyometric Block — do first',exercises:[]}], note:'Finish with 20–30 min tempo run at conversational pace' },
+  { num:'07', title:'Recovery',              sub:'True Rest',            color:'grey', focus:'Rest or active recovery — listen to your body',          recovery:[{title:'True Rest',desc:'Full off day. Sleep in, eat well, let your body repair.'},{title:'Active Recovery',desc:'Easy 20–30 min walk or light jog, foam rolling, yoga.'},{title:'Mobility Focus',desc:'30 min yoga: couch stretch, pigeon pose, cat-cow, world\'s greatest stretch.'}] },
 ];
  
 // ── State ──────────────────────────────────────────────────────────────────
@@ -1527,7 +1527,7 @@ function renderDay(index) {
  
           if (!isSimple) {
             html += '<div class="equip-tabs">'
-              + ['🏋️ Free Weight','⚙️ Machine/Band','🤸 Bodyweight'].map(function(t,i){
+              + ['Free Weight','Machine/Band','Bodyweight'].map(function(t,i){
                   var parts = t.split(' ');
                   return '<button class="equip-tab'+(i===activeTab?' active':'')+'" onclick="switchTab(\''+key+'\','+i+')">'
                     +'<span class="equip-tab-emoji">'+parts[0]+'</span>'
@@ -1625,9 +1625,9 @@ function renderLibrary() {
       }
  
       exHTML += '<div class="lib-ex-options">'
-        + '<div class="lib-ex-option">🏋️ <span>'+ex.fw+'</span></div>'
-        + '<div class="lib-ex-option">⚙️ <span>'+ex.mb+'</span></div>'
-        + '<div class="lib-ex-option">🤸 <span>'+ex.bw+'</span></div>'
+        + '<div class="lib-ex-option"> <span>'+ex.fw+'</span></div>'
+        + '<div class="lib-ex-option"> <span>'+ex.mb+'</span></div>'
+        + '<div class="lib-ex-option"> <span>'+ex.bw+'</span></div>'
         + '</div>'
         + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
         + '</div>';
@@ -1703,7 +1703,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="addExToDay(' + m.di + ',' + m.ti + ',\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>'
+            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
             + '</button>';
         }).join('');
 
@@ -1739,18 +1739,18 @@ function renderModal() {
  
     + (showCat ? '<label class="form-label">Category</label><select class="form-select" onchange="updateModal(\'cat\',this.value)">'+catOptions+'</select>' : '')
 
-    + '<label class="form-label">📝 Notes <span style="color:var(--text-mute);font-size:10px;font-family:\'Trebuchet MS\',sans-serif;">(optional · 120 chars)</span></label>'
+    + '<label class="form-label">Notes <span style="color:var(--text-mute);font-size:10px;font-family:\'Trebuchet MS\',sans-serif;">(optional · 120 chars)</span></label>'
     + '<textarea class="form-input form-textarea" maxlength="120" placeholder="e.g. Superset with face pulls. Eccentric focus." oninput="updateModal(\'notes\',this.value)">' + escHtml(m.notes||'') + '</textarea>'
     + '<button class="autofill-btn" onclick="doAutoFill()" style="width:100%;padding:11px;border-radius:12px;border:1px solid var(--lime-dark);background:var(--lime-dim);color:var(--lime);font-size:13px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-bottom:12px;">✨ Auto-fill missing options</button>'
     + '<div class="form-section-label">Equipment Options</div>'
  
-    + '<label class="form-label">🏋️ Free Weight</label>'
+    + '<label class="form-label"> Free Weight</label>'
     + '<input class="form-input" type="text" placeholder="e.g. Barbell Good Mornings" value="'+escHtml(m.fw)+'" oninput="updateModal(\'fw\',this.value)"/>'
  
-    + '<label class="form-label">⚙️ Machine / Band</label>'
+    + '<label class="form-label"> Machine / Band</label>'
     + '<input class="form-input" type="text" placeholder="e.g. Cable pull-through" value="'+escHtml(m.mb)+'" oninput="updateModal(\'mb\',this.value)"/>'
  
-    + '<label class="form-label">🤸 Bodyweight</label>'
+    + '<label class="form-label"> Bodyweight</label>'
     + '<input class="form-input" type="text" placeholder="e.g. Single-leg RDL slow tempo" value="'+escHtml(m.bw)+'" oninput="updateModal(\'bw\',this.value)"/>'
  
     + '<div class="form-row">'
@@ -2992,7 +2992,6 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       } else {
         // Equipment tabs
         var tabLabels = ['FW', 'MB', 'BW'];
-        var tabEmojis = ['🏋️', '⚙️', '🤸'];
         var currentTab = ex.equipTab || 0;
         var equipVals = [ex.fw || '—', ex.mb || '—', ex.bw || '—'];
         html += '<div style="display:flex;gap:6px;margin-bottom:8px;">';

@@ -1652,6 +1652,33 @@ function renderModal() {
   var m = state.modal;
   if (!m) return '';
 
+  if (m.mode === 'replaceSession') {
+    var cats = ['upper','lower','power','dynamics','core','recovery'];
+    var activeCat = state.pickerCat || 'upper';
+    var filtered = state.library.filter(function(e) { return e.cat === activeCat; });
+    var tabsHTML = cats.map(function(c) {
+      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+        + '" onclick="setPickerCat(\'' + c + '\')">'
+        + c.charAt(0).toUpperCase() + c.slice(1) + '</button>';
+    }).join('');
+    var listHTML = filtered.length === 0
+      ? '<div class="lib-empty"><div class="lib-empty-icon">📋</div>No exercises in this category.</div>'
+      : filtered.map(function(ex) {
+          return '<button class="picker-ex-btn" onclick="confirmReplaceSessionExercise(' + m.ei + ',\'' + ex.id + '\')">'
+            + '<div class="picker-ex-name">' + ex.name + '</div>'
+            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
+            + '</button>';
+        }).join('');
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">Replace Exercise</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
+      + '</div></div>';
+  }
+  
   if (m.mode === 'addField') {
     var cats = ['upper','lower','power','dynamics','core','recovery'];
     var activeCat = state.pickerCat || 'dynamics';
@@ -2809,7 +2836,59 @@ function removeFieldEx(dayIndex, ei) {
 }
   
 // ── Workout Logging ────────────────────────────────────────────────────────
-function setSessionEquipTab(ei, tab) {
+function toggleSessionMenu(ei) {
+  if (!state.activeSession) return;
+  var ex = state.activeSession.exercises[ei];
+  ex.menuOpen = !ex.menuOpen;
+  render();
+}
+
+function bypassExercise(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].bypassed = true;
+  state.activeSession.exercises[ei].menuOpen = false;
+  render();
+}
+
+function undoBypass(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].bypassed = false;
+  render();
+}
+
+function removeSessionExercise(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises.splice(ei, 1);
+  render();
+}
+
+function replaceSessionExercise(ei) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].menuOpen = false;
+  state.pickerCat = 'upper';
+  openModal({ mode: 'replaceSession', ei: ei });
+}
+
+function confirmReplaceSessionExercise(ei, exId) {
+  var ex = state.library.find(function(e) { return e.id === exId; });
+  if (!ex || !state.activeSession) return;
+  var old = state.activeSession.exercises[ei];
+  state.activeSession.exercises[ei] = {
+    exName: ex.name,
+    tier: old.tier,
+    type: detectExType(ex.name),
+    unit: old.unit || 'mi',
+    fw: ex.fw,
+    mb: ex.mb,
+    bw: ex.bw,
+    equipTab: 0,
+    sets: [],
+    static: false
+  };
+  closeModal();
+}
+  
+  function setSessionEquipTab(ei, tab) {
   if (!state.activeSession) return;
   state.activeSession.exercises[ei].equipTab = tab;
   render();
@@ -3014,71 +3093,126 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
           + '</div>';
       }
 
-      // Set rows
-      var inputBase = 'border-radius:8px;padding:7px 4px;font-size:13px;font-family:var(--font-body);text-align:center;width:100%;';
+      // ── Three dot menu ──
+      var menuOpen = ex.menuOpen === true;
+      html += '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">'
+        + '<button onclick="toggleSessionMenu(' + ei + ')" '
+        + 'style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:2px 6px;letter-spacing:2px;">•••</button>'
+        + '</div>';
+
+      if (menuOpen) {
+        html += '<div style="display:flex;gap:6px;margin-bottom:10px;">'
+          + '<button onclick="replaceSessionExercise(' + ei + ')" '
+          + 'style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--grey-light);background:transparent;'
+          + 'color:var(--text-sec);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">Replace</button>'
+          + '<button onclick="bypassExercise(' + ei + ')" '
+          + 'style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(245,158,11,0.4);background:rgba(245,158,11,0.06);'
+          + 'color:var(--gold);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">Bypass</button>'
+          + '<button onclick="removeSessionExercise(' + ei + ')" '
+          + 'style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.06);'
+          + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">Remove</button>'
+          + '</div>';
+      }
+
+      // ── Bypassed state ──
+      if (ex.bypassed) {
+        html += '<div style="text-align:center;padding:16px;font-size:11px;font-family:var(--font-body);'
+          + 'letter-spacing:0.08em;color:var(--text-mute);border:1px dashed var(--grey-muted);border-radius:10px;margin-bottom:8px;">BYPASSED</div>'
+          + '<button onclick="undoBypass(' + ei + ')" '
+          + 'style="width:100%;padding:8px;border-radius:10px;margin-bottom:8px;'
+          + 'border:1px solid var(--grey-light);background:transparent;'
+          + 'color:var(--text-mute);font-size:11px;font-family:var(--font-body);'
+          + 'letter-spacing:0.06em;cursor:pointer;">Undo Bypass</button>';
+        html += '</div>';
+        return;
+      }
+
+      // ── Set rows ──
+      var inputBase = 'border-radius:8px;padding:8px;font-size:14px;font-family:var(--font-body);text-align:center;width:100%;';
       var inputActive = inputBase + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);';
       var inputLocked = inputBase + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
-      var selectStyle = 'border-radius:8px;padding:7px 2px;font-size:11px;font-family:var(--font-body);text-align:center;width:100%;-webkit-appearance:none;cursor:pointer;';
-      var selectActive = selectStyle + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);';
+      var selectStyle = 'border-radius:8px;padding:6px 4px;font-size:11px;font-family:var(--font-body);'
+        + 'letter-spacing:0.04em;text-align:center;width:100%;-webkit-appearance:none;cursor:pointer;';
+      var selectActive = selectStyle + 'background:var(--grey-dark);border:1px solid var(--grey-light);color:var(--gold-metal);';
       var selectLocked = selectStyle + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
 
-      ex.sets.forEach(function(set, si) {
-        var setNum = '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--gold-metal)') + ';text-align:center;">' + (si + 1) + '</div>';
-        var removeBtn = isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>';
+      if (ex.type === 'running') {
+        // Running column headers
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
+          + '<div></div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + (ex.unit || 'mi') + ')</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
+          + '<div></div>'
+          + '</div>';
 
-        if (ex.type === 'running') {
-          html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-            + setNum
+        ex.sets.forEach(function(set, si) {
+          html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'
+            + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--gold-metal)') + ';text-align:center;">' + (si + 1) + '</div>'
             + '<input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="' + (set.distance || '') + '" '
             + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'distance\',this.value)" ')
             + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
             + '<input type="text" inputmode="numeric" placeholder="00:00" value="' + (set.time || '') + '" '
             + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'time\',this.value)" ')
             + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
-            + removeBtn
+            + (isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
             + '</div>';
-        } else {
-          var loadTypeVal = set.loadType || 'weight';
-          var effortTypeVal = set.effortType || 'reps';
-          html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;align-items:center;">'
-            + setNum
+        });
 
-            // LOAD column — dropdown + number stacked
-            + '<div style="display:flex;flex-direction:column;gap:3px;">'
-            + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'loadType\',this.value)" ')
-            + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
-            + '<option value="weight"' + (loadTypeVal === 'weight' ? ' selected' : '') + '>Weight</option>'
-            + '<option value="band"'  + (loadTypeVal === 'band'   ? ' selected' : '') + '>Band</option>'
-            + '<option value="bw"'    + (loadTypeVal === 'bw'     ? ' selected' : '') + '>BW</option>'
-            + '</select>'
-            + (loadTypeVal === 'bw'
-              ? '<div style="' + (isComplete ? inputLocked : inputBase + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-mute);') + '">—</div>'
+      } else {
+        // Standard — Load dropdown header row + Effort dropdown header row
+        // Then per-set: set number | load value | effort value | remove
+        // Dropdowns sit as column headers above the value inputs
+        var loadTypeVal = ex.sets.length > 0 ? (ex.sets[ex.sets.length-1].loadType || 'weight') : 'weight';
+        var effortTypeVal = ex.sets.length > 0 ? (ex.sets[ex.sets.length-1].effortType || 'reps') : 'reps';
+
+        // Header row with dropdowns
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'
+          + '<div></div>'
+          + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateAllSetsField(' + ei + ',\'loadType\',this.value)" ')
+          + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
+          + '<option value="weight"' + (loadTypeVal === 'weight' ? ' selected' : '') + '>Weight</option>'
+          + '<option value="band"'   + (loadTypeVal === 'band'   ? ' selected' : '') + '>Band</option>'
+          + '<option value="bw"'     + (loadTypeVal === 'bw'     ? ' selected' : '') + '>BW</option>'
+          + '</select>'
+          + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateAllSetsField(' + ei + ',\'effortType\',this.value)" ')
+          + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
+          + '<option value="reps"' + (effortTypeVal === 'reps' ? ' selected' : '') + '>Reps</option>'
+          + '<option value="time"' + (effortTypeVal === 'time' ? ' selected' : '') + '>Time</option>'
+          + '</select>'
+          + '<div></div>'
+          + '</div>';
+
+        // Value column labels
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">'
+          + (loadTypeVal === 'bw' ? 'BW' : loadTypeVal === 'band' ? 'BAND' : 'LBS') + '</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">'
+          + (effortTypeVal === 'time' ? 'TIME' : 'REPS') + '</div>'
+          + '<div></div>'
+          + '</div>';
+
+        ex.sets.forEach(function(set, si) {
+          var thisLoad = set.loadType || loadTypeVal;
+          html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'
+            + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--gold-metal)') + ';text-align:center;">' + (si + 1) + '</div>'
+            + (thisLoad === 'bw'
+              ? '<div style="' + (isComplete ? inputLocked : inputActive) + 'display:flex;align-items:center;justify-content:center;color:var(--text-mute);">BW</div>'
               : '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.load || '') + '" '
                 + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'load\',this.value)" ')
                 + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>')
-            + '</div>'
-
-            // EFFORT column — dropdown + input stacked
-            + '<div style="display:flex;flex-direction:column;gap:3px;">'
-            + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effortType\',this.value)" ')
-            + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
-            + '<option value="reps"' + (effortTypeVal === 'reps' ? ' selected' : '') + '>Reps</option>'
-            + '<option value="time"' + (effortTypeVal === 'time' ? ' selected' : '') + '>Time</option>'
-            + '</select>'
             + '<input type="' + (effortTypeVal === 'time' ? 'text' : 'number') + '" '
             + (effortTypeVal === 'time' ? 'placeholder="00:00" ' : 'inputmode="numeric" min="1" placeholder="--" ')
             + 'value="' + (set.effort || '') + '" '
             + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effort\',this.value)" ')
             + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
-            + '</div>'
-
-            + removeBtn
+            + (isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
             + '</div>';
-        }
-      });
-      
+        });
+      }
+
       // Add set + Complete buttons
-      if (!isComplete) {
+      if (!isComplete && !ex.bypassed) {
         html += '<button onclick="addSet(' + ei + ')" '
           + 'style="width:100%;padding:8px;border-radius:10px;margin-top:6px;'
           + 'border:1.5px dashed var(--gold-metal);background:transparent;'
@@ -3089,18 +3223,18 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
           + 'border:1px solid var(--gold-metal);background:rgba(200,146,42,0.08);'
           + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
           + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
-      } else {
+      } else if (isComplete) {
         html += '<button onclick="unlockExercise(' + ei + ')" '
           + 'style="width:100%;padding:9px;border-radius:10px;margin-top:6px;'
           + 'border:1px solid var(--grey-light);background:transparent;'
           + 'color:var(--text-sec);font-size:12px;font-family:var(--font-body);'
-          + 'letter-spacing:0.08em;cursor:pointer;">✏️ Edit</button>';
+          + 'letter-spacing:0.08em;cursor:pointer;">Edit</button>';
       }
 
       html += '</div>';
     });
   });
-
+  
   // Static cooldown card for field days
   if (state.activeSession.exercises.length > 0 && state.activeSession.exercises[0].tier === 'Speed & Agility') {
     html += '<div style="margin:0 16px 16px;background:#0d0d0d;border:1px solid var(--grey-mid);border-radius:14px;padding:14px;">'
@@ -3171,6 +3305,14 @@ function addSet(ei) {
 function updateSet(ei, si, field, value) {
   if (!state.activeSession) return;
   state.activeSession.exercises[ei].sets[si][field] = value;
+}
+
+function updateAllSetsField(ei, field, value) {
+  if (!state.activeSession) return;
+  state.activeSession.exercises[ei].sets.forEach(function(set) {
+    set[field] = value;
+  });
+  render();
 }
 
 function removeSet(ei, si) {

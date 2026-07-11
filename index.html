@@ -1134,9 +1134,24 @@ function saveLogs(logs) {
     var days = localStorage.getItem(KEY_DAYS);
     if (days) {
       state.days = JSON.parse(days);
-      // Migration — fix Day 6 name if still old value
+      // Migration — fix Day 6 name
       if (state.days[5] && state.days[5].title === 'Lower Explosiveness') {
         state.days[5].title = 'Explosiveness';
+        saveDays();
+      }
+      // Migration — remove emojis from recovery cards
+      if (state.days[6] && state.days[6].recovery) {
+        state.days[6].recovery.forEach(function(r) { delete r.icon; });
+        saveDays();
+      }
+      // Migration — remove emojis from Day 6 note
+      if (state.days[5] && state.days[5].note && state.days[5].note.indexOf('🏃') !== -1) {
+        state.days[5].note = 'Finish with 20–30 min tempo run at conversational pace';
+        saveDays();
+      }
+      // Migration — remove emojis from Day 4 field steps
+      if (state.days[3] && state.days[3].field) {
+        state.days[3].field.forEach(function(f) { delete f.icon; });
         saveDays();
       }
     } else {
@@ -1456,7 +1471,7 @@ function renderDay(index) {
 
     // Static warmup
     html += '<div class="tier-section">'
-      + '<div class="field-step"><div class="field-step-icon">' + d.field[0].icon + '</div><div class="field-step-text">' + d.field[0].text + '</div></div>';
+      + '<div class="field-step">' + (d.field[0] && d.field[0].icon ? '<div class="field-step-icon">'+d.field[0].icon+'</div>' : '') + '<div class="field-step-text">' + d.field[0].text + '</div></div>';
 
     // Customizable exercises (up to 3)
     var fieldExes = d.exercises || [];
@@ -1485,14 +1500,14 @@ function renderDay(index) {
     }
 
     // Static cooldown
-    var lastField = d.field[d.field.length - 1];
-    html += '<div class="field-step" style="margin-top:8px;"><div class="field-step-icon">' + lastField.icon + '</div><div class="field-step-text">' + lastField.text + '</div></div>'
+var lastField = d.field[d.field.length - 1];
+    html += '<div class="field-step" style="margin-top:8px;">' + (lastField.icon ? '<div class="field-step-icon">'+lastField.icon+'</div>' : '') + '<div class="field-step-text">' + lastField.text + '</div></div>'
       + '</div>';
   }
  
   if (d.recovery) {
     d.recovery.forEach(function(r){
-      html += '<div class="recovery-card"><div class="recovery-icon">'+r.icon+'</div><div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
+      html += '<div class="recovery-card">' + (r.icon ? '<div class="recovery-icon">'+r.icon+'</div>' : '') + '<div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
     });
   }
  
@@ -3041,17 +3056,22 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
         return acc + ((parseFloat(set.weight) || 0) * (parseInt(set.reps) || 0));
       }, 0);
 
-      var borderColor = isComplete ? acColor : 'var(--grey-light)';
+      var isBypassed = ex.bypassed === true;
+      var borderColor = isComplete ? acColor : isBypassed ? '#a0a0a0' : 'var(--grey-light)';
       var glowStyle = isComplete ? acGlowComplete
+        : isBypassed ? 'box-shadow:0 0 10px 2px rgba(200,200,200,0.15),0 0 24px 4px rgba(200,200,200,0.06);'
         : 'box-shadow:0 0 10px 2px rgba(255,255,255,0.04),0 0 24px 4px rgba(255,255,255,0.02);';
 
       html += '<div style="margin:0 16px 16px;background:#0d0d0d;border:1px solid ' + borderColor + ';'
         + 'border-radius:14px;padding:14px;' + glowStyle + '">'
 
-        // Exercise header
+        // Exercise header with three dots top right
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
         + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + ex.exName + '</div>'
+        + '<div style="display:flex;align-items:center;gap:8px;">'
         + (isComplete ? '<div style="font-size:12px;color:' + acColor + ';">✓</div>' : '')
+        + (!isComplete ? '<button onclick="toggleSessionMenu(' + ei + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;letter-spacing:2px;line-height:1;">•••</button>' : '')
+        + '</div>'
         + '</div>'
 
         // Volume
@@ -3095,10 +3115,6 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
 
       // ── Three dot menu ──
       var menuOpen = ex.menuOpen === true;
-      html += '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">'
-        + '<button onclick="toggleSessionMenu(' + ei + ')" '
-        + 'style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:2px 6px;letter-spacing:2px;">•••</button>'
-        + '</div>';
 
       if (menuOpen) {
         html += '<div style="display:flex;gap:6px;margin-bottom:10px;">'

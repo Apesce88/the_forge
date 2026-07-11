@@ -1767,7 +1767,7 @@ function renderModal() {
   var saveFn = m.mode === 'editDay' ? 'saveEditDayExercise()' : 'saveLibExercise()';
   var showCat = m.mode !== 'editDay';
  
-  var catOptions = ['upper','lower','power','core','recovery'].map(function(c){
+  var catOptions = ['upper','lower','power','dynamic','core','recovery'].map(function(c){
     return '<option value="'+c+'"'+(m.cat===c?' selected':'')+'>'+c.charAt(0).toUpperCase()+c.slice(1)+'</option>';
   }).join('');
  

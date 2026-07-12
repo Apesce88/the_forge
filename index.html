@@ -1619,7 +1619,7 @@ function renderLibrary() {
     { id:'upper',    label:'Upper',    color:'lime' },
     { id:'lower',    label:'Lower',    color:'red' },
     { id:'power',    label:'Power',    color:'lime' },
-    { id:'dynamics', label:'Dynamic', color:'red' },
+    { id:'dynamic', label:'Dynamic', color:'red' },
     { id:'core',     label:'Core',     color:'gold' },
     { id:'recovery', label:'Recovery', color:'grey' },
   ];
@@ -1679,7 +1679,7 @@ function renderModal() {
   if (!m) return '';
 
   if (m.mode === 'replaceSession') {
-    var cats = ['upper','lower','power','dynamics','core','recovery'];
+    var cats = ['upper','lower','power','dynamic','core','recovery'];
     var activeCat = state.pickerCat || 'upper';
     var filtered = state.library.filter(function(e) { return e.cat === activeCat; });
     var tabsHTML = cats.map(function(c) {
@@ -1706,8 +1706,8 @@ function renderModal() {
   }
   
   if (m.mode === 'addField') {
-    var cats = ['upper','lower','power','dynamics','core','recovery'];
-    var activeCat = state.pickerCat || 'dynamics';
+    var cats = ['upper','lower','power','dynamic','core','recovery'];
+    var activeCat = state.pickerCat || 'dynamic';
     var filtered = state.library.filter(function(e) {
       return e.cat === activeCat;
     });
@@ -2835,7 +2835,7 @@ function saveGeminiKey(val) {
 }  
 
 function openFieldExModal(dayIndex) {
-  state.pickerCat = 'dynamics';
+  state.pickerCat = 'dynamic';
   openModal({ mode: 'addField', di: dayIndex });
 }
 

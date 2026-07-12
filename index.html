@@ -1371,6 +1371,16 @@ function saveLibExercise() {
 function updateModal(field, value) {
   if (!state.modal) return;
   state.modal[field] = value;
+  // Category change swaps field labels — re-render modal only
+  if (field === 'cat') {
+    var existing = document.getElementById('modal-layer');
+    if (existing) existing.remove();
+    var div = document.createElement('div');
+    div.id = 'modal-layer';
+    div.innerHTML = renderModal();
+    document.getElementById('app').appendChild(div);
+    return;
+  }
   // Only update the button — don't re-render the whole screen
   if (field === 'name') {
     var saveBtn = document.querySelector('.btn-save');
@@ -1639,10 +1649,11 @@ function renderLibrary() {
           + '</div>';
       }
  
+      var isDyn = ex.cat === 'dynamic';
       exHTML += '<div class="lib-ex-options">'
-        + '<div class="lib-ex-option"> <span>'+ex.fw+'</span></div>'
-        + '<div class="lib-ex-option"> <span>'+ex.mb+'</span></div>'
-        + '<div class="lib-ex-option"> <span>'+ex.bw+'</span></div>'
+        + '<div class="lib-ex-option">' + (isDyn ? 'DIST: ' : '') + '<span>'+ex.fw+'</span></div>'
+        + '<div class="lib-ex-option">' + (isDyn ? 'VOL: ' : '') + '<span>'+ex.mb+'</span></div>'
+        + '<div class="lib-ex-option">' + (isDyn ? 'REST: ' : '') + '<span>'+ex.bw+'</span></div>'
         + '</div>'
         + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
         + '</div>';
@@ -1784,16 +1795,16 @@ function renderModal() {
     + '<label class="form-label">Notes <span style="color:var(--text-mute);font-size:10px;font-family:\'Trebuchet MS\',sans-serif;">(optional · 120 chars)</span></label>'
     + '<textarea class="form-input form-textarea" maxlength="120" placeholder="e.g. Superset with face pulls. Eccentric focus." oninput="updateModal(\'notes\',this.value)">' + escHtml(m.notes||'') + '</textarea>'
     + '<button class="autofill-btn" onclick="doAutoFill()" style="width:100%;padding:11px;border-radius:12px;border:1px solid var(--lime-dark);background:var(--lime-dim);color:var(--lime);font-size:13px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;margin-bottom:12px;">✨ Auto-fill missing options</button>'
-    + '<div class="form-section-label">Equipment Options</div>'
- 
-    + '<label class="form-label"> Free Weight</label>'
-    + '<input class="form-input" type="text" placeholder="e.g. Barbell Good Mornings" value="'+escHtml(m.fw)+'" oninput="updateModal(\'fw\',this.value)"/>'
- 
-    + '<label class="form-label"> Machine / Band</label>'
-    + '<input class="form-input" type="text" placeholder="e.g. Cable pull-through" value="'+escHtml(m.mb)+'" oninput="updateModal(\'mb\',this.value)"/>'
- 
-    + '<label class="form-label"> Bodyweight</label>'
-    + '<input class="form-input" type="text" placeholder="e.g. Single-leg RDL slow tempo" value="'+escHtml(m.bw)+'" oninput="updateModal(\'bw\',this.value)"/>'
+    + '<div class="form-section-label">' + (m.cat === 'dynamic' ? 'Movement Details' : 'Equipment Options') + '</div>'
+
+    + '<label class="form-label">' + (m.cat === 'dynamic' ? 'Distance' : 'Free Weight') + '</label>'
+    + '<input class="form-input" type="text" placeholder="' + (m.cat === 'dynamic' ? 'e.g. 10 yards per rep' : 'e.g. Barbell Good Mornings') + '" value="'+escHtml(m.fw)+'" oninput="updateModal(\'fw\',this.value)"/>'
+
+    + '<label class="form-label">' + (m.cat === 'dynamic' ? 'Total Volume' : 'Machine / Band') + '</label>'
+    + '<input class="form-input" type="text" placeholder="' + (m.cat === 'dynamic' ? 'e.g. 300 yards total' : 'e.g. Cable pull-through') + '" value="'+escHtml(m.mb)+'" oninput="updateModal(\'mb\',this.value)"/>'
+
+    + '<label class="form-label">' + (m.cat === 'dynamic' ? 'Rest' : 'Bodyweight') + '</label>'
+    + '<input class="form-input" type="text" placeholder="' + (m.cat === 'dynamic' ? 'e.g. Full recovery between reps' : 'e.g. Single-leg RDL slow tempo') + '" value="'+escHtml(m.bw)+'" oninput="updateModal(\'bw\',this.value)"/>'
  
     + '<div class="form-row">'
     + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'

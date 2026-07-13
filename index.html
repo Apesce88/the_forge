@@ -257,13 +257,18 @@
     .equip-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
  
     .equip-tab {
-      flex: 1; padding: 5px 4px; border-radius: 8px; border: none; cursor: pointer;
-      font-size: 10px; font-weight: 600; font-family: var(--font-body); letter-spacing: 0.04em;
+      flex: 1; padding: 8px 4px; border-radius: 8px; border: 1px solid transparent; cursor: pointer;
+      font-size: 10px; font-weight: 600; font-family: var(--font-body); letter-spacing: 0.05em;
       background: var(--grey-mid); color: var(--text-mute); transition: all 0.15s;
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      display: flex; align-items: center; justify-content: center;
+      text-transform: uppercase;
     }
  
-    .equip-tab.active { background: var(--grey-card); color: var(--text-pri); }
+    .equip-tab.active {
+      background: var(--grey-card); color: var(--text-pri);
+      border-color: var(--grey-muted);
+      box-shadow: 0 0 8px rgba(120,120,120,0.25);
+    }
     .equip-tab-emoji { font-size: 13px; }
     .equip-tab-label { font-size: 9px; letter-spacing: 0.04em; }
     .equip-content { font-size: 13px; color: var(--text-sec); line-height: 1.5; min-height: 20px; }
@@ -1079,7 +1084,8 @@ var state = {
   activeSession: null,
   profileSheet: false,
   journeyLogsShown: 10,
-  journeyExpanded: {}
+  journeyExpanded: {},
+  journeySwiped: null
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
@@ -1550,13 +1556,10 @@ var lastField = d.field[d.field.length - 1];
               + '</div>';
           }
  
-          if (!isSimple) {
+if (!isSimple) {
             html += '<div class="equip-tabs">'
               + ['Free Weight','Machine/Band','Bodyweight'].map(function(t,i){
-                  var parts = t.split(' ');
-                  return '<button class="equip-tab'+(i===activeTab?' active':'')+'" onclick="switchTab(\''+key+'\','+i+')">'
-                    +'<span class="equip-tab-emoji">'+parts[0]+'</span>'
-                    +'<span class="equip-tab-label">'+parts.slice(1).join(' ')+'</span></button>';
+                  return '<button class="equip-tab'+(i===activeTab?' active':'')+'" onclick="switchTab(\''+key+'\','+i+')">'+t+'</button>';
                 }).join('')
               + '</div>'
               + '<div class="equip-content">'+vals[activeTab]+'</div>';
@@ -2689,11 +2692,22 @@ function renderJourney() {
 
       var isExpanded = state.journeyExpanded[log.id] === true;
 
+      var isSwiped = state.journeySwiped === log.id;
+
       // Collapsed card
       var cardHTML = '<div style="margin:0 16px 12px;background:#0d0d0d;'
-        + 'border:1px solid ' + acBorder + ';border-radius:14px;overflow:hidden;'
+        + 'border:1px solid ' + (isSwiped ? 'var(--red)' : acBorder) + ';border-radius:14px;overflow:hidden;'
         + 'box-shadow:0 0 16px ' + acGlow + ';cursor:pointer;"'
+        + ' ontouchstart="jSwipeStart(event)" ontouchend="jSwipeEnd(event,\'' + log.id + '\')"'
         + ' onclick="toggleJourneyLog(\'' + log.id + '\')">'
+        + (isSwiped
+          ? '<div style="padding:10px 16px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;">'
+            + '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);">DELETE THIS LOG?</span>'
+            + '<button onclick="event.stopPropagation();deleteJourneyLog(\'' + log.id + '\')" '
+            + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--red);background:rgba(239,68,68,0.1);'
+            + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">DELETE</button>'
+            + '</div>'
+          : '')
 
         // Card header
         + '<div style="padding:14px 16px 12px;">'
@@ -2917,6 +2931,34 @@ function confirmReplaceSessionExercise(ei, exId) {
   function setSessionEquipTab(ei, tab) {
   if (!state.activeSession) return;
   state.activeSession.exercises[ei].equipTab = tab;
+  render();
+}
+
+var jSwipeX = null;
+
+function jSwipeStart(e) {
+  jSwipeX = e.touches[0].clientX;
+}
+
+function jSwipeEnd(e, logId) {
+  if (jSwipeX === null) return;
+  var deltaX = e.changedTouches[0].clientX - jSwipeX;
+  jSwipeX = null;
+  if (deltaX > 60) {
+    state.journeySwiped = logId;
+    render();
+  } else if (state.journeySwiped) {
+    state.journeySwiped = null;
+    render();
+  }
+}
+
+function deleteJourneyLog(logId) {
+  if (!confirm('Delete this workout log? This cannot be undone.')) return;
+  var logs = loadLogs();
+  logs = logs.filter(function(l) { return l.id !== logId; });
+  saveLogs(logs);
+  state.journeySwiped = null;
   render();
 }
   

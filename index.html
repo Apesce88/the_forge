@@ -2647,34 +2647,34 @@ render();
       
 // ── Tracker Screen ──
 function renderJourney() {
-  // // ── Stats ──
-  // var stats = computeJourneyStats();
-  // var fmtVol = function(v) { return v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v); };
+  // ── Stats ──
+  var stats = computeJourneyStats();
+  var fmtVol = function(v) { return v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v); };
 
-  // var statsHTML = '';
+  var statsHTML = '';
 
-  // // Progressive overload spotlight — only when earned
-  // stats.overloads.forEach(function(o) {
-  //   statsHTML += '<div style="margin:0 16px 12px;border-radius:14px;padding:14px 16px;'
-  //     + 'background:linear-gradient(135deg, rgba(200,146,42,0.15), rgba(245,158,11,0.05));'
-  //     + 'border:1.5px solid var(--gold-metal);'
-  //     + 'box-shadow:0 0 16px rgba(200,146,42,0.35), 0 0 32px rgba(200,146,42,0.12);">'
-  //     + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:4px;">⬆ PROGRESSIVE OVERLOAD</div>'
-  //     + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + o.name + '</div>'
-  //     + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--gold-light);margin-top:2px;">+' + o.gain + '% volume vs last week</div>'
-  //     + '</div>';
-  // });
+  // Progressive overload spotlight — only when earned
+  stats.overloads.forEach(function(o) {
+    statsHTML += '<div style="margin:0 16px 12px;border-radius:14px;padding:14px 16px;'
+      + 'background:linear-gradient(135deg, rgba(200,146,42,0.15), rgba(245,158,11,0.05));'
+      + 'border:1.5px solid var(--gold-metal);'
+      + 'box-shadow:0 0 16px rgba(200,146,42,0.35), 0 0 32px rgba(200,146,42,0.12);">'
+      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:4px;">⬆ PROGRESSIVE OVERLOAD</div>'
+      + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + o.name + '</div>'
+      + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--gold-light);margin-top:2px;">+' + o.gain + '% volume vs last week</div>'
+      + '</div>';
+  });
 
-  // // Stat card grid
-  // statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 8px;">'
-  //   + '<div class="stat-card"><div class="stat-num">' + stats.weekCount + '</div><div class="stat-label">Workouts This Week</div></div>'
-  //   + '<div class="stat-card"><div class="stat-num">' + stats.monthCount + '</div><div class="stat-label">Workouts This Month</div></div>'
-  //   + '<div class="stat-card"><div class="stat-num" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label">Upper Volume (lbs · wk)</div></div>'
-  //   + '<div class="stat-card"><div class="stat-num" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label">Lower Volume (lbs · wk)</div></div>'
-  //   + '</div>'
-  //   + '<div style="padding:0 16px 16px;">'
-  //   + '<div class="stat-card"><div class="stat-num">' + stats.runDist.toFixed(1) + ' <span style="font-size:12px;color:var(--text-sec);">mi</span></div><div class="stat-label">Run Distance This Week</div></div>'
-  //   + '</div>';
+  // Stat card grid
+  statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 8px;">'
+    + '<div class="stat-card"><div class="stat-num">' + stats.weekCount + '</div><div class="stat-label">Workouts This Week</div></div>'
+    + '<div class="stat-card"><div class="stat-num">' + stats.monthCount + '</div><div class="stat-label">Workouts This Month</div></div>'
+    + '<div class="stat-card"><div class="stat-num" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label">Upper Volume (lbs · wk)</div></div>'
+    + '<div class="stat-card"><div class="stat-num" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label">Lower Volume (lbs · wk)</div></div>'
+    + '</div>'
+    + '<div style="padding:0 16px 16px;">'
+    + '<div class="stat-card"><div class="stat-num">' + stats.runDist.toFixed(1) + ' <span style="font-size:12px;color:var(--text-sec);">mi</span></div><div class="stat-label">Run Distance This Week</div></div>'
+    + '</div>';
 
   // ── Active session card ──
   var sessionHTML = '';
@@ -2827,7 +2827,7 @@ function renderJourney() {
     + '<div class="lib-sub">Workout log · Volume · Progress</div>'
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
-    // + statsHTML
+    + statsHTML
     + sessionHTML
     + historyHeader
     + logsHTML
@@ -2985,93 +2985,93 @@ function confirmReplaceSessionExercise(ei, exId) {
 }
 
 // // ── Journey Stats ──────────────────────────────────────────────────────────
-// function getWeekStart(offset) {
-//   // Monday 00:00 of current week; offset -1 = last week
-//   var now = new Date();
-//   var day = now.getDay(); // 0=Sun
-//   var diff = (day === 0 ? 6 : day - 1); // days since Monday
-//   var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
-//   if (offset) monday.setDate(monday.getDate() + offset * 7);
-//   return monday.getTime();
-// }
+function getWeekStart(offset) {
+  // Monday 00:00 of current week; offset -1 = last week
+  var now = new Date();
+  var day = now.getDay(); // 0=Sun
+  var diff = (day === 0 ? 6 : day - 1); // days since Monday
+  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
+  if (offset) monday.setDate(monday.getDate() + offset * 7);
+  return monday.getTime();
+}
 
-// function logVolume(log) {
-//   return log.exercises.reduce(function(acc, ex) {
-//     return acc + ex.sets.reduce(function(a, set) {
-//       if (set.loadType === 'bw' || !set.load) return a;
-//       return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
-//     }, 0);
-//   }, 0);
-// }
+function logVolume(log) {
+  return log.exercises.reduce(function(acc, ex) {
+    return acc + ex.sets.reduce(function(a, set) {
+      if (set.loadType === 'bw' || !set.load) return a;
+      return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+    }, 0);
+  }, 0);
+}
 
-// function logDistance(log) {
-//   // Yards converted to miles (1760 yd = 1 mi), summed with mile distances
-//   return log.exercises.reduce(function(acc, ex) {
-//     if (ex.type !== 'running') return acc;
-//     return acc + ex.sets.reduce(function(a, set) {
-//       var d = parseFloat(set.distance) || 0;
-//       return a + (ex.unit === 'yd' ? d / 1760 : d);
-//     }, 0);
-//   }, 0);
-// }
+function logDistance(log) {
+  // Yards converted to miles (1760 yd = 1 mi), summed with mile distances
+  return log.exercises.reduce(function(acc, ex) {
+    if (ex.type !== 'running') return acc;
+    return acc + ex.sets.reduce(function(a, set) {
+      var d = parseFloat(set.distance) || 0;
+      return a + (ex.unit === 'yd' ? d / 1760 : d);
+    }, 0);
+  }, 0);
+}
 
-// function computeJourneyStats() {
-//   var logs = loadLogs();
-//   var weekStart = getWeekStart(0);
-//   var lastWeekStart = getWeekStart(-1);
-//   var now = new Date();
-//   var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+function computeJourneyStats() {
+  var logs = loadLogs();
+  var weekStart = getWeekStart(0);
+  var lastWeekStart = getWeekStart(-1);
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
-//   var stats = {
-//     weekCount: 0, monthCount: 0,
-//     upperVol: 0, lowerVol: 0, runDist: 0,
-//     overloads: []
-//   };
+  var stats = {
+    weekCount: 0, monthCount: 0,
+    upperVol: 0, lowerVol: 0, runDist: 0,
+    overloads: []
+  };
 
-//   // Main lift volume maps: exName → volume
-//   var thisWeekMains = {};
-//   var lastWeekMains = {};
+  // Main lift volume maps: exName → volume
+  var thisWeekMains = {};
+  var lastWeekMains = {};
 
-//   logs.forEach(function(log) {
-//     var t = log.completedAt || log.startedAt;
+  logs.forEach(function(log) {
+    var t = log.completedAt || log.startedAt;
 
-//     if (t >= weekStart) {
-//       stats.weekCount++;
-//       var vol = logVolume(log);
-//       if (log.dayColor === 'red') stats.lowerVol += vol;
-//       else if (log.dayColor === 'lime') stats.upperVol += vol;
-//       stats.runDist += logDistance(log);
-//     }
-//     if (t >= monthStart) stats.monthCount++;
+    if (t >= weekStart) {
+      stats.weekCount++;
+      var vol = logVolume(log);
+      if (log.dayColor === 'red') stats.lowerVol += vol;
+      else if (log.dayColor === 'lime') stats.upperVol += vol;
+      stats.runDist += logDistance(log);
+    }
+    if (t >= monthStart) stats.monthCount++;
 
-//     // Main lift volume per exercise, this week vs last week
-//     var bucket = null;
-//     if (t >= weekStart) bucket = thisWeekMains;
-//     else if (t >= lastWeekStart && t < weekStart) bucket = lastWeekMains;
-//     if (bucket) {
-//       log.exercises.forEach(function(ex) {
-//         if (!ex.mainLift) return;
-//         var exVol = ex.sets.reduce(function(a, set) {
-//           if (set.loadType === 'bw' || !set.load) return a;
-//           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
-//         }, 0);
-//         bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
-//       });
-//     }
-//   });
+    // Main lift volume per exercise, this week vs last week
+    var bucket = null;
+    if (t >= weekStart) bucket = thisWeekMains;
+    else if (t >= lastWeekStart && t < weekStart) bucket = lastWeekMains;
+    if (bucket) {
+      log.exercises.forEach(function(ex) {
+        if (!ex.mainLift) return;
+        var exVol = ex.sets.reduce(function(a, set) {
+          if (set.loadType === 'bw' || !set.load) return a;
+          return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+        }, 0);
+        bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
+      });
+    }
+  });
 
-//   // Overload: this week's main lift volume beats last week's (both must exist)
-//   Object.keys(thisWeekMains).forEach(function(name) {
-//     if (lastWeekMains[name] && thisWeekMains[name] > lastWeekMains[name]) {
-//       stats.overloads.push({
-//         name: name,
-//         gain: Math.round(((thisWeekMains[name] - lastWeekMains[name]) / lastWeekMains[name]) * 100)
-//       });
-//     }
-//   });
+  // Overload: this week's main lift volume beats last week's (both must exist)
+  Object.keys(thisWeekMains).forEach(function(name) {
+    if (lastWeekMains[name] && thisWeekMains[name] > lastWeekMains[name]) {
+      stats.overloads.push({
+        name: name,
+        gain: Math.round(((thisWeekMains[name] - lastWeekMains[name]) / lastWeekMains[name]) * 100)
+      });
+    }
+  });
 
-//   return stats;
-// }
+  return stats;
+}
   
 var jSwipeX = null;
 

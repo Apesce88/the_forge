@@ -2983,94 +2983,94 @@ function confirmReplaceSessionExercise(ei, exId) {
   render();
 }
 
-// ── Journey Stats ──────────────────────────────────────────────────────────
-function getWeekStart(offset) {
-  // Monday 00:00 of current week; offset -1 = last week
-  var now = new Date();
-  var day = now.getDay(); // 0=Sun
-  var diff = (day === 0 ? 6 : day - 1); // days since Monday
-  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
-  if (offset) monday.setDate(monday.getDate() + offset * 7);
-  return monday.getTime();
-}
+// // ── Journey Stats ──────────────────────────────────────────────────────────
+// function getWeekStart(offset) {
+//   // Monday 00:00 of current week; offset -1 = last week
+//   var now = new Date();
+//   var day = now.getDay(); // 0=Sun
+//   var diff = (day === 0 ? 6 : day - 1); // days since Monday
+//   var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
+//   if (offset) monday.setDate(monday.getDate() + offset * 7);
+//   return monday.getTime();
+// }
 
-function logVolume(log) {
-  return log.exercises.reduce(function(acc, ex) {
-    return acc + ex.sets.reduce(function(a, set) {
-      if (set.loadType === 'bw' || !set.load) return a;
-      return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
-    }, 0);
-  }, 0);
-}
+// function logVolume(log) {
+//   return log.exercises.reduce(function(acc, ex) {
+//     return acc + ex.sets.reduce(function(a, set) {
+//       if (set.loadType === 'bw' || !set.load) return a;
+//       return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+//     }, 0);
+//   }, 0);
+// }
 
-function logDistance(log) {
-  // Yards converted to miles (1760 yd = 1 mi), summed with mile distances
-  return log.exercises.reduce(function(acc, ex) {
-    if (ex.type !== 'running') return acc;
-    return acc + ex.sets.reduce(function(a, set) {
-      var d = parseFloat(set.distance) || 0;
-      return a + (ex.unit === 'yd' ? d / 1760 : d);
-    }, 0);
-  }, 0);
-}
+// function logDistance(log) {
+//   // Yards converted to miles (1760 yd = 1 mi), summed with mile distances
+//   return log.exercises.reduce(function(acc, ex) {
+//     if (ex.type !== 'running') return acc;
+//     return acc + ex.sets.reduce(function(a, set) {
+//       var d = parseFloat(set.distance) || 0;
+//       return a + (ex.unit === 'yd' ? d / 1760 : d);
+//     }, 0);
+//   }, 0);
+// }
 
-function computeJourneyStats() {
-  var logs = loadLogs();
-  var weekStart = getWeekStart(0);
-  var lastWeekStart = getWeekStart(-1);
-  var now = new Date();
-  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+// function computeJourneyStats() {
+//   var logs = loadLogs();
+//   var weekStart = getWeekStart(0);
+//   var lastWeekStart = getWeekStart(-1);
+//   var now = new Date();
+//   var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
-  var stats = {
-    weekCount: 0, monthCount: 0,
-    upperVol: 0, lowerVol: 0, runDist: 0,
-    overloads: []
-  };
+//   var stats = {
+//     weekCount: 0, monthCount: 0,
+//     upperVol: 0, lowerVol: 0, runDist: 0,
+//     overloads: []
+//   };
 
-  // Main lift volume maps: exName → volume
-  var thisWeekMains = {};
-  var lastWeekMains = {};
+//   // Main lift volume maps: exName → volume
+//   var thisWeekMains = {};
+//   var lastWeekMains = {};
 
-  logs.forEach(function(log) {
-    var t = log.completedAt || log.startedAt;
+//   logs.forEach(function(log) {
+//     var t = log.completedAt || log.startedAt;
 
-    if (t >= weekStart) {
-      stats.weekCount++;
-      var vol = logVolume(log);
-      if (log.dayColor === 'red') stats.lowerVol += vol;
-      else if (log.dayColor === 'lime') stats.upperVol += vol;
-      stats.runDist += logDistance(log);
-    }
-    if (t >= monthStart) stats.monthCount++;
+//     if (t >= weekStart) {
+//       stats.weekCount++;
+//       var vol = logVolume(log);
+//       if (log.dayColor === 'red') stats.lowerVol += vol;
+//       else if (log.dayColor === 'lime') stats.upperVol += vol;
+//       stats.runDist += logDistance(log);
+//     }
+//     if (t >= monthStart) stats.monthCount++;
 
-    // Main lift volume per exercise, this week vs last week
-    var bucket = null;
-    if (t >= weekStart) bucket = thisWeekMains;
-    else if (t >= lastWeekStart && t < weekStart) bucket = lastWeekMains;
-    if (bucket) {
-      log.exercises.forEach(function(ex) {
-        if (!ex.mainLift) return;
-        var exVol = ex.sets.reduce(function(a, set) {
-          if (set.loadType === 'bw' || !set.load) return a;
-          return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
-        }, 0);
-        bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
-      });
-    }
-  });
+//     // Main lift volume per exercise, this week vs last week
+//     var bucket = null;
+//     if (t >= weekStart) bucket = thisWeekMains;
+//     else if (t >= lastWeekStart && t < weekStart) bucket = lastWeekMains;
+//     if (bucket) {
+//       log.exercises.forEach(function(ex) {
+//         if (!ex.mainLift) return;
+//         var exVol = ex.sets.reduce(function(a, set) {
+//           if (set.loadType === 'bw' || !set.load) return a;
+//           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+//         }, 0);
+//         bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
+//       });
+//     }
+//   });
 
-  // Overload: this week's main lift volume beats last week's (both must exist)
-  Object.keys(thisWeekMains).forEach(function(name) {
-    if (lastWeekMains[name] && thisWeekMains[name] > lastWeekMains[name]) {
-      stats.overloads.push({
-        name: name,
-        gain: Math.round(((thisWeekMains[name] - lastWeekMains[name]) / lastWeekMains[name]) * 100)
-      });
-    }
-  });
+//   // Overload: this week's main lift volume beats last week's (both must exist)
+//   Object.keys(thisWeekMains).forEach(function(name) {
+//     if (lastWeekMains[name] && thisWeekMains[name] > lastWeekMains[name]) {
+//       stats.overloads.push({
+//         name: name,
+//         gain: Math.round(((thisWeekMains[name] - lastWeekMains[name]) / lastWeekMains[name]) * 100)
+//       });
+//     }
+//   });
 
-  return stats;
-}
+//   return stats;
+// }
   
 var jSwipeX = null;
 

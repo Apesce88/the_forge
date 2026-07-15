@@ -2647,37 +2647,38 @@ render();
       
 // ── Tracker Screen ──
 function renderJourney() {
-  // ── Stats ──
-  var stats = computeJourneyStats();
-  var fmtVol = function(v) { return v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v); };
+  // // ── Stats ──
+  // var stats = computeJourneyStats();
+  // var fmtVol = function(v) { return v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v); };
 
-  var statsHTML = '';
+  // var statsHTML = '';
 
-  // Progressive overload spotlight — only when earned
-  stats.overloads.forEach(function(o) {
-    statsHTML += '<div style="margin:0 16px 12px;border-radius:14px;padding:14px 16px;'
-      + 'background:linear-gradient(135deg, rgba(200,146,42,0.15), rgba(245,158,11,0.05));'
-      + 'border:1.5px solid var(--gold-metal);'
-      + 'box-shadow:0 0 16px rgba(200,146,42,0.35), 0 0 32px rgba(200,146,42,0.12);">'
-      + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:4px;">⬆ PROGRESSIVE OVERLOAD</div>'
-      + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + o.name + '</div>'
-      + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--gold-light);margin-top:2px;">+' + o.gain + '% volume vs last week</div>'
-      + '</div>';
-  });
+  // // Progressive overload spotlight — only when earned
+  // stats.overloads.forEach(function(o) {
+  //   statsHTML += '<div style="margin:0 16px 12px;border-radius:14px;padding:14px 16px;'
+  //     + 'background:linear-gradient(135deg, rgba(200,146,42,0.15), rgba(245,158,11,0.05));'
+  //     + 'border:1.5px solid var(--gold-metal);'
+  //     + 'box-shadow:0 0 16px rgba(200,146,42,0.35), 0 0 32px rgba(200,146,42,0.12);">'
+  //     + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:4px;">⬆ PROGRESSIVE OVERLOAD</div>'
+  //     + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + o.name + '</div>'
+  //     + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--gold-light);margin-top:2px;">+' + o.gain + '% volume vs last week</div>'
+  //     + '</div>';
+  // });
 
-  // Stat card grid
-  statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 8px;">'
-    + '<div class="stat-card"><div class="stat-num">' + stats.weekCount + '</div><div class="stat-label">Workouts This Week</div></div>'
-    + '<div class="stat-card"><div class="stat-num">' + stats.monthCount + '</div><div class="stat-label">Workouts This Month</div></div>'
-    + '<div class="stat-card"><div class="stat-num" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label">Upper Volume (lbs · wk)</div></div>'
-    + '<div class="stat-card"><div class="stat-num" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label">Lower Volume (lbs · wk)</div></div>'
-    + '</div>'
-    + '<div style="padding:0 16px 16px;">'
-    + '<div class="stat-card"><div class="stat-num">' + stats.runDist.toFixed(1) + ' <span style="font-size:12px;color:var(--text-sec);">mi</span></div><div class="stat-label">Run Distance This Week</div></div>'
-    + '</div>';
+  // // Stat card grid
+  // statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 8px;">'
+  //   + '<div class="stat-card"><div class="stat-num">' + stats.weekCount + '</div><div class="stat-label">Workouts This Week</div></div>'
+  //   + '<div class="stat-card"><div class="stat-num">' + stats.monthCount + '</div><div class="stat-label">Workouts This Month</div></div>'
+  //   + '<div class="stat-card"><div class="stat-num" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label">Upper Volume (lbs · wk)</div></div>'
+  //   + '<div class="stat-card"><div class="stat-num" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label">Lower Volume (lbs · wk)</div></div>'
+  //   + '</div>'
+  //   + '<div style="padding:0 16px 16px;">'
+  //   + '<div class="stat-card"><div class="stat-num">' + stats.runDist.toFixed(1) + ' <span style="font-size:12px;color:var(--text-sec);">mi</span></div><div class="stat-label">Run Distance This Week</div></div>'
+  //   + '</div>';
 
   // ── Active session card ──
   var sessionHTML = '';
+  
   if (state.activeSession) {
     var s = state.activeSession;
     var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
@@ -2826,7 +2827,7 @@ function renderJourney() {
     + '<div class="lib-sub">Workout log · Volume · Progress</div>'
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
-    + statsHTML
+    // + statsHTML
     + sessionHTML
     + historyHeader
     + logsHTML

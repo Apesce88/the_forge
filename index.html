@@ -1591,8 +1591,7 @@ if (!isSimple) {
   return html;
 }
  
-// ── Remove exercise from day → add to library ──────────────────────────────
-function removeDayEx(di, ti, ei) {
+// ── Main Lift toggle — one per day max ─────────────────────────────────────
 function setMainLift(di, ti, ei) {
   var target = state.days[di].tiers[ti].exercises[ei];
   var wasMain = target.mainLift === true;
@@ -1602,6 +1601,21 @@ function setMainLift(di, ti, ei) {
   });
   // Toggle: if it wasn't main, set it; if it was, leave all cleared
   if (!wasMain) target.mainLift = true;
+  saveDays();
+  state.openMenuId = null;
+  render();
+}
+
+// ── Remove exercise from day → add to library ──────────────────────────────
+function removeDayEx(di, ti, ei) {
+  var ex = state.days[di].tiers[ti].exercises[ei];
+  // Add to library if not already there
+  var exists = state.library.some(function(e){ return e.name === ex.name; });
+  if (!exists) {
+    state.library.push({ id: genId(), name: ex.name, cat: 'upper', fw: ex.fw, mb: ex.mb, bw: ex.bw });
+    saveLibrary();
+  }
+  state.days[di].tiers[ti].exercises.splice(ei, 1);
   saveDays();
   state.openMenuId = null;
   render();

@@ -2904,24 +2904,24 @@ function renderHeroScreen() {
       var accent = l.dayColor === 'red' ? 'var(--red)' : l.dayColor === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
       var isCalc = state.rmCalc && state.rmCalc.li === li;
 
-      recordsHTML += '<div style="margin:0 16px 12px;background:#0d0d0d;border:1px solid var(--grey-light);border-radius:14px;padding:14px;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">'
-        + '<div>'
-        + '<div style="font-family:var(--font-title);font-size:14px;color:var(--text-pri);">' + l.name + '</div>'
-        + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.08em;color:' + accent + ';margin-top:2px;">' + l.day.toUpperCase() + '</div>'
+      recordsHTML += '<div style="margin:0 16px 8px;background:#0d0d0d;border:1px solid var(--grey-light);border-radius:12px;padding:10px 12px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+        + '<div style="display:flex;align-items:baseline;gap:8px;">'
+        + '<div style="font-family:var(--font-title);font-size:12px;color:var(--text-pri);">' + l.name + '</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:' + accent + ';">' + l.day.toUpperCase() + '</div>'
         + '</div>'
-        + '<span style="font-size:8px;font-family:var(--font-body);letter-spacing:0.12em;color:var(--gold-metal);border:1px solid var(--gold-metal);border-radius:4px;padding:2px 6px;box-shadow:0 0 6px rgba(200,146,42,0.3);">MAIN</span>'
+        + '<span style="font-size:7px;font-family:var(--font-body);letter-spacing:0.12em;color:var(--gold-metal);border:1px solid var(--gold-metal);border-radius:3px;padding:1px 5px;">MAIN</span>'
         + '</div>'
 
-        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">'
-        + '<div class="stat-card-sm" style="border-color:var(--gold-metal);">'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:6px;">'
+        + '<div class="stat-card-sm" style="border-color:var(--gold-metal);padding:5px 4px;">'
         + '<input type="number" inputmode="decimal" min="0" placeholder="—" value="' + (has ? round5(rec.oneRM) : '') + '" '
         + 'onchange="setRecord1RM(' + li + ',this.value)" '
-        + 'style="width:100%;background:transparent;border:none;color:var(--gold-metal);font-size:16px;font-family:var(--font-title);font-weight:700;text-align:center;outline:none;padding:0;"/>'
-        + '<div class="stat-label-sm">1RM · Tap to edit</div>'
+        + 'style="width:100%;background:transparent;border:none;color:var(--gold-metal);font-size:13px;font-family:var(--font-title);font-weight:700;text-align:center;outline:none;padding:0;"/>'
+        + '<div class="stat-label-sm" style="font-size:7px;">1RM · EDIT</div>'
         + '</div>'
-        + '<div class="stat-card-sm"><div class="stat-num-sm">' + (has ? rmFromOne(rec.oneRM, 3) : '—') + '</div><div class="stat-label-sm">3RM</div></div>'
-        + '<div class="stat-card-sm"><div class="stat-num-sm">' + (has ? rmFromOne(rec.oneRM, 5) : '—') + '</div><div class="stat-label-sm">5RM</div></div>'
+        + '<div class="stat-card-sm" style="padding:5px 4px;"><div class="stat-num-sm" style="font-size:13px;">' + (has ? rmFromOne(rec.oneRM, 3) : '—') + '</div><div class="stat-label-sm" style="font-size:7px;">3RM</div></div>'
+        + '<div class="stat-card-sm" style="padding:5px 4px;"><div class="stat-num-sm" style="font-size:13px;">' + (has ? rmFromOne(rec.oneRM, 5) : '—') + '</div><div class="stat-label-sm" style="font-size:7px;">5RM</div></div>'
         + '</div>';
 
       if (isCalc) {
@@ -2940,9 +2940,9 @@ function renderHeroScreen() {
       }
 
       recordsHTML += '<button onclick="toggleRMCalc(' + li + ')" '
-        + 'style="width:100%;padding:7px;border-radius:10px;border:1px solid var(--grey-light);background:transparent;'
-        + 'color:var(--text-mute);font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">'
-        + (isCalc ? 'Close Calculator' : 'Not sure? Calculate 1RM from a 3 or 5 rep max')
+        + 'style="width:100%;padding:5px;border-radius:8px;border:1px solid var(--grey-light);background:transparent;'
+        + 'color:var(--text-mute);font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">'
+        + (isCalc ? 'CLOSE' : 'UNSURE? CALC FROM 3/5 RM')
         + '</button>'
         + '</div>';
     });

@@ -2905,29 +2905,29 @@ function renderHeroScreen() {
       var accent = l.dayColor === 'red' ? 'var(--red)' : l.dayColor === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
       var isCalc = state.rmCalc && state.rmCalc.li === li;
 
-      rowsHTML += '<div style="padding:7px 0 6px;' + (li > 0 ? 'border-top:1px solid var(--grey-mid);' : '') + '">'
-        + '<div style="font-family:var(--font-title);font-size:10px;color:var(--text-pri);'
+      rowsHTML += '<div style="padding:11px 0 10px;' + (li > 0 ? 'border-top:1px solid var(--grey-mid);' : '') + '">'
+        + '<div style="font-family:var(--font-title);font-size:12px;color:var(--text-pri);'
         + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + l.name + '</div>'
-        + '<div style="font-size:6px;font-family:var(--font-body);letter-spacing:0.1em;color:' + accent + ';margin-bottom:6px;">' + l.day.toUpperCase() + '</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.1em;color:' + accent + ';margin-bottom:8px;">' + l.day.toUpperCase() + '</div>'
 
         // numbers row: bordered/glowing 1RM input + 3RM + 5RM
-        + '<div style="display:flex;gap:8px;align-items:flex-end;">'
-        + '<div style="text-align:center;">'
+        + '<div style="display:flex;gap:6px;align-items:flex-end;">'
+        + '<div style="flex:1;min-width:0;text-align:center;">'
         + '<input type="number" inputmode="decimal" min="0" placeholder="—" value="' + (has ? round5(rec.oneRM) : '') + '" '
         + 'onchange="setRecord1RM(' + li + ',this.value)" '
-        + 'style="width:42px;background:rgba(200,146,42,0.07);border:1px solid var(--gold-metal);border-radius:6px;'
+        + 'style="width:100%;background:rgba(200,146,42,0.07);border:1px solid var(--gold-metal);border-radius:6px;'
         + 'box-shadow:0 0 7px rgba(212,175,55,0.45),inset 0 0 4px rgba(212,175,55,0.12);'
-        + 'color:var(--gold-light);font-size:11px;font-family:var(--font-title);font-weight:700;'
+        + 'color:var(--gold-light);font-size:15px;font-family:var(--font-title);font-weight:700;'
         + 'text-align:center;outline:none;padding:3px 0;"/>'
-        + '<div style="font-size:6px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--gold-metal);margin-top:3px;">1RM</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--gold-metal);margin-top:3px;">1RM</div>'
         + '</div>'
-        + '<div style="text-align:center;">'
-        + '<div style="font-size:11px;font-family:var(--font-title);font-weight:700;color:var(--text-pri);line-height:1.5;padding:3px 0;">' + (has ? rmFromOne(rec.oneRM, 3) : '—') + '</div>'
-        + '<div style="font-size:6px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);margin-top:3px;">3RM</div>'
+        + '<div style="flex:1;min-width:0;text-align:center;">'
+        + '<div style="font-size:15px;font-family:var(--font-title);font-weight:700;color:var(--text-pri);line-height:1.4;padding:3px 0;">' + (has ? rmFromOne(rec.oneRM, 3) : '—') + '</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);margin-top:3px;">3RM</div>'
         + '</div>'
-        + '<div style="text-align:center;">'
-        + '<div style="font-size:11px;font-family:var(--font-title);font-weight:700;color:var(--text-pri);line-height:1.5;padding:3px 0;">' + (has ? rmFromOne(rec.oneRM, 5) : '—') + '</div>'
-        + '<div style="font-size:6px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);margin-top:3px;">5RM</div>'
+        + '<div style="flex:1;min-width:0;text-align:center;">'
+        + '<div style="font-size:15px;font-family:var(--font-title);font-weight:700;color:var(--text-pri);line-height:1.4;padding:3px 0;">' + (has ? rmFromOne(rec.oneRM, 5) : '—') + '</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);margin-top:3px;">5RM</div>'
         + '</div>'
         + '</div>';
 
@@ -2956,7 +2956,7 @@ function renderHeroScreen() {
       rowsHTML += '<button onclick="toggleRMCalc(' + li + ')" '
         + 'style="width:100%;padding:3px;border-radius:6px;margin-top:5px;'
         + 'border:1px solid rgba(210,210,210,0.3);background:transparent;'
-        + 'color:#c8c8c8;font-size:7px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;'
+        + 'color:#c8c8c8;font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;'
         + 'box-shadow:0 0 5px rgba(210,210,210,0.1);">'
         + (isCalc ? 'CLOSE' : 'UNSURE? CALC 1RM')
         + '</button>'
@@ -3020,7 +3020,7 @@ function renderHeroScreen() {
     + '</div>'
     + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 16px;"></div>'
     + signetBanner
-    + '<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:8px;padding:0 16px 12px;align-items:start;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:8px;padding:0 16px 12px;align-items:stretch;">'
     + leftCol
     + recordsPanel
     + '</div>'

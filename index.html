@@ -1090,7 +1090,8 @@ var state = {
   journeyLogsShown: 10,
   journeyExpanded: {},
   journeySwiped: null,
-  rmCalc: null
+  rmCalc: null,
+  showArchived: false
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
@@ -1208,6 +1209,8 @@ function navigate(view) {
   state.modal = null;
   state.journeyLogsShown = 10;
   state.journeyExpanded = {};
+  state.journeySwiped = null;
+  state.showArchived = false;
   document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
   var btn = document.getElementById('nav-' + view);
   if (btn) btn.classList.add('active');
@@ -2728,13 +2731,20 @@ function renderJourney() {
   }
 
   // ── Log history ──
-  var logs = loadLogs().reverse();
+  var allLogs = loadLogs().reverse();
+  var archivedLogs = allLogs.filter(function(l) { return l.archived === true; });
+  var logs = state.showArchived
+    ? archivedLogs
+    : allLogs.filter(function(l) { return !l.archived; });
   var logsHTML = '';
 
   if (logs.length === 0) {
     logsHTML = '<div class="lib-section-pad">'
-      + '<div class="day-empty-tier">No workouts logged yet.<br>Complete a session to see your history.</div>'
-      + '</div>';
+      + '<div class="day-empty-tier">'
+      + (state.showArchived
+        ? 'No archived workouts.<br>Nothing has been removed yet.'
+        : 'No workouts logged yet.<br>Complete a session to see your history.')
+      + '</div></div>';
   } else {
     var visible = logs.slice(0, state.journeyLogsShown);
 
@@ -2774,10 +2784,15 @@ function renderJourney() {
         + ' onclick="toggleJourneyLog(\'' + log.id + '\')">'
         + (isSwiped
           ? '<div style="padding:10px 16px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;">'
-            + '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);">DELETE THIS LOG?</span>'
-            + '<button onclick="event.stopPropagation();deleteJourneyLog(\'' + log.id + '\')" '
-            + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--red);background:rgba(239,68,68,0.1);'
-            + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">DELETE</button>'
+            + '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);">'
+            + (log.archived ? 'RESTORE TO JOURNEY?' : 'REMOVE FROM JOURNEY?') + '</span>'
+            + (log.archived
+              ? '<button onclick="event.stopPropagation();restoreJourneyLog(\'' + log.id + '\')" '
+                + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--lime);background:rgba(163,230,53,0.1);'
+                + 'color:var(--lime);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">RESTORE</button>'
+              : '<button onclick="event.stopPropagation();deleteJourneyLog(\'' + log.id + '\')" '
+                + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--red);background:rgba(239,68,68,0.1);'
+                + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">REMOVE</button>')
             + '</div>'
           : '')
 
@@ -2840,22 +2855,26 @@ function renderJourney() {
   // ── History header ──
   var historyHeader = '<div style="display:flex;align-items:center;gap:8px;margin:4px 16px 14px;">'
     + '<div style="flex:1;height:1px;background:var(--grey-mid);"></div>'
-    + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.14em;color:var(--text-mute);">WORKOUT HISTORY</div>'
+    + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.14em;color:'
+    + (state.showArchived ? 'var(--gold-metal)' : 'var(--text-mute)') + ';">'
+    + (state.showArchived ? 'ARCHIVED WORKOUTS' : 'WORKOUT HISTORY') + '</div>'
     + '<div style="flex:1;height:1px;background:var(--grey-mid);"></div>'
     + '</div>';
 
-  return '<div class="lib-header">'
-    + '<div class="home-eyebrow">The Hero\'s Path</div>'
-    + '<div class="lib-title">Journey</div>'
-    + '<div class="lib-sub">Workout log · Volume · Progress</div>'
-    + '</div>'
-    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
-    + statsHTML
-    + sessionHTML
-    + historyHeader
-    + logsHTML
-    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
-}
+  // ── Archive toggle ──
+  var archiveToggle = '';
+  if (archivedLogs.length > 0 || state.showArchived) {
+    archiveToggle = '<div style="padding:4px 16px 16px;">'
+      + '<button onclick="toggleArchivedLogs()" '
+      + 'style="width:100%;padding:8px;border-radius:10px;border:1px solid rgba(210,210,210,0.25);'
+      + 'background:transparent;color:#c8c8c8;font-size:9px;font-family:var(--font-body);'
+      + 'letter-spacing:0.08em;cursor:pointer;box-shadow:0 0 5px rgba(210,210,210,0.08);">'
+      + (state.showArchived
+        ? '← BACK TO HISTORY'
+        : 'VIEW ARCHIVED (' + archivedLogs.length + ')')
+      + '</button></div>';
+  }
+  logsHTML += archiveToggle;
 
 // ── Profile Sheet ──
 function openProfileSheet() {
@@ -3215,7 +3234,7 @@ function logDistance(log) {
 }
 
 function computeJourneyStats() {
-  var logs = loadLogs();
+  var logs = loadLogs().filter(function(l) { return !l.archived; });
   var weekStart = getWeekStart(0);
   var lastWeekStart = getWeekStart(-1);
   var now = new Date();
@@ -3291,12 +3310,32 @@ function jSwipeEnd(e, logId) {
   }
 }
 
+// Soft delete — flags the log as archived, never removes it from storage
 function deleteJourneyLog(logId) {
-  if (!confirm('Delete this workout log? This cannot be undone.')) return;
+  if (!confirm('Remove this workout from your Journey? It will be archived, not erased.')) return;
   var logs = loadLogs();
-  logs = logs.filter(function(l) { return l.id !== logId; });
+  logs.forEach(function(l) {
+    if (l.id === logId) { l.archived = true; l.archivedAt = Date.now(); }
+  });
   saveLogs(logs);
   state.journeySwiped = null;
+  render();
+}
+
+function restoreJourneyLog(logId) {
+  var logs = loadLogs();
+  logs.forEach(function(l) {
+    if (l.id === logId) { delete l.archived; delete l.archivedAt; }
+  });
+  saveLogs(logs);
+  state.journeySwiped = null;
+  render();
+}
+
+function toggleArchivedLogs() {
+  state.showArchived = !state.showArchived;
+  state.journeySwiped = null;
+  state.journeyLogsShown = 10;
   render();
 }
   

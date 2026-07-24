@@ -2874,6 +2874,21 @@ function renderJourney() {
         : 'VIEW ARCHIVED (' + archivedLogs.length + ')')
       + '</button></div>';
   }
+
+  logsHTML += archiveToggle;
+
+  return '<div class="lib-header">'
+    + '<div class="home-eyebrow">The Hero\'s Path</div>'
+    + '<div class="lib-title">Journey</div>'
+    + '<div class="lib-sub">Workout log · Volume · Progress</div>'
+    + '</div>'
+    + '<div style="height:1px;background:var(--grey-mid);margin:0 20px 24px;"></div>'
+    + statsHTML
+    + sessionHTML
+    + historyHeader
+    + logsHTML
+    + '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.6</div>';
+}
   
 // ── Profile Sheet ──
 function openProfileSheet() {

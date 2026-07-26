@@ -336,8 +336,20 @@
       text-transform: uppercase;
     }
  
-    .cat-tab.active { background: var(--lime-dim); border-color: var(--lime); color: var(--lime); }
- 
+    .cat-tab.active {
+      background: var(--ec-dim, var(--lime-dim));
+      border-color: var(--ec, var(--lime));
+      color: var(--ec, var(--lime));
+    }
+
+    /* Category accent — shared by library tabs, picker tabs, and card glow bars */
+    .cat-upper    { --ec: var(--lime); --ec-dim: var(--lime-dim); }
+    .cat-lower    { --ec: var(--red);  --ec-dim: var(--red-dim); }
+    .cat-power    { --ec: var(--gold); --ec-dim: var(--gold-dim); }
+    .cat-dynamic  { --ec: var(--gold); --ec-dim: var(--gold-dim); }
+    .cat-core     { --ec: #a78bfa;     --ec-dim: rgba(167,139,250,0.14); }
+    .cat-recovery { --ec: #a0a0a0;     --ec-dim: rgba(160,160,160,0.14); }
+    
     /* Exercise library card */
     .lib-ex-card {
       background: #0d0d0d; border: 1px solid var(--grey-light);
@@ -351,12 +363,6 @@
       height: 1.5px; pointer-events: none;
       background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
     }
-    .lib-ex-card.cat-upper    { --ec: var(--lime); }
-    .lib-ex-card.cat-lower    { --ec: var(--red); }
-    .lib-ex-card.cat-power    { --ec: var(--gold); }
-    .lib-ex-card.cat-dynamic  { --ec: var(--gold); }
-    .lib-ex-card.cat-core     { --ec: #a78bfa; }
-    .lib-ex-card.cat-recovery { --ec: #a0a0a0; }
  
     .lib-ex-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .lib-ex-name { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
@@ -1695,7 +1701,7 @@ function renderLibrary() {
   var filtered = state.library.filter(function(e){ return e.cat === state.libCat; });
  
   var tabsHTML = cats.map(function(c){
-    return '<button class="cat-tab' + (state.libCat === c.id ? ' active' : '') + '" onclick="setLibCat(\'' + c.id + '\')">' + c.label + '</button>';
+    return '<button class="cat-tab cat-' + c.id + (state.libCat === c.id ? ' active' : '') + '" onclick="setLibCat(\'' + c.id + '\')">' + c.label + '</button>';
   }).join('');
  
   var exHTML = '';
@@ -1751,7 +1757,7 @@ function renderModal() {
     var activeCat = state.pickerCat || 'upper';
     var filtered = state.library.filter(function(e) { return e.cat === activeCat; });
     var tabsHTML = cats.map(function(c) {
-      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+      return '<button class="cat-tab cat-' + c + (activeCat === c ? ' active' : '')
         + '" onclick="setPickerCat(\'' + c + '\')">'
         + c.charAt(0).toUpperCase() + c.slice(1) + '</button>';
     }).join('');
@@ -1780,7 +1786,7 @@ function renderModal() {
       return e.cat === activeCat;
     });
     var tabsHTML = cats.map(function(c) {
-      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+      return '<button class="cat-tab cat-' + c + (activeCat === c ? ' active' : '')
         + '" onclick="setPickerCat(\'' + c + '\')">'
         + c.charAt(0).toUpperCase() + c.slice(1)
         + '</button>';
@@ -1813,7 +1819,7 @@ function renderModal() {
     });
 
     var tabsHTML = cats.map(function(c) {
-      return '<button class="cat-tab' + (activeCat === c ? ' active' : '')
+      return '<button class="cat-tab cat-' + c + (activeCat === c ? ' active' : '')
         + '" onclick="setPickerCat(\'' + c + '\')">'
         + c.charAt(0).toUpperCase() + c.slice(1)
         + '</button>';

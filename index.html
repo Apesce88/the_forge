@@ -143,8 +143,14 @@
     .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 16px; }
  
     .day-card {
-      background: #0d0d0d; border-radius: 16px; padding: 16px 14px 14px;
-      cursor: pointer; text-align: left; border: 1.5px solid var(--grey-light);
+      border-radius: 16px; padding: 16px 14px 14px;
+      cursor: pointer; text-align: left; border: 1.5px solid transparent;
+      background:
+        linear-gradient(#0d0d0d, #0d0d0d) padding-box,
+        linear-gradient(150deg,
+          var(--dc, var(--grey-light)) 0%,
+          rgba(255,255,255,0.05) 55%,
+          transparent 100%) border-box;
       transition: transform 0.12s; position: relative;
       min-height: 120px;
     }
@@ -156,13 +162,13 @@
       opacity: 0.04; pointer-events: none;
     }
  
-    .day-card.lime { border-color: var(--lime); box-shadow: 0 0 10px 2px rgba(163,230,53,0.25), 0 0 24px 4px rgba(163,230,53,0.10); }
+    .day-card.lime { --dc: var(--lime); box-shadow: 0 0 22px 3px rgba(163,230,53,0.10); }
     .day-card.lime::before { background: var(--lime); }
-    .day-card.red  { border-color: var(--red);  box-shadow: 0 0 12px 3px rgba(239,68,68,0.15),  0 0 28px 6px rgba(239,68,68,0.06); }
+    .day-card.red  { --dc: var(--red);  box-shadow: 0 0 22px 3px rgba(239,68,68,0.09); }
     .day-card.red::before  { background: var(--red); }
-    .day-card.gold { border-color: var(--gold); box-shadow: 0 0 12px 3px rgba(200,146,42,0.20), 0 0 28px 6px rgba(200,146,42,0.08); }
+    .day-card.gold { --dc: var(--gold); box-shadow: 0 0 22px 3px rgba(200,146,42,0.10); }
     .day-card.gold::before { background: var(--gold); }
-    .day-card.grey { border-color: #a0a0a0; box-shadow: 0 0 12px 3px rgba(200,200,200,0.25), 0 0 28px 6px rgba(200,200,200,0.10); }
+    .day-card.grey { --dc: #a0a0a0; box-shadow: 0 0 22px 3px rgba(200,200,200,0.10); }
     .day-card.grey::before { background: #111; }
  
     .day-number { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; font-family: var(--font-body); }

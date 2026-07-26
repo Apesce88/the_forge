@@ -149,8 +149,8 @@
         linear-gradient(#0d0d0d, #0d0d0d) padding-box,
         linear-gradient(150deg,
           var(--dc, var(--grey-light)) 0%,
-          rgba(255,255,255,0.05) 55%,
-          transparent 100%) border-box;
+          rgba(200,146,42,0.30) 55%,
+          rgba(200,146,42,0.20) 100%) border-box;
       transition: transform 0.12s; position: relative;
       min-height: 120px;
     }
@@ -342,7 +342,21 @@
     .lib-ex-card {
       background: #0d0d0d; border: 1px solid var(--grey-light);
       border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+      position: relative; overflow: hidden;
     }
+
+    /* Category glow bar — same format as .sgt-card-glow */
+    .lib-ex-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1.5px; pointer-events: none;
+      background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
+    }
+    .lib-ex-card.cat-upper    { --ec: var(--lime); }
+    .lib-ex-card.cat-lower    { --ec: var(--red); }
+    .lib-ex-card.cat-power    { --ec: var(--gold); }
+    .lib-ex-card.cat-dynamic  { --ec: var(--gold); }
+    .lib-ex-card.cat-core     { --ec: #a78bfa; }
+    .lib-ex-card.cat-recovery { --ec: #a0a0a0; }
  
     .lib-ex-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .lib-ex-name { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); }
@@ -1690,7 +1704,7 @@ function renderLibrary() {
   } else {
     filtered.forEach(function(ex) {
       var menuOpen = state.openMenuId === ex.id;
-      exHTML += '<div class="lib-ex-card">'
+      exHTML += '<div class="lib-ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '">'
         + '<div class="lib-ex-header">'
         + '<div><div class="lib-ex-name">'+ex.name+'</div></div>'
         + '<button class="lib-ex-menu-btn" onclick="toggleMenu(\''+ex.id+'\')">•••</button>'

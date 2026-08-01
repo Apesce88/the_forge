@@ -1778,6 +1778,33 @@ function renderModal() {
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
       + '</div></div>';
   }
+
+  if (m.mode === 'addSession') {
+    var cats = ['upper','lower','power','dynamic','core','recovery'];
+    var activeCat = state.pickerCat || 'upper';
+    var filtered = state.library.filter(function(e) { return e.cat === activeCat; });
+    var tabsHTML = cats.map(function(c) {
+      return '<button class="cat-tab cat-' + c + (activeCat === c ? ' active' : '')
+        + '" onclick="setPickerCat(\'' + c + '\')">'
+        + c.charAt(0).toUpperCase() + c.slice(1) + '</button>';
+    }).join('');
+    var listHTML = filtered.length === 0
+      ? '<div class="lib-empty"><div class="lib-empty-icon">📋</div>No exercises in this category.</div>'
+      : filtered.map(function(ex) {
+          return '<button class="picker-ex-btn" onclick="confirmAddSessionExercise(\'' + ex.id + '\')">'
+            + '<div class="picker-ex-name">' + ex.name + '</div>'
+            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
+            + '</button>';
+        }).join('');
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">Add to ' + escHtml(m.tier || '') + '</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
+      + '</div></div>';
+  }
   
   if (m.mode === 'addField') {
     var cats = ['upper','lower','power','dynamic','core','recovery'];
@@ -3222,6 +3249,35 @@ function replaceSessionExercise(ei) {
   openModal({ mode: 'replaceSession', ei: ei });
 }
 
+function addSessionExercise(tierIdx) {
+  if (!state.activeSession) return;
+  var tierList = [];
+  state.activeSession.exercises.forEach(function(ex) {
+    if (tierList.indexOf(ex.tier) === -1) tierList.push(ex.tier);
+  });
+  var tierName = tierList[tierIdx];
+  if (!tierName) return;
+  openModal({ mode: 'addSession', tier: tierName });
+}
+
+function confirmAddSessionExercise(exId) {
+  var ex = state.library.find(function(e) { return e.id === exId; });
+  if (!ex || !state.activeSession || !state.modal) return;
+  state.activeSession.exercises.push({
+    exName: ex.name,
+    tier: state.modal.tier,
+    type: detectExType(ex.name),
+    unit: 'mi',
+    fw: ex.fw,
+    mb: ex.mb,
+    bw: ex.bw,
+    equipTab: 0,
+    sets: [],
+    static: false
+  });
+  closeModal();
+}
+  
 function confirmReplaceSessionExercise(ei, exId) {
   var ex = state.library.find(function(e) { return e.id === exId; });
   if (!ex || !state.activeSession) return;
@@ -3557,12 +3613,12 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       + '</div>';
   }
   
-  tiers.forEach(function(tierName) {
+  tiers.forEach(function(tierName, tierIdx) {
     // Tier header
     html += '<div style="display:flex;align-items:center;gap:8px;margin:8px 16px 10px;'
       + 'padding-bottom:8px;border-bottom:1px solid var(--grey-mid);">'
       + '<span style="font-size:11px;font-weight:700;font-family:var(--font-body);'
-      + 'letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-metal);">' + tierName + '</span>'
+      + 'letter-spacing:0.1em;text-transform:uppercase;color:' + acColor + ';">' + tierName + '</span>'
       + '</div>';
 
     tierMap[tierName].forEach(function(item) {
@@ -3766,6 +3822,13 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
 
       html += '</div>';
     });
+
+    // Add exercise to this tier (session-only)
+    html += '<button onclick="addSessionExercise(' + tierIdx + ')" '
+      + 'style="display:block;width:calc(100% - 32px);margin:0 16px 16px;padding:9px;'
+      + 'border-radius:10px;border:1px dashed var(--grey-light);background:var(--grey-mid);'
+      + 'color:var(--text-sec);font-size:11px;font-family:var(--font-body);'
+      + 'letter-spacing:0.08em;cursor:pointer;">+ ADD EXERCISE</button>';
   });
   
   // Static cooldown card for field days

@@ -243,6 +243,14 @@
     .ex-card {
       background: #0d0d0d; border: 1px solid var(--grey-light);
       border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+      position: relative; overflow: hidden;
+    }
+
+    /* Category glow bar — --ec comes from the shared .cat-* rules */
+    .ex-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1.5px; pointer-events: none;
+      background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
     }
  
     .ex-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -1210,6 +1218,21 @@ function rmFromOne(oneRM, reps) { return round5(oneRM / (1 + reps / 30)); }
         state.days[3].field.forEach(function(f) { delete f.icon; });
         saveDays();
       }
+      // Migration — backfill cat on day exercises (category glow)
+      var _catMap = {};
+      state.library.forEach(function(l) { if (l.cat) _catMap[l.name] = l.cat; });
+      var _catFixed = false;
+      state.days.forEach(function(d) {
+        if (d.tiers) d.tiers.forEach(function(t) {
+          t.exercises.forEach(function(ex) {
+            if (!ex.cat && _catMap[ex.name]) { ex.cat = _catMap[ex.name]; _catFixed = true; }
+          });
+        });
+        if (d.exercises) d.exercises.forEach(function(ex) {
+          if (!ex.cat && _catMap[ex.name]) { ex.cat = _catMap[ex.name]; _catFixed = true; }
+        });
+      });
+      if (_catFixed) saveDays();
     } else {
       state.days = JSON.parse(JSON.stringify(DAYS));
       saveDays();
@@ -1389,6 +1412,7 @@ function addExToDay(di, ti, exId) {
     fw: ex.fw,
     mb: ex.mb,
     bw: ex.bw,
+    cat: ex.cat || '',
     notes: ex.notes || ''
   });
   saveDays();
@@ -1549,7 +1573,7 @@ function renderDay(index) {
       fieldExes.forEach(function(ex, ei) {
         var key = 'field-' + index + '-' + ei;
         var menuOpen = state.openMenuId === key;
-        html += '<div class="ex-card">'
+        html += '<div class="ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '">'
           + '<div class="ex-card-header">'
           + '<div class="ex-name">' + ex.name + '</div>'
           + '<button class="ex-menu-btn" onclick="toggleMenu(\'' + key + '\')">•••</button>'
@@ -1595,7 +1619,7 @@ var lastField = d.field[d.field.length - 1];
           var isSimple = ex.fw === ex.mb && ex.mb === ex.bw;
           var menuOpen = state.openMenuId === key;
  
-          html += '<div class="ex-card" data-key="' + key + '">'
+          html += '<div class="ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '" data-key="' + key + '">'
             + '<div class="ex-card-header">'
             + '<div style="display:flex;align-items:center;gap:8px;">'
             + '<div class="ex-name">' + ex.name + '</div>'
@@ -1682,7 +1706,13 @@ function openEditDayModal(di, ti, ei) {
 function saveEditDayExercise() {
   var m = state.modal;
   if (!m || !m.name.trim()) return;
-  state.days[m.di].tiers[m.ti].exercises[m.ei] = { name:m.name.trim(), fw:m.fw.trim(), mb:m.mb.trim(), bw:m.bw.trim(), notes:(m.notes||'').trim() };
+  var prevEx = state.days[m.di].tiers[m.ti].exercises[m.ei] || {};
+  state.days[m.di].tiers[m.ti].exercises[m.ei] = {
+    name: m.name.trim(), fw: m.fw.trim(), mb: m.mb.trim(), bw: m.bw.trim(),
+    cat: prevEx.cat || '',
+    mainLift: prevEx.mainLift || false,
+    notes: (m.notes || '').trim()
+  };
   saveDays();
   closeModal();
 }
@@ -3203,6 +3233,7 @@ function addFieldEx(dayIndex, exId) {
     fw: ex.fw,
     mb: ex.mb,
     bw: ex.bw
+    cat: ex.cat || ''
   });
   saveDays();
   closeModal();

@@ -1865,6 +1865,40 @@ function renderModal() {
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
       + '</div></div>';
   }
+
+  if (m.mode === 'freestyle') {
+    var fOrder = ['upper','lower','power','recovery'];
+    var fDesc = {
+      upper: 'COUNTS TOWARD UPPER VOLUME',
+      lower: 'COUNTS TOWARD LOWER VOLUME',
+      power: 'SPRINTS, FIELD WORK, EXPLOSIVE',
+      recovery: 'MOBILITY, STRETCH, WALK'
+    };
+    var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', recovery: '#a0a0a0' };
+    var fHTML = fOrder.map(function(k) {
+      return '<button onclick="beginFreestyle(\'' + k + '\')" '
+        + 'style="display:block;width:100%;text-align:left;position:relative;overflow:hidden;'
+        + 'background:#0d0d0d;border:1px solid var(--grey-light);border-radius:12px;'
+        + 'padding:12px 14px;margin-bottom:8px;cursor:pointer;">'
+        + '<div style="font-family:var(--font-title);font-size:14px;font-weight:700;color:var(--text-pri);">'
+        + FREESTYLE_FOCUS[k].label + '</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);margin-top:3px;">'
+        + fDesc[k] + '</div>'
+        + '<div style="position:absolute;bottom:0;left:0;right:0;height:1.5px;'
+        + 'background:linear-gradient(to right,transparent,' + fBar[k] + ',transparent);"></div>'
+        + '</button>';
+    }).join('');
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">Off-Plan Workout</div>'
+      + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
+      + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
+      + 'What did you train? This sets how the volume counts toward your stats.</div>'
+      + fHTML
+      + '<div style="margin-top:8px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
+      + '</div></div>';
+  }
   
   if (m.mode === 'addField') {
     var cats = ['upper','lower','power','dynamic','core','recovery'];
@@ -2840,6 +2874,10 @@ function renderJourney() {
   } else {
     sessionHTML = '<div class="lib-section-pad">'
       + '<div class="day-empty-tier">No active session.<br>Start a workout from any day card.</div>'
+      + '<button onclick="startFreestyle()" style="display:block;width:100%;margin-top:10px;'
+      + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
+      + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
+      + 'letter-spacing:0.1em;cursor:pointer;">+ LOG OFF-PLAN WORKOUT</button>'
       + '</div>';
   }
 
@@ -3316,8 +3354,7 @@ function addSessionExercise(tierIdx) {
   state.activeSession.exercises.forEach(function(ex) {
     if (tierList.indexOf(ex.tier) === -1) tierList.push(ex.tier);
   });
-  var tierName = tierList[tierIdx];
-  if (!tierName) return;
+  var tierName = tierList[tierIdx] || 'Freestyle';
   openModal({ mode: 'addSession', tier: tierName });
 }
 
@@ -3542,6 +3579,38 @@ function resumeWorkout() {
   render();
   document.getElementById('screen').scrollTop = 0;
 }
+
+var FREESTYLE_FOCUS = {
+  upper:    { label: 'Upper',         color: 'lime' },
+  lower:    { label: 'Lower',         color: 'red'  },
+  power:    { label: 'Speed / Power', color: 'red'  },
+  recovery: { label: 'Recovery',      color: 'grey' }
+};
+
+function startFreestyle() {
+  if (state.activeSession) return;
+  openModal({ mode: 'freestyle' });
+}
+
+function beginFreestyle(focus) {
+  var f = FREESTYLE_FOCUS[focus];
+  if (!f || state.activeSession) return;
+  state.activeSession = {
+    id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    dayIndex: null,
+    dayName: 'Freestyle · ' + f.label,
+    dayColor: f.color,
+    freestyle: true,
+    startedAt: Date.now(),
+    completedAt: null,
+    user_id: null,
+    exercises: []
+  };
+  state.modal = null;
+  state.view = 'workout';
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
   
 function startWorkout(dayIndex) {
   var d = state.days[dayIndex];
@@ -3682,6 +3751,12 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
     }
     tierMap[ex.tier].push({ ex: ex, ei: ei });
   });
+
+    // Empty session (off-plan) — seed one tier so the add button has a home
+  if (tiers.length === 0) {
+    tiers.push('Freestyle');
+    tierMap['Freestyle'] = [];
+  }
 
   // Static warmup card for field days
   if (state.activeSession.exercises.length > 0 && state.activeSession.exercises[0].tier === 'Speed & Agility') {
@@ -3949,8 +4024,9 @@ function completeExercise(ei) {
 }
 
 function backFromWorkout() {
-  state.view = 'day';
-  state.dayIndex = state.activeSession.dayIndex;
+  var bdi = state.activeSession ? state.activeSession.dayIndex : null;
+  state.view = (bdi === null || bdi === undefined) ? 'journey' : 'day';
+  state.dayIndex = (bdi === null || bdi === undefined) ? null : bdi;
   closeProfileSheet();
   render();
   document.getElementById('screen').scrollTop = 0;
@@ -4003,8 +4079,13 @@ function finishWorkout() {
   saveLogs(logs);
   var dayIndex = state.activeSession.dayIndex;
   state.activeSession = null;
-  state.view = 'day';
-  state.dayIndex = dayIndex;
+  if (dayIndex === null || dayIndex === undefined) {
+    state.view = 'journey';
+    state.dayIndex = null;
+  } else {
+    state.view = 'day';
+    state.dayIndex = dayIndex;
+  }
   closeProfileSheet();
   render();
   document.getElementById('screen').scrollTop = 0;

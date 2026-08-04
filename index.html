@@ -291,16 +291,38 @@
     .equip-tab-label { font-size: 9px; letter-spacing: 0.04em; }
     .equip-content { font-size: 13px; color: var(--text-sec); line-height: 1.5; min-height: 20px; }
  
-    .field-step { display: flex; gap: 12px; align-items: flex-start; background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+    /* Day-color fallback for --ec. Must stay ABOVE the .cat-* block so
+       category colors override day color on categorized cards. */
+    .dc-lime { --ec: var(--lime); }
+    .dc-red  { --ec: var(--red); }
+    .dc-gold { --ec: var(--gold); }
+    .dc-grey { --ec: #a0a0a0; }
+
+    .field-step { display: flex; gap: 12px; align-items: flex-start; background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; position: relative; overflow: hidden; }
     .field-step-icon { font-size: 20px; flex-shrink: 0; }
-    .field-step-text { font-size: 14px; color: var(--text-sec); line-height: 1.5; padding-top: 2px; }
- 
-    .recovery-card { background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 14px; padding: 14px 16px; margin: 0 16px 10px; }
+    .field-step-text { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); line-height: 1.5; padding-top: 2px; }
+    .field-step::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1.5px; pointer-events: none;
+      background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
+    }
+
+    .recovery-card { background: #0d0d0d; border: 1px solid var(--grey-light); border-radius: 12px; padding: 12px 14px; margin: 0 16px 8px; position: relative; overflow: hidden; }
     .recovery-icon { font-size: 24px; margin-bottom: 6px; }
-    .recovery-title { font-size: 15px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 4px; }
+    .recovery-title { font-size: 14px; font-weight: 700; font-family: var(--font-title); color: var(--text-pri); margin-bottom: 4px; }
     .recovery-desc { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
- 
-    .day-note { margin: 0 16px 20px; background: #0d0d0d; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-sec); line-height: 1.5; border: 1px solid var(--grey-light); }
+    .recovery-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1.5px; pointer-events: none;
+      background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
+    }
+
+    .day-note { margin: 0 16px 20px; background: #0d0d0d; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-sec); line-height: 1.5; border: 1px solid var(--grey-light); position: relative; overflow: hidden; }
+    .day-note::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1.5px; pointer-events: none;
+      background: linear-gradient(to right, transparent, var(--ec, transparent), transparent);
+    }
  
     .day-empty-tier {
       background: #0d0d0d; border: 1.5px dashed var(--grey-muted);
@@ -1563,8 +1585,8 @@ function renderDay(index) {
 
     // Static warmup
     html += '<div class="tier-section">'
-      + '<div class="field-step">' + (d.field[0] && d.field[0].icon ? '<div class="field-step-icon">'+d.field[0].icon+'</div>' : '') + '<div class="field-step-text">' + d.field[0].text + '</div></div>';
-
+      + '<div class="field-step dc-' + c + '">' + (d.field[0] && d.field[0].icon ? '<div class="field-step-icon">'+d.field[0].icon+'</div>' : '') + '<div class="field-step-text">' + d.field[0].text + '</div></div>';
+    
     // Customizable exercises (up to 3)
     var fieldExes = d.exercises || [];
     if (fieldExes.length === 0) {
@@ -1573,7 +1595,7 @@ function renderDay(index) {
       fieldExes.forEach(function(ex, ei) {
         var key = 'field-' + index + '-' + ei;
         var menuOpen = state.openMenuId === key;
-        html += '<div class="ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '">'
+        html += '<div class="ex-card dc-' + c + (ex.cat ? ' cat-' + ex.cat : '') + '">'
           + '<div class="ex-card-header">'
           + '<div class="ex-name">' + ex.name + '</div>'
           + '<button class="ex-menu-btn" onclick="toggleMenu(\'' + key + '\')">•••</button>'
@@ -1593,13 +1615,12 @@ function renderDay(index) {
 
     // Static cooldown
 var lastField = d.field[d.field.length - 1];
-    html += '<div class="field-step" style="margin-top:8px;">' + (lastField.icon ? '<div class="field-step-icon">'+lastField.icon+'</div>' : '') + '<div class="field-step-text">' + lastField.text + '</div></div>'
-      + '</div>';
+    html += '<div class="field-step dc-' + c + '" style="margin-top:8px;">' + (lastField.icon ? '<div class="field-step-icon">'+lastField.icon+'</div>' : '') + '<div class="field-step-text">' + lastField.text + '</div></div>'      + '</div>';
   }
  
   if (d.recovery) {
     d.recovery.forEach(function(r){
-      html += '<div class="recovery-card">' + (r.icon ? '<div class="recovery-icon">'+r.icon+'</div>' : '') + '<div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
+      html += '<div class="recovery-card dc-' + c + '">' + (r.icon ? '<div class="recovery-icon">'+r.icon+'</div>' : '') + '<div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
     });
   }
  
@@ -1619,7 +1640,7 @@ var lastField = d.field[d.field.length - 1];
           var isSimple = ex.fw === ex.mb && ex.mb === ex.bw;
           var menuOpen = state.openMenuId === key;
  
-          html += '<div class="ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '" data-key="' + key + '">'
+          html += '<div class="ex-card dc-' + c + (ex.cat ? ' cat-' + ex.cat : '') + '" data-key="' + key + '">'
             + '<div class="ex-card-header">'
             + '<div style="display:flex;align-items:center;gap:8px;">'
             + '<div class="ex-name">' + ex.name + '</div>'
@@ -1662,7 +1683,7 @@ if (!isSimple) {
     });
   }
  
-  if (d.note) html += '<div class="day-note">'+d.note+'</div>';
+  if (d.note) html += '<div class="day-note dc-' + c + '">'+d.note+'</div>';
   html += '<div class="forge-mark">The Forge &nbsp;·&nbsp; Beta v0.4</div>';
   return html;
 }

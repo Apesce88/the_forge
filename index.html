@@ -1619,6 +1619,15 @@ var lastField = d.field[d.field.length - 1];
   }
  
   if (d.recovery) {
+      html += '<div style="padding: 0 16px 16px;display:flex;justify-content:center;">'
+      + '<button onclick="startWorkout(' + index + ')" style="'
+      + 'width:70%;padding:11px;border-radius:14px;'
+      + 'border:1.5px solid #a0a0a0;'
+      + 'background:rgba(200,200,200,0.06);color:#d0d0d0;'
+      + 'font-size:14px;font-family:var(--font-body);letter-spacing:0.1em;'
+      + 'font-weight:700;cursor:pointer;'
+      + 'box-shadow:0 0 12px rgba(200,200,200,0.25);">START WORKOUT</button>'
+      + '</div>';
     d.recovery.forEach(function(r){
       html += '<div class="recovery-card dc-' + c + '">' + (r.icon ? '<div class="recovery-icon">'+r.icon+'</div>' : '') + '<div class="recovery-title">'+r.title+'</div><div class="recovery-desc">'+r.desc+'</div></div>';
     });
@@ -3572,6 +3581,23 @@ function startWorkout(dayIndex) {
     });
   }
 
+  // Recovery days — default recovery options become loggable exercises
+  if (exercises.length === 0 && d.recovery) {
+    d.recovery.forEach(function(r) {
+      exercises.push({
+        exName: r.title,
+        tier: 'Recovery',
+        type: 'standard',
+        unit: 'mi',
+        static: false,
+        fw: r.desc,
+        mb: r.desc,
+        bw: r.desc,
+        equipTab: 0,
+        sets: [{ load: '', loadType: 'bw', effort: '', effortType: 'time' }]
+      });
+    });
+  }
 
   state.activeSession = {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),

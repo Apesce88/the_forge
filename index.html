@@ -1845,13 +1845,13 @@ function renderModal() {
       + '<div class="modal-sheet" onclick="event.stopPropagation()">'
       + '<div class="modal-handle"></div>'
       + '<div class="modal-title">Replace Exercise</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromSession(\'replace\',' + m.ei + ')" '
-      + 'style="display:block;width:100%;margin:0 0 4px;padding:10px;border-radius:10px;'
+      + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
       + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
-      + '<div class="cat-tabs">' + tabsHTML + '</div>'
-      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
       + '</div></div>';
   }
@@ -1877,13 +1877,13 @@ function renderModal() {
       + '<div class="modal-sheet" onclick="event.stopPropagation()">'
       + '<div class="modal-handle"></div>'
       + '<div class="modal-title">Add to ' + escHtml(m.tier || '') + '</div>'
+      + '<div class="cat-tabs">' + tabsHTML + '</div>'
+      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromSession(\'add\',\'' + escHtml(m.tier || '') + '\')" '
-      + 'style="display:block;width:100%;margin:0 0 4px;padding:10px;border-radius:10px;'
+      + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
       + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
-      + '<div class="cat-tabs">' + tabsHTML + '</div>'
-      + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
       + '</div></div>';
   }

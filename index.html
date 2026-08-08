@@ -1147,7 +1147,8 @@ var state = {
   journeyExpanded: {},
   journeySwiped: null,
   rmCalc: null,
-  showArchived: false
+  showArchived: false,
+  journeyPeriod: 'week'
 };
  
 // ── localStorage Keys ──────────────────────────────────────────────────────
@@ -2843,7 +2844,7 @@ render();
 // ── Tracker Screen ──
 function renderJourney() {
   // ── Stats ──
-  var stats = computeJourneyStats();
+  var stats = computeJourneyStats(state.journeyPeriod || 'week');
   var fmtVol = function(v) { return v >= 1000 ? (v/1000).toFixed(1) + 'k' : Math.round(v); };
 
   var statsHTML = '';
@@ -2860,15 +2861,25 @@ function renderJourney() {
       + '</div>';
   });
 
-  // Stat card grid — compact
+  // Period toggle — Week / Month / Year
+  var jpCur = state.journeyPeriod || 'week';
+  var jpOpts = [['week','Week'],['month','Month'],['year','Year']];
+  statsHTML += '<div class="cat-tabs" style="padding:0 16px 10px;">'
+    + jpOpts.map(function(p) {
+        return '<button class="cat-tab' + (jpCur === p[0] ? ' active' : '') + '" '
+          + 'onclick="setJourneyPeriod(\'' + p[0] + '\')">' + p[1] + '</button>';
+      }).join('')
+    + '</div>';
+
+  // Stat card grid — compact, scoped to the toggled period
   statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 16px 6px;">'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.weekCount + '</div><div class="stat-label-sm">This Week</div></div>'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.monthCount + '</div><div class="stat-label-sm">This Month</div></div>'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.runDist.toFixed(1) + '<span style="font-size:9px;color:var(--text-sec);"> mi</span></div><div class="stat-label-sm">Run · Wk</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.count + '</div><div class="stat-label-sm">Workouts</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm">' + fmtVol(stats.totalVol) + '</div><div class="stat-label-sm">Total Vol</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.runDist.toFixed(1) + '<span style="font-size:9px;color:var(--text-sec);"> mi</span></div><div class="stat-label-sm">Run</div></div>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 16px 16px;">'
-    + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label-sm">Upper Vol · Wk</div></div>'
-    + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label-sm">Lower Vol · Wk</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label-sm">Upper Vol</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label-sm">Lower Vol</div></div>'
     + '</div>';
 
   // ── Active session card ──
@@ -3454,16 +3465,28 @@ function logDistance(log) {
   }, 0);
 }
 
-function computeJourneyStats() {
+function setJourneyPeriod(p) {
+  state.journeyPeriod = p;
+  render();
+}
+  
+function computeJourneyStats(period) {
   var logs = loadLogs().filter(function(l) { return !l.archived; });
   var weekStart = getWeekStart(0);
   var lastWeekStart = getWeekStart(-1);
   var now = new Date();
   var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yearStart = new Date(now.getFullYear(), 0, 1).getTime();
+
+  // Toggled period for the stat tiles. Overload detection below stays week-over-week.
+  var periodStart = period === 'year' ? yearStart
+                  : period === 'month' ? monthStart
+                  : weekStart;
 
   var stats = {
-    weekCount: 0, monthCount: 0,
-    upperVol: 0, lowerVol: 0, runDist: 0,
+    period: period || 'week',
+    count: 0,
+    upperVol: 0, lowerVol: 0, totalVol: 0, runDist: 0,
     overloads: []
   };
 
@@ -3474,14 +3497,14 @@ function computeJourneyStats() {
   logs.forEach(function(log) {
     var t = log.completedAt || log.startedAt;
 
-    if (t >= weekStart) {
-      stats.weekCount++;
+    if (t >= periodStart) {
+      stats.count++;
       var vol = logVolume(log);
+      stats.totalVol += vol;
       if (log.dayColor === 'red') stats.lowerVol += vol;
       else if (log.dayColor === 'lime') stats.upperVol += vol;
       stats.runDist += logDistance(log);
     }
-    if (t >= monthStart) stats.monthCount++;
 
     // Main lift volume per exercise, this week vs last week
     var bucket = null;

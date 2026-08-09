@@ -2951,7 +2951,7 @@ function renderJourney() {
       var totalSets = log.exercises.reduce(function(acc, ex) { return acc + ex.sets.length; }, 0);
       var totalVol = log.exercises.reduce(function(acc, ex) {
         return acc + ex.sets.reduce(function(a, set) {
-          if (set.loadType === 'bw' || !set.load) return a;
+          if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
         }, 0);
       }, 0);
@@ -3448,7 +3448,7 @@ function getWeekStart(offset) {
 function logVolume(log) {
   return log.exercises.reduce(function(acc, ex) {
     return acc + ex.sets.reduce(function(a, set) {
-      if (set.loadType === 'bw' || !set.load) return a;
+      if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
       return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
     }, 0);
   }, 0);
@@ -3514,7 +3514,7 @@ function computeJourneyStats(period) {
       log.exercises.forEach(function(ex) {
         if (!ex.mainLift) return;
         var exVol = ex.sets.reduce(function(a, set) {
-          if (set.loadType === 'bw' || !set.load) return a;
+          if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
         }, 0);
         bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
@@ -3950,8 +3950,8 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
             + '<input type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="' + (set.distance || '') + '" '
             + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'distance\',this.value)" ')
             + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
-            + '<input type="text" inputmode="numeric" placeholder="00:00" value="' + (set.time || '') + '" '
-            + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'time\',this.value)" ')
+            + '<input type="text" inputmode="numeric" placeholder="0:00" value="' + (set.time || '') + '" '
+            + (isComplete ? 'disabled ' : 'oninput="timeInput(this,' + ei + ',' + si + ',\'time\')" onblur="timeBlur(this,' + ei + ',' + si + ',\'time\')" ')
             + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
             + (isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
             + '</div>';
@@ -4000,11 +4000,13 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
               : '<input type="number" inputmode="decimal" min="1" placeholder="--" value="' + (set.load || '') + '" '
                 + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'load\',this.value)" ')
                 + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>')
-            + '<input type="' + (effortTypeVal === 'time' ? 'text' : 'number') + '" '
-            + (effortTypeVal === 'time' ? 'placeholder="00:00" ' : 'inputmode="numeric" min="1" placeholder="--" ')
-            + 'value="' + (set.effort || '') + '" '
-            + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effort\',this.value)" ')
-            + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
+            + (effortTypeVal === 'time'
+              ? '<input type="text" inputmode="numeric" placeholder="0:00" value="' + (set.effort || '') + '" '
+                + (isComplete ? 'disabled ' : 'oninput="timeInput(this,' + ei + ',' + si + ',\'effort\')" onblur="timeBlur(this,' + ei + ',' + si + ',\'effort\')" ')
+                + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>'
+              : '<input type="number" inputmode="numeric" min="1" placeholder="--" value="' + (set.effort || '') + '" '
+                + (isComplete ? 'disabled ' : 'onchange="updateSet(' + ei + ',' + si + ',\'effort\',this.value)" ')
+                + 'style="' + (isComplete ? inputLocked : inputActive) + '"/>')
             + (isComplete ? '<div></div>' : '<button onclick="removeSet(' + ei + ',' + si + ')" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0;text-align:center;">×</button>')
             + '</div>';
         });
@@ -4109,6 +4111,28 @@ function addSet(ei) {
   render();
 }
 
+// Live mm:ss formatting. Digits fill from the right; colon appears at 3+ digits.
+function timeInput(el, ei, si, field) {
+  var d = (el.value || '').replace(/\D/g, '').slice(0, 4);
+  var out = d.length >= 3 ? d.slice(0, d.length - 2) + ':' + d.slice(-2) : d;
+  el.value = out;
+  if (state.activeSession) state.activeSession.exercises[ei].sets[si][field] = out;
+}
+
+// On blur, normalise to m:ss — "45" becomes 0:45, "90" becomes 1:30
+function timeBlur(el, ei, si, field) {
+  var d = (el.value || '').replace(/\D/g, '');
+  var out = '';
+  if (d) {
+    var mm = d.length <= 2 ? 0 : parseInt(d.slice(0, -2), 10);
+    var ss = d.length <= 2 ? parseInt(d, 10) : parseInt(d.slice(-2), 10);
+    if (ss > 59) { mm += Math.floor(ss / 60); ss = ss % 60; }
+    out = mm + ':' + (ss < 10 ? '0' + ss : ss);
+  }
+  el.value = out;
+  if (state.activeSession) state.activeSession.exercises[ei].sets[si][field] = out;
+}
+  
 function updateSet(ei, si, field, value) {
   if (!state.activeSession) return;
   state.activeSession.exercises[ei].sets[si][field] = value;

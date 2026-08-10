@@ -1618,6 +1618,11 @@ function renderDay(index) {
             + '<button class="ex-action-btn ex-action-remove" onclick="removeFieldEx(' + index + ',' + ei + ')">📋 Remove</button>'
             + '</div>';
         }
+        if (ex.cat === 'dynamic') {
+          html += dynOptsHTML(ex);
+        } else if (ex.fw) {
+          html += '<div class="equip-content">' + ex.fw + '</div>';
+        }
         html += '</div>';
       });
     }
@@ -3896,15 +3901,7 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       if (ex.type === 'running') {
         var distUnit = ex.unit === 'yd' ? 'yd' : 'mi';
         if (ex.cat === 'dynamic') html += dynInlineHTML(ex);
-        // Movement details — dynamic exercises hold Distance in fw and Rest in bw
-        var detBits = [];
-        if (ex.fw) detBits.push(ex.fw);
-        if (ex.bw) detBits.push('Rest ' + ex.bw);
-        if (detBits.length) {
-          html += '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;'
-            + 'margin-bottom:8px;padding:8px 10px;background:var(--grey-mid);border-radius:8px;">'
-            + escHtml(detBits.join(' · ')) + '</div>';
-        }
+        
         html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + distUnit + ')</div>'
@@ -3975,7 +3972,16 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       var selectLocked = selectStyle + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
 
       if (ex.type === 'running') {
-
+        // Static type row — mirrors the standard card's Load/Effort dropdowns.
+        // Not a select: distance and time aren't switchable.
+        var runLabel = 'display:flex;align-items:center;justify-content:center;';
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'
+          + '<div></div>'
+          + '<div style="' + (isComplete ? selectLocked : selectActive) + runLabel + '">Distance</div>'
+          + '<div style="' + (isComplete ? selectLocked : selectActive) + runLabel + '">Time</div>'
+          + '<div></div>'
+          + '</div>';
+        
         ex.sets.forEach(function(set, si) {
           html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'
             + '<div style="font-size:11px;font-family:var(--font-body);color:' + (isComplete ? 'var(--text-mute)' : 'var(--gold-metal)') + ';text-align:center;">' + (si + 1) + '</div>'

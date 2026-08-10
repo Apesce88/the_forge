@@ -3682,6 +3682,11 @@ function startWorkout(dayIndex) {
         type: detectExType(ex.name),
         unit: 'yd',
         static: false,
+        cat: ex.cat || '',
+        fw: ex.fw,
+        mb: ex.mb,
+        bw: ex.bw,
+        equipTab: 0,
         sets: []
       });
     });
@@ -3866,7 +3871,16 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       // Column headers
       if (ex.type === 'running') {
         var distUnit = ex.unit === 'yd' ? 'yd' : 'mi';
-        html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+        // Movement details — dynamic exercises hold Distance in fw and Rest in bw
+        var detBits = [];
+        if (ex.fw) detBits.push(ex.fw);
+        if (ex.bw) detBits.push('Rest ' + ex.bw);
+        if (detBits.length) {
+          html += '<div style="font-size:12px;color:var(--text-sec);line-height:1.5;'
+            + 'margin-bottom:8px;padding:8px 10px;background:var(--grey-mid);border-radius:8px;">'
+            + escHtml(detBits.join(' · ')) + '</div>';
+        }
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;padding:0 2px;">'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + distUnit + ')</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
@@ -3936,13 +3950,6 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       var selectLocked = selectStyle + 'background:var(--grey-dark);border:1px solid var(--grey-mid);color:var(--text-mute);cursor:not-allowed;';
 
       if (ex.type === 'running') {
-        // Running column headers
-        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
-          + '<div></div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + (ex.unit || 'mi') + ')</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
-          + '<div></div>'
-          + '</div>';
 
         ex.sets.forEach(function(set, si) {
           html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center;">'

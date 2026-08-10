@@ -1679,7 +1679,9 @@ var lastField = d.field[d.field.length - 1];
               + '</div>';
           }
  
-if (!isSimple) {
+if (ex.cat === 'dynamic') {
+            html += dynOptsHTML(ex);
+          } else if (!isSimple) {
             html += '<div class="equip-tabs">'
               + ['Free Weight','Machine/Band','Bodyweight'].map(function(t,i){
                   return '<button class="equip-tab'+(i===activeTab?' active':'')+'" onclick="switchTab(\''+key+'\','+i+')">'+t+'</button>';
@@ -1759,7 +1761,28 @@ function saveEditDayExercise() {
   saveDays();
   closeModal();
 }
- 
+
+// Dynamic exercises show Distance / Volume / Rest instead of equipment variants.
+// One renderer so library, picker, and day card can never drift apart again.
+function dynOptsHTML(ex) {
+  return '<div class="lib-ex-options">'
+    + '<div class="lib-ex-option">DIST: <span>' + escHtml(ex.fw || '—') + '</span></div>'
+    + '<div class="lib-ex-option">VOL: <span>' + escHtml(ex.mb || '—') + '</span></div>'
+    + '<div class="lib-ex-option">REST: <span>' + escHtml(ex.bw || '—') + '</span></div>'
+    + '</div>';
+}
+
+// Same three values on one line, for the session card header
+function dynInlineHTML(ex) {
+  return '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;'
+    + 'background:var(--grey-mid);border-radius:8px;font-size:11px;'
+    + 'font-family:var(--font-body);color:var(--text-mute);letter-spacing:0.04em;">'
+    + '<span>DIST: <span style="color:var(--text-pri);">' + escHtml(ex.fw || '—') + '</span></span>'
+    + '<span>VOL: <span style="color:var(--text-pri);">' + escHtml(ex.mb || '—') + '</span></span>'
+    + '<span>REST: <span style="color:var(--text-pri);">' + escHtml(ex.bw || '—') + '</span></span>'
+    + '</div>';
+}
+  
 // ── Screen: My Exercises Library ───────────────────────────────────────────
 function renderLibrary() {
   var cats = [
@@ -1796,12 +1819,13 @@ function renderLibrary() {
           + '</div>';
       }
  
-      var isDyn = ex.cat === 'dynamic';
-      exHTML += '<div class="lib-ex-options">'
-        + '<div class="lib-ex-option">' + (isDyn ? 'DIST: ' : '') + '<span>'+ex.fw+'</span></div>'
-        + '<div class="lib-ex-option">' + (isDyn ? 'VOL: ' : '') + '<span>'+ex.mb+'</span></div>'
-        + '<div class="lib-ex-option">' + (isDyn ? 'REST: ' : '') + '<span>'+ex.bw+'</span></div>'
-        + '</div>'
+      exHTML += (ex.cat === 'dynamic'
+        ? dynOptsHTML(ex)
+        : '<div class="lib-ex-options">'
+          + '<div class="lib-ex-option"><span>'+ex.fw+'</span></div>'
+          + '<div class="lib-ex-option"><span>'+ex.mb+'</span></div>'
+          + '<div class="lib-ex-option"><span>'+ex.bw+'</span></div>'
+          + '</div>')
         + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
         + '</div>';
     });
@@ -1839,7 +1863,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="confirmReplaceSessionExercise(' + m.ei + ',\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
+            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">' + ex.fw + '</div>')
             + '</button>';
         }).join('');
     return '<div class="modal-overlay" onclick="closeModal()">'
@@ -1871,7 +1895,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="confirmAddSessionExercise(\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
+            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">' + ex.fw + '</div>')
             + '</button>';
         }).join('');
     return '<div class="modal-overlay" onclick="closeModal()">'
@@ -1940,7 +1964,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="addFieldEx(' + m.di + ',\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>'
+            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>')
             + '</button>';
         }).join('');
     return '<div class="modal-overlay" onclick="closeModal()">'
@@ -1974,7 +1998,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="addExToDay(' + m.di + ',' + m.ti + ',\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + '<div class="picker-ex-opts">' + ex.fw + '</div>'
+            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">' + ex.fw + '</div>')
             + '</button>';
         }).join('');
 
@@ -3871,6 +3895,7 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
       // Column headers
       if (ex.type === 'running') {
         var distUnit = ex.unit === 'yd' ? 'yd' : 'mi';
+        if (ex.cat === 'dynamic') html += dynInlineHTML(ex);
         // Movement details — dynamic exercises hold Distance in fw and Rest in bw
         var detBits = [];
         if (ex.fw) detBits.push(ex.fw);
@@ -3880,10 +3905,10 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
             + 'margin-bottom:8px;padding:8px 10px;background:var(--grey-mid);border-radius:8px;">'
             + escHtml(detBits.join(' · ')) + '</div>';
         }
-        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:6px;padding:0 2px;">'
+        html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">DIST (' + distUnit + ')</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME (mm:ss)</div>'
+          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">TIME</div>'
           + '<div></div>'
           + '</div>';
       } else {

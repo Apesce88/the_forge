@@ -1416,6 +1416,23 @@ function openAddLibModal() {
   openModal({ mode: 'addLib', name:'', cat: state.libCat, fw:'', mb:'', bw:'' });
 }
 
+// Create a new library exercise from a day-card picker, then place it
+function openNewExFromDay(di, ti) {
+  openModal({
+    mode: 'addLib', name: '', cat: state.pickerCat || 'upper',
+    fw: '', mb: '', bw: '', notes: '',
+    dayTarget: 'day', dayDi: di, dayTi: ti
+  });
+}
+
+function openNewExFromField(di) {
+  openModal({
+    mode: 'addLib', name: '', cat: 'dynamic',
+    fw: '', mb: '', bw: '', notes: '',
+    dayTarget: 'field', dayDi: di
+  });
+}
+  
   function openAddDayModal(di, ti) {
   state.pickerCat = 'upper';
   openModal({ mode: 'addDay', di: di, ti: ti });
@@ -1465,6 +1482,12 @@ function saveLibExercise() {
   if (m.mode === 'addLib') {
     newLibEx = { id: genId(), name: m.name.trim(), cat: m.cat, fw: m.fw.trim(), mb: m.mb.trim(), bw: m.bw.trim(), notes: (m.notes||'').trim() };
     state.library.push(newLibEx);
+    if (m.dayTarget) {
+      saveLibrary();
+      if (m.dayTarget === 'day') addExToDay(m.dayDi, m.dayTi, newLibEx.id);
+      else addFieldEx(m.dayDi, newLibEx.id);
+      return;
+    }    
     if (m.sessionTarget && state.activeSession) {
       saveLibrary();
       if (m.sessionTarget === 'add') {
@@ -1969,7 +1992,7 @@ function renderModal() {
       : filtered.map(function(ex) {
           return '<button class="picker-ex-btn" onclick="addFieldEx(' + m.di + ',\'' + ex.id + '\')">'
             + '<div class="picker-ex-name">' + ex.name + '</div>'
-            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">🏋️ ' + ex.fw + '</div>')
+            + (ex.cat === 'dynamic' ? dynOptsHTML(ex) : '<div class="picker-ex-opts">' + ex.fw + '</div>')
             + '</button>';
         }).join('');
     return '<div class="modal-overlay" onclick="closeModal()">'
@@ -1978,6 +2001,11 @@ function renderModal() {
       + '<div class="modal-title">Add Exercise</div>'
       + '<div class="cat-tabs">' + tabsHTML + '</div>'
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<button onclick="openNewExFromField(' + m.di + ')" '
+      + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
+      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
+      + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;">'
       + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
       + '</div>'
@@ -2013,6 +2041,11 @@ function renderModal() {
       + '<div class="modal-title">Add Exercise</div>'
       + '<div class="cat-tabs">' + tabsHTML + '</div>'
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
+      + '<button onclick="openNewExFromDay(' + m.di + ',' + m.ti + ')" '
+      + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
+      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
+      + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;">'
       + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
       + '</div>'

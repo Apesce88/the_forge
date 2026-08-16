@@ -179,8 +179,18 @@
     .day-widget-lg .day-num { font-size: 28px; }
     .day-lbl { font-size: 7.5px; letter-spacing: 0.1em; color: var(--text-mute); margin-top: 3px; }
 
-    .j-week-streak { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; }
-    .j-week-flame { font-size: 13px; }
+    .j-week-streak {
+      display: flex; align-items: center; gap: 8px;
+      margin: 0 16px 10px; padding: 10px 14px;
+      border-radius: 10px; background: #0d0d0d;
+      border: 1px solid var(--grey-light);
+    }
+    .cat-tab.period-tab.active {
+      background: rgba(255,255,255,0.08);
+      border-color: #d0d0d0;
+      color: #f0f0f0;
+      box-shadow: 0 0 8px rgba(255,255,255,0.30);
+    }    .j-week-flame { font-size: 13px; }
     .j-week-text { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.03em; color: var(--text-sec); }
     .j-week-text b { font-family: var(--font-title); font-size: 12px; font-weight: 700; color: var(--gold-metal); margin-right: 2px; }    .stat-num-sm { font-size: 16px; font-weight: 700; color: var(--text-pri); line-height: 1; font-family: var(--font-title); }
     .stat-label-sm { font-size: 8px; color: var(--text-sec); margin-top: 3px; letter-spacing: 0.04em; line-height: 1.25; font-family: var(--font-body); text-transform: uppercase; }
@@ -2975,7 +2985,7 @@ function renderJourney() {
   var jpOpts = [['week','Week'],['month','Month'],['year','Year']];
   statsHTML += '<div class="cat-tabs" style="padding:0 16px 10px;">'
     + jpOpts.map(function(p) {
-        return '<button class="cat-tab' + (jpCur === p[0] ? ' active' : '') + '" '
+        return '<button class="cat-tab period-tab' + (jpCur === p[0] ? ' active' : '') + '" '
           + 'onclick="setJourneyPeriod(\'' + p[0] + '\')">' + p[1] + '</button>';
       }).join('')
     + '</div>';
@@ -3308,11 +3318,18 @@ function closeProfileSheet() {
   
   function weekStreakLineHTML() {
     var wk = computeWeekStreak();
-    if (wk.level === 0) return '';
-    var name = WEEK_STREAK_NAMES[wk.level];
-    return '<div class="j-week-streak">'
+    var cls = 'j-week-streak'
+      + (wk.level === 1 ? ' streak-ring' : '')
+      + (wk.level === 2 ? ' streak-ring streak-bar' : '')
+      + (wk.level >= 3 ? ' gring' : '')
+      + (wk.level === 4 ? ' gring-glow' : '')
+      + (wk.level === 5 ? ' gring-glow-lg' : '');
+    var label = wk.level === 0
+      ? '<div class="j-week-text">No streak yet</div>'
+      : '<div class="j-week-text"><b>' + WEEK_STREAK_NAMES[wk.level] + '</b> · ' + wk.weeksRunning + ' week streak</div>';
+    return '<div class="' + cls + '">'
       + '<div class="j-week-flame">🔥</div>'
-      + '<div class="j-week-text"><b>' + name + '</b> · ' + wk.weeksRunning + ' week streak</div>'
+      + label
       + '</div>';
   }
   
@@ -3356,11 +3373,11 @@ function renderHeroScreen() {
         + '<div style="flex:1;min-width:0;text-align:center;">'
         + '<input type="number" inputmode="decimal" min="0" placeholder="—" value="' + (has ? round5(rec.oneRM) : '') + '" '
         + 'onchange="setRecord1RM(' + li + ',this.value)" '
-        + 'style="width:100%;background:rgba(200,146,42,0.07);border:1px solid var(--gold-metal);border-radius:6px;'
-        + 'box-shadow:0 0 7px rgba(212,175,55,0.45),inset 0 0 4px rgba(212,175,55,0.12);'
-        + 'color:var(--gold-light);font-size:15px;font-family:var(--font-title);font-weight:700;'
+        + 'style="width:100%;background:rgba(210,210,210,0.07);border:1px solid rgba(210,210,210,0.5);border-radius:6px;'
+        + 'box-shadow:0 0 7px rgba(210,210,210,0.35),inset 0 0 4px rgba(210,210,210,0.10);'
+        + 'color:#f0f0f0;font-size:15px;font-family:var(--font-title);font-weight:700;'
         + 'text-align:center;outline:none;padding:3px 0;"/>'
-        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--gold-metal);margin-top:3px;">1RM</div>'
+        + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;color:#c8c8c8;margin-top:3px;">1RM</div>'
         + '</div>'
         + '<div style="flex:1;min-width:0;text-align:center;">'
         + '<div style="font-size:15px;font-family:var(--font-title);font-weight:700;color:var(--text-pri);line-height:1.4;padding:3px 0;">' + (has ? rmFromOne(rec.oneRM, 3) : '—') + '</div>'
@@ -3382,14 +3399,14 @@ function renderHeroScreen() {
           + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);width:100%;"/>'
           + '<select onchange="updateRMCalc(\'reps\',this.value)" '
           + 'style="border-radius:6px;padding:5px 2px;font-size:9px;font-family:var(--font-body);text-align:center;'
-          + 'background:var(--grey-dark);border:1px solid var(--grey-light);color:var(--gold-metal);width:100%;-webkit-appearance:none;cursor:pointer;">'
+          + 'background:var(--grey-dark);border:1px solid var(--grey-light);color:#c8c8c8;width:100%;-webkit-appearance:none;cursor:pointer;">'
           + '<option value="5"' + (state.rmCalc.reps === '3' ? '' : ' selected') + '>5RM</option>'
           + '<option value="3"' + (state.rmCalc.reps === '3' ? ' selected' : '') + '>3RM</option>'
           + '</select>'
           + '</div>'
           + '<button onclick="applyRMCalc(' + li + ')" '
           + 'style="width:100%;padding:4px;border-radius:6px;font-size:8px;font-family:var(--font-body);letter-spacing:0.08em;'
-          + 'background:rgba(200,146,42,0.08);border:1px solid var(--gold-metal);color:var(--gold-metal);cursor:pointer;">APPLY</button>'
+          + 'background:rgba(210,210,210,0.08);border:1px solid rgba(210,210,210,0.5);color:#c8c8c8;cursor:pointer;">APPLY</button>'
           + '</div>';
       }
 
@@ -3405,25 +3422,25 @@ function renderHeroScreen() {
     });
   }
 
-  var recordsPanel = '<div style="background:#0d0d0d;border:1px solid rgba(200,146,42,0.3);border-radius:12px;padding:10px 10px 6px;">'
-    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.14em;color:var(--gold-metal);line-height:1.2;">RECORDS</div>'
+  var recordsPanel = '<div style="background:#0d0d0d;border:1px solid rgba(210,210,210,0.25);border-radius:12px;padding:10px 10px 6px;">'
+    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.14em;color:#c8c8c8;line-height:1.2;">RECORDS</div>'
     + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.1em;color:var(--text-mute);margin-bottom:4px;">MAIN LIFTS</div>'
     + rowsHTML
     + '</div>';
 
   // ── Signet + Focus banner — the identity anchor ──
-  var signetBanner = '<div style="margin:0 16px 10px;background:#0d0d0d;border:1px solid rgba(200,146,42,0.35);'
-    + 'border-radius:16px;padding:18px 16px;box-shadow:0 0 18px rgba(200,146,42,0.10);">'
+  var signetBanner = '<div style="margin:0 16px 10px;background:#0d0d0d;border:1px solid rgba(210,210,210,0.25);'
+    + 'border-radius:16px;padding:18px 16px;box-shadow:0 0 18px rgba(210,210,210,0.08);">'
     + '<div style="display:flex;align-items:center;gap:16px;">'
 
     // Emblem slot — Phase 13 drops the forged signet emblem in here
     + '<div style="width:76px;height:76px;border-radius:50%;flex-shrink:0;'
     + 'display:flex;align-items:center;justify-content:center;font-size:30px;'
-    + 'background:rgba(200,146,42,0.06);border:1.5px dashed rgba(200,146,42,0.45);'
-    + 'box-shadow:0 0 16px rgba(200,146,42,0.18);color:rgba(200,146,42,0.5);">⚔</div>'
+    + 'background:rgba(210,210,210,0.05);border:1.5px dashed rgba(210,210,210,0.35);'
+    + 'box-shadow:0 0 16px rgba(210,210,210,0.12);color:rgba(210,210,210,0.5);">⚔</div>'
 
     + '<div style="min-width:0;flex:1;">'
-    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:4px;">YOUR SIGNET</div>'
+    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.16em;color:#c8c8c8;margin-bottom:4px;">YOUR SIGNET</div>'
     + '<div style="font-family:var(--font-title);font-size:20px;color:var(--text-sec);line-height:1.1;margin-bottom:6px;">Not Chosen</div>'
     + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);line-height:1.5;">'
     + 'Forge a path in the Proving Grounds<br>to claim your archetype.</div>'
@@ -3432,7 +3449,7 @@ function renderHeroScreen() {
 
     // Hero's Focus strip
     + '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grey-mid);">'
-    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.16em;color:var(--gold-metal);margin-bottom:5px;">HERO\'S FOCUS</div>'
+    + '<div style="font-size:12px;font-family:var(--font-body);letter-spacing:0.16em;color:#c8c8c8;margin-bottom:5px;">HERO\'S FOCUS</div>'
     + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.04em;color:var(--text-sec);line-height:1.5;">'
     + 'Hypertrophy · Power · Speed<br>'
     + '<span style="font-size:9px;color:var(--text-mute);">Focus is set by your Signet — Phase 13</span></div>'

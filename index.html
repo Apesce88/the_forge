@@ -3069,8 +3069,8 @@ function renderJourney() {
         : '—';
       var totalSets = log.exercises.reduce(function(acc, ex) { return acc + ex.sets.length; }, 0);
       var totalVol = log.exercises.reduce(function(acc, ex) {
-        return acc + ex.sets.reduce(function(a, set) {
-          if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
+      return acc + ex.sets.reduce(function(a, set) {
+          if (set.loadType === 'bw' || set.loadType === 'distance' || set.loadType === 'height' || set.effortType === 'time' || !set.load) return a;
           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
         }, 0);
       }, 0);
@@ -3131,7 +3131,7 @@ function renderJourney() {
             if (ex.type === 'running') {
               setLine = (set.distance || '—') + ' ' + (ex.unit || 'mi') + '  ·  ' + (set.time || '—');
             } else {
-              var loadLabel = set.loadType === 'bw' ? 'BW' : set.loadType === 'band' ? 'Band' : (set.load || '—') + ' lbs';
+              var loadLabel = set.loadType === 'bw' ? 'BW' : set.loadType === 'band' ? 'Band' : set.loadType === 'distance' ? (set.load || '—') + ' dist' : set.loadType === 'height' ? (set.load || '—') + ' ht' : (set.load || '—') + ' lbs';
               var effortLabel = set.effortType === 'time' ? (set.effort || '—') + ' sec' : (set.effort || '—') + ' reps';
               setLine = loadLabel + '  ·  ' + effortLabel;
             }
@@ -3687,7 +3687,7 @@ function getWeekStart(offset) {
 function logVolume(log) {
   return log.exercises.reduce(function(acc, ex) {
     return acc + ex.sets.reduce(function(a, set) {
-      if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
+      if (set.loadType === 'bw' || set.loadType === 'distance' || set.loadType === 'height' || set.effortType === 'time' || !set.load) return a;
       return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
     }, 0);
   }, 0);
@@ -3753,7 +3753,7 @@ function computeJourneyStats(period) {
       log.exercises.forEach(function(ex) {
         if (!ex.mainLift) return;
         var exVol = ex.sets.reduce(function(a, set) {
-          if (set.loadType === 'bw' || set.effortType === 'time' || !set.load) return a;
+          if (set.loadType === 'bw' || set.loadType === 'distance' || set.loadType === 'height' || set.effortType === 'time' || !set.load) return a;
           return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
         }, 0);
         bucket[ex.exName] = (bucket[ex.exName] || 0) + exVol;
@@ -3843,9 +3843,12 @@ function showMoreJourneyLogs() {
 }
   
   function detectExType(name) {
-  var runWords = ['run','jog','sprint','tempo','cardio','walk','5k','bound','acceleration','shuffle','backpedal','treadmill','mile','distance'];
+  var jumpWords = ['jump','bound','leap','hop','plyo'];
+  var runWords = ['run','jog','sprint','tempo','cardio','walk','5k','acceleration','shuffle','backpedal','treadmill','mile','distance'];
   var n = (name || '').toLowerCase();
-  return runWords.some(function(w) { return n.includes(w); }) ? 'running' : 'standard';
+  if (jumpWords.some(function(w) { return n.includes(w); })) return 'jump';
+  if (runWords.some(function(w) { return n.includes(w); })) return 'running';
+  return 'standard';
 }
 
 function resumeWorkout() {
@@ -4209,7 +4212,8 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
         // Standard — Load dropdown header row + Effort dropdown header row
         // Then per-set: set number | load value | effort value | remove
         // Dropdowns sit as column headers above the value inputs
-        var loadTypeVal = ex.sets.length > 0 ? (ex.sets[ex.sets.length-1].loadType || 'weight') : 'weight';
+        var isJump = ex.type === 'jump';
+        var loadTypeVal = ex.sets.length > 0 ? (ex.sets[ex.sets.length-1].loadType || (isJump ? 'distance' : 'weight')) : (isJump ? 'distance' : 'weight');
         var effortTypeVal = ex.sets.length > 0 ? (ex.sets[ex.sets.length-1].effortType || 'reps') : 'reps';
 
         // Header row with dropdowns
@@ -4217,9 +4221,12 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
           + '<div></div>'
           + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateAllSetsField(' + ei + ',\'loadType\',this.value)" ')
           + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
-          + '<option value="weight"' + (loadTypeVal === 'weight' ? ' selected' : '') + '>Weight</option>'
-          + '<option value="band"'   + (loadTypeVal === 'band'   ? ' selected' : '') + '>Band</option>'
-          + '<option value="bw"'     + (loadTypeVal === 'bw'     ? ' selected' : '') + '>BW</option>'
+          + (isJump
+            ? '<option value="distance"' + (loadTypeVal === 'distance' ? ' selected' : '') + '>Distance</option>'
+              + '<option value="height"' + (loadTypeVal === 'height' ? ' selected' : '') + '>Height</option>'
+            : '<option value="weight"' + (loadTypeVal === 'weight' ? ' selected' : '') + '>Weight</option>'
+              + '<option value="band"'   + (loadTypeVal === 'band'   ? ' selected' : '') + '>Band</option>'
+              + '<option value="bw"'     + (loadTypeVal === 'bw'     ? ' selected' : '') + '>BW</option>')
           + '</select>'
           + '<select ' + (isComplete ? 'disabled ' : 'onchange="updateAllSetsField(' + ei + ',\'effortType\',this.value)" ')
           + 'style="' + (isComplete ? selectLocked : selectActive) + '">'
@@ -4233,8 +4240,7 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
         html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;margin-bottom:4px;padding:0 2px;">'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">SET</div>'
           + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">'
-          + (loadTypeVal === 'bw' ? 'BW' : loadTypeVal === 'band' ? 'BAND' : 'LBS') + '</div>'
-          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">'
+          + (loadTypeVal === 'bw' ? 'BW' : loadTypeVal === 'band' ? 'BAND' : loadTypeVal === 'distance' ? 'DIST' : loadTypeVal === 'height' ? 'HEIGHT' : 'LBS') + '</div>'          + '<div style="font-size:9px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);text-align:center;">'
           + (effortTypeVal === 'time' ? 'TIME' : 'REPS') + '</div>'
           + '<div></div>'
           + '</div>';

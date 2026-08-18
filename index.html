@@ -162,10 +162,6 @@
     }
 
     /* ── Week Streak panel ── */
-    .week-panel, .streak-broken, .day-widget {
-      height: 100%; box-sizing: border-box;
-      display: flex; flex-direction: column; justify-content: center;
-    }
     .week-panel { position: relative; background: #0d0d0d; border-radius: 12px; padding: 12px 14px 11px; }
     .streak-broken { background: #0d0d0d; border: 1px dashed var(--grey-muted); border-radius: 12px; padding: 12px; text-align: center; }
     .streak-broken-txt { font-size: 10px; color: var(--text-mute); font-family: var(--font-body); letter-spacing: 0.04em; line-height: 1.5; }
@@ -173,24 +169,30 @@
     .week-name { font-family: var(--font-title); font-size: 16px; font-weight: 700; color: var(--text-pri); }
     .week-name.gradient { background: linear-gradient(to bottom,#F2D57A,#D4AF37 45%,#8B6A1F); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .week-flame { font-size: 17px; }
-    .week-sub { font-size: 9px; letter-spacing: 0.08em; color: var(--text-mute); text-transform: uppercase; }
-    .week-num-inline { font-family: var(--font-title); font-size: 13px; font-weight: 700; color: var(--gold); margin-right: 3px; }
+    .week-sub { font-size: 8px; letter-spacing: 0.1em; color: var(--text-mute); }
 
     /* ── Day Streak widget — number only, no names ── */
     .day-widget { background: #0d0d0d; border-radius: 10px; padding: 8px 6px; text-align: center; }
     .day-widget-plain { border: 1px solid var(--grey-light); }
     .day-widget-lg { padding: 14px 8px; }
-    .day-num { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
+    .day-num { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--text-pri); line-height: 1; }
     .day-widget-lg .day-num { font-size: 28px; }
     .day-lbl { font-size: 7.5px; letter-spacing: 0.1em; color: var(--text-mute); margin-top: 3px; }
 
+    .j-week-streak {
+      display: flex; align-items: center; gap: 8px;
+      margin: 0 16px 10px; padding: 10px 14px;
+      border-radius: 10px; background: #0d0d0d;
+      border: 1px solid var(--grey-light);
+    }
     .cat-tab.period-tab.active {
       background: rgba(255,255,255,0.08);
       border-color: #d0d0d0;
       color: #f0f0f0;
       box-shadow: 0 0 8px rgba(255,255,255,0.30);
-    }
-    
+    }    .j-week-flame { font-size: 13px; }
+    .j-week-text { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.03em; color: var(--text-sec); }
+    .j-week-text b { font-family: var(--font-title); font-size: 12px; font-weight: 700; color: var(--gold-metal); margin-right: 2px; }
     .stat-label-sm { font-size: 8px; color: var(--text-sec); margin-top: 3px; letter-spacing: 0.04em; line-height: 1.25; font-family: var(--font-body); text-transform: uppercase; }
  
     .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 16px; }

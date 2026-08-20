@@ -4244,18 +4244,20 @@ var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
         });
       }
 
-      // Add set + Complete buttons
+      // Add set + Complete buttons — side by side, same solid shape, gold vs day-color
       if (!isComplete && !ex.bypassed) {
-        html += '<button onclick="addSet(' + ei + ')" '
-          + 'style="width:100%;padding:8px;border-radius:10px;margin-top:6px;'
-          + 'border:1.5px dashed var(--gold-metal);background:transparent;'
+        html += '<div style="display:flex;gap:8px;margin-top:6px;">'
+          + '<button onclick="addSet(' + ei + ')" '
+          + 'style="flex:1;padding:9px;border-radius:10px;'
+          + 'border:1px solid var(--gold-metal);background:rgba(200,146,42,0.10);'
           + 'color:var(--gold-metal);font-size:12px;font-family:var(--font-body);'
-          + 'letter-spacing:0.06em;cursor:pointer;margin-bottom:8px;">+ Add Set</button>'
+          + 'letter-spacing:0.06em;cursor:pointer;">+ ADD SET</button>'
           + '<button onclick="completeExercise(' + ei + ')" '
-          + 'style="width:100%;padding:9px;border-radius:10px;'
+          + 'style="flex:1;padding:9px;border-radius:10px;'
           + 'border:1px solid ' + acColor + ';background:' + acBg + ';'
           + 'color:' + acColor + ';font-size:12px;font-family:var(--font-body);'
-          + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE EXERCISE</button>';
+          + 'letter-spacing:0.08em;cursor:pointer;">✓ COMPLETE</button>'
+          + '</div>';
       } else if (isComplete) {
         html += '<button onclick="unlockExercise(' + ei + ')" '
           + 'style="width:100%;padding:9px;border-radius:10px;margin-top:6px;'

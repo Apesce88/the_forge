@@ -161,7 +161,7 @@
       50% { box-shadow: 0 0 36px 8px rgba(245,158,11,0.78); }
     }
 
-/* ── Week Streak panel ── */
+    /* ── Week Streak panel ── */
     .week-panel, .streak-broken, .day-widget {
       height: 100%; box-sizing: border-box;
       display: flex; flex-direction: column; justify-content: center;
@@ -3300,6 +3300,7 @@ function closeProfileSheet() {
       + (wk.level >= 3 ? ' gring' : '')
       + (wk.level === 4 ? ' gring-glow' : '')
       + (wk.level === 5 ? ' gring-glow-lg' : '');
+    
     return '<div class="' + cls + '">'
       + '<div class="week-top">'
       + '<div class="week-name' + (wk.level === 5 ? ' gradient' : '') + '">' + name + '</div>'

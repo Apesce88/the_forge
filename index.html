@@ -3239,6 +3239,8 @@ function closeProfileSheet() {
     else if (n === 3) cls += ' streak-ring streak-bar';
     else if (n === 2) cls += ' streak-ring';
     else cls += ' day-widget-plain';
+    return '<div class="' + cls + '"><div class="day-num">' + n + '</div><div class="day-lbl">DAYS THIS WK</div></div>';
+  }
   
   // ── Week Streak — Initiate/Contender/Champion/Vanguard/Legendary ladder.
   // Missing your current level costs one rung. Three consecutive missed weeks

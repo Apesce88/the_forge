@@ -1994,14 +1994,16 @@ function renderModal() {
   }
 
   if (m.mode === 'freestyle') {
-    var fOrder = ['upper','lower','power','recovery'];
+    var fOrder = ['upper','lower','power','dynamic','recovery','other'];
     var fDesc = {
       upper: 'COUNTS TOWARD UPPER VOLUME',
       lower: 'COUNTS TOWARD LOWER VOLUME',
       power: 'SPRINTS, FIELD WORK, EXPLOSIVE',
-      recovery: 'MOBILITY, STRETCH, WALK'
+      dynamic: 'JUMPS, PLYO, AGILITY DRILLS',
+      recovery: 'MOBILITY, STRETCH, WALK',
+      other: 'ANYTHING ELSE — DOESN\'T COUNT TOWARD VOLUME'
     };
-    var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', recovery: '#a0a0a0' };
+    var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', dynamic: 'var(--gold)', recovery: '#a0a0a0', other: '#a0a0a0' };
     var fHTML = fOrder.map(function(k) {
       return '<button onclick="beginFreestyle(\'' + k + '\')" '
         + 'style="display:block;width:100%;text-align:left;position:relative;overflow:hidden;'
@@ -3053,9 +3055,9 @@ function renderJourney() {
 
     visible.forEach(function(log) {
       var dc = log.dayColor || 'lime';
-      var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
-      var acBorder = dc === 'red' ? 'rgba(239,68,68,0.4)' : dc === 'grey' ? 'rgba(160,160,160,0.2)' : 'rgba(163,230,53,0.35)';
-      var acGlow = dc === 'red' ? 'rgba(239,68,68,0.08)' : dc === 'grey' ? 'rgba(160,160,160,0.04)' : 'rgba(163,230,53,0.08)';
+      var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : dc === 'gold' ? 'var(--gold)' : 'var(--lime)';
+      var acBorder = dc === 'red' ? 'rgba(239,68,68,0.4)' : dc === 'grey' ? 'rgba(160,160,160,0.2)' : dc === 'gold' ? 'rgba(245,158,11,0.4)' : 'rgba(163,230,53,0.35)';
+      var acGlow = dc === 'red' ? 'rgba(239,68,68,0.08)' : dc === 'grey' ? 'rgba(160,160,160,0.04)' : dc === 'gold' ? 'rgba(245,158,11,0.08)' : 'rgba(163,230,53,0.08)';
 
       // Date formatting
       var d = new Date(log.completedAt || log.startedAt);
@@ -3122,24 +3124,28 @@ function renderJourney() {
       if (isExpanded) {
         cardHTML += '<div style="border-top:1px solid #1a1a1a;padding:12px 16px;">';
         log.exercises.forEach(function(ex) {
-          if (ex.sets.length === 0) return;
           cardHTML += '<div style="margin-bottom:12px;">'
-            + '<div style="font-family:var(--font-title);font-size:12px;color:var(--text-sec);margin-bottom:6px;">' + ex.exName + '</div>';
+            + '<div style="font-family:var(--font-title);font-size:12px;color:var(--text-sec);margin-bottom:6px;">' + ex.exName
+            + (ex.bypassed ? ' <span style="color:var(--text-mute);font-size:9px;">(bypassed)</span>' : '') + '</div>';
 
-          ex.sets.forEach(function(set, si) {
-            var setLine = '';
-            if (ex.type === 'running') {
-              setLine = (set.distance || '—') + ' ' + (ex.unit || 'mi') + '  ·  ' + (set.time || '—');
-            } else {
-              var loadLabel = set.loadType === 'bw' ? 'BW' : set.loadType === 'band' ? 'Band' : set.loadType === 'distance' ? (set.load || '—') + ' dist' : set.loadType === 'height' ? (set.load || '—') + ' ht' : (set.load || '—') + ' lbs';
-              var effortLabel = set.effortType === 'time' ? (set.effort || '—') + ' sec' : (set.effort || '—') + ' reps';
-              setLine = loadLabel + '  ·  ' + effortLabel;
-            }
-            cardHTML += '<div style="display:flex;gap:10px;margin-bottom:3px;align-items:center;">'
-              + '<div style="font-size:10px;font-family:var(--font-body);color:var(--gold-metal);width:20px;">' + (si + 1) + '</div>'
-              + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.04em;color:var(--text-mute);">' + setLine + '</div>'
-              + '</div>';
-          });
+          if (ex.sets.length === 0) {
+            cardHTML += '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);letter-spacing:0.04em;">No sets logged</div>';
+          } else {
+            ex.sets.forEach(function(set, si) {
+              var setLine = '';
+              if (ex.type === 'running') {
+                setLine = (set.distance || '—') + ' ' + (ex.unit || 'mi') + '  ·  ' + (set.time || '—');
+              } else {
+                var loadLabel = set.loadType === 'bw' ? 'BW' : set.loadType === 'band' ? 'Band' : set.loadType === 'distance' ? (set.load || '—') + ' dist' : set.loadType === 'height' ? (set.load || '—') + ' ht' : (set.load || '—') + ' lbs';
+                var effortLabel = set.effortType === 'time' ? (set.effort || '—') : (set.effort || '—') + ' reps';
+                setLine = loadLabel + '  ·  ' + effortLabel;
+              }
+              cardHTML += '<div style="display:flex;gap:10px;margin-bottom:3px;align-items:center;">'
+                + '<div style="font-size:10px;font-family:var(--font-body);color:var(--gold-metal);width:20px;">' + (si + 1) + '</div>'
+                + '<div style="font-size:11px;font-family:var(--font-body);letter-spacing:0.04em;color:var(--text-mute);">' + setLine + '</div>'
+                + '</div>';
+            });
+          }
           cardHTML += '</div>';
         });
         cardHTML += '</div>';
@@ -3849,7 +3855,9 @@ var FREESTYLE_FOCUS = {
   upper:    { label: 'Upper',         color: 'lime' },
   lower:    { label: 'Lower',         color: 'red'  },
   power:    { label: 'Speed / Power', color: 'red'  },
-  recovery: { label: 'Recovery',      color: 'grey' }
+  dynamic:  { label: 'Dynamic',       color: 'gold' },
+  recovery: { label: 'Recovery',      color: 'grey' },
+  other:    { label: 'Other',         color: 'grey' }
 };
 
 function startFreestyle() {
@@ -3971,13 +3979,13 @@ function renderActiveWorkout() {
 
 var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
   var dc = s.dayColor || 'lime';
-  var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : 'var(--lime)';
-  var acBg    = dc === 'red' ? 'rgba(239,68,68,0.06)'   : dc === 'grey' ? 'rgba(160,160,160,0.06)'  : 'rgba(163,230,53,0.06)';
-  var acGlow  = dc === 'red' ? 'rgba(239,68,68,0.25)'   : dc === 'grey' ? 'rgba(160,160,160,0.15)'  : 'rgba(163,230,53,0.25)';
-  var acBorder= dc === 'red' ? 'rgba(239,68,68,0.3)'    : dc === 'grey' ? 'rgba(160,160,160,0.2)'   : 'rgba(163,230,53,0.3)';
-  var acGlowComplete = dc === 'red' ? 'box-shadow:0 0 10px 2px rgba(239,68,68,0.2),0 0 24px 4px rgba(239,68,68,0.08);' : dc === 'grey' ? 'box-shadow:0 0 10px 2px rgba(160,160,160,0.1),0 0 24px 4px rgba(160,160,160,0.04);' : 'box-shadow:0 0 10px 2px rgba(163,230,53,0.2),0 0 24px 4px rgba(163,230,53,0.08);';
-  var acGradient = dc === 'red' ? 'linear-gradient(to bottom, #f87171, #dc2626)' : dc === 'grey' ? 'linear-gradient(to bottom, #c0c0c0, #808080)' : 'linear-gradient(to bottom, #bef264, #84cc16)';
-  var acFinishGlow = dc === 'red' ? '0 0 20px rgba(239,68,68,0.5)' : dc === 'grey' ? '0 0 20px rgba(200,200,200,0.4)' : '0 0 20px rgba(163,230,53,0.5)';
+  var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : dc === 'gold' ? 'var(--gold)' : 'var(--lime)';
+  var acBg    = dc === 'red' ? 'rgba(239,68,68,0.06)'   : dc === 'grey' ? 'rgba(160,160,160,0.06)'  : dc === 'gold' ? 'rgba(245,158,11,0.06)' : 'rgba(163,230,53,0.06)';
+  var acGlow  = dc === 'red' ? 'rgba(239,68,68,0.25)'   : dc === 'grey' ? 'rgba(160,160,160,0.15)'  : dc === 'gold' ? 'rgba(245,158,11,0.25)' : 'rgba(163,230,53,0.25)';
+  var acBorder= dc === 'red' ? 'rgba(239,68,68,0.3)'    : dc === 'grey' ? 'rgba(160,160,160,0.2)'   : dc === 'gold' ? 'rgba(245,158,11,0.3)' : 'rgba(163,230,53,0.3)';
+  var acGlowComplete = dc === 'red' ? 'box-shadow:0 0 10px 2px rgba(239,68,68,0.2),0 0 24px 4px rgba(239,68,68,0.08);' : dc === 'grey' ? 'box-shadow:0 0 10px 2px rgba(160,160,160,0.1),0 0 24px 4px rgba(160,160,160,0.04);' : dc === 'gold' ? 'box-shadow:0 0 10px 2px rgba(245,158,11,0.2),0 0 24px 4px rgba(245,158,11,0.08);' : 'box-shadow:0 0 10px 2px rgba(163,230,53,0.2),0 0 24px 4px rgba(163,230,53,0.08);';
+  var acGradient = dc === 'red' ? 'linear-gradient(to bottom, #f87171, #dc2626)' : dc === 'grey' ? 'linear-gradient(to bottom, #c0c0c0, #808080)' : dc === 'gold' ? 'linear-gradient(to bottom, #fbbf24, #d97706)' : 'linear-gradient(to bottom, #bef264, #84cc16)';
+  var acFinishGlow = dc === 'red' ? '0 0 20px rgba(239,68,68,0.5)' : dc === 'grey' ? '0 0 20px rgba(200,200,200,0.4)' : dc === 'gold' ? '0 0 20px rgba(245,158,11,0.5)' : '0 0 20px rgba(163,230,53,0.5)';
   var recs = loadRecords();
 
   // Main lift rep-max strip — session level, max one main lift per day

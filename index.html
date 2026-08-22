@@ -146,20 +146,7 @@
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
       background: linear-gradient(to right, var(--gold-dark), var(--gold-metal), var(--gold-dark));
     }
-    .gring {
-      border: 1.5px solid transparent;
-      background:
-        linear-gradient(#0d0d0d,#0d0d0d) padding-box,
-        conic-gradient(from 0deg at 50% 50%,
-          var(--gold) 0%, var(--gold-dark) 12.5%, var(--gold) 25%, var(--gold-dark) 37.5%,
-          var(--gold) 50%, var(--gold-dark) 62.5%, var(--gold) 75%, var(--gold-dark) 87.5%, var(--gold) 100%) border-box;
-    }
-    .gring-glow { box-shadow: 0 0 14px 2px rgba(200,146,42,0.30); }
-    .gring-glow-lg { box-shadow: 0 0 24px 4px rgba(245,158,11,0.5); animation: legendaryPulse 2.2s ease-in-out infinite; }
-    @keyframes legendaryPulse {
-      0%,100% { box-shadow: 0 0 24px 4px rgba(245,158,11,0.5); }
-      50% { box-shadow: 0 0 36px 8px rgba(245,158,11,0.78); }
-    }
+
 
     /* ── Week Streak panel ── */
     .week-panel, .streak-broken, .day-widget {
@@ -180,6 +167,24 @@
     .day-widget { background: #0d0d0d; border-radius: 10px; padding: 8px 6px; text-align: center; }
     .day-widget-plain { border: 1px solid var(--grey-light); }
     .day-widget-lg { padding: 14px 8px; }
+
+    /* Must come after .day-widget / .week-panel — both set a plain background,
+       and same-specificity same-selector-weight rules resolve by source order.
+       .gring needs to win that fight or its gradient gets silently overwritten. */
+    .gring {
+      border: 1.5px solid transparent;
+      background:
+        linear-gradient(#0d0d0d,#0d0d0d) padding-box,
+        conic-gradient(from 0deg at 50% 50%,
+          var(--gold) 0%, var(--gold-dark) 12.5%, var(--gold) 25%, var(--gold-dark) 37.5%,
+          var(--gold) 50%, var(--gold-dark) 62.5%, var(--gold) 75%, var(--gold-dark) 87.5%, var(--gold) 100%) border-box;
+    }
+    .gring-glow { box-shadow: 0 0 14px 2px rgba(200,146,42,0.30); }
+    .gring-glow-lg { box-shadow: 0 0 24px 4px rgba(245,158,11,0.5); animation: legendaryPulse 2.2s ease-in-out infinite; }
+    @keyframes legendaryPulse {
+      0%,100% { box-shadow: 0 0 24px 4px rgba(245,158,11,0.5); }
+      50% { box-shadow: 0 0 36px 8px rgba(245,158,11,0.78); }
+    }
     .day-num { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
     .day-widget-lg .day-num { font-size: 28px; }
     .day-lbl { font-size: 7.5px; letter-spacing: 0.1em; color: var(--text-mute); margin-top: 3px; }

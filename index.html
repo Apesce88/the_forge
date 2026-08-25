@@ -3230,7 +3230,7 @@ function closeProfileSheet() {
   // ── Day Streak — live count of distinct days trained THIS week, 0-7.
   // No tiers, no names. Escalates visually only, capped at 5+ = biggest treatment.
   function computeDayStreak() {
-    var logs = loadLogs().filter(function(l) { return !l.archived; });
+    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayColor !== 'grey'; });
     var thisWeekStart = getWeekStart(0);
     var days = {};
     logs.forEach(function(l) {
@@ -3267,7 +3267,7 @@ function closeProfileSheet() {
   // under 2 days resets it to zero. Tier is read straight off that number:
   // 2=Initiate 3=Contender 5=Vanguard 7=Champion 10+=Legendary.
   function computeWeekStreak() {
-    var logs = loadLogs().filter(function(l) { return !l.archived; });
+    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayColor !== 'grey'; });
     if (logs.length === 0) return { level: 0, weeksRunning: 0 };
   
     var WEEK = 86400000 * 7;

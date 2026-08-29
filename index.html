@@ -1967,8 +1967,8 @@ function renderModal() {
   }
 
   if (m.mode === 'addSession') {
-    var cats = ['upper','lower','power','dynamic','core','recovery'];
-    var activeCat = state.pickerCat || 'upper';
+    var cats = ['upper','lower','power','dynamic','core'];
+    var activeCat = (state.pickerCat && state.pickerCat !== 'recovery') ? state.pickerCat : 'upper';
     var filtered = state.library.filter(function(e) { return e.cat === activeCat; });
     var tabsHTML = cats.map(function(c) {
       return '<button class="cat-tab cat-' + c + (activeCat === c ? ' active' : '')
@@ -1999,16 +1999,16 @@ function renderModal() {
   }
 
   if (m.mode === 'freestyle') {
-    var fOrder = ['upper','lower','power','dynamic','recovery','other'];
+    var fOrder = ['upper','lower','power','dynamic','endurance','recovery'];
     var fDesc = {
       upper: 'COUNTS TOWARD UPPER VOLUME',
       lower: 'COUNTS TOWARD LOWER VOLUME',
       power: 'SPRINTS, FIELD WORK, EXPLOSIVE',
       dynamic: 'JUMPS, PLYO, AGILITY DRILLS',
-      recovery: 'MOBILITY, STRETCH, WALK',
-      other: 'ANYTHING ELSE — DOESN\'T COUNT TOWARD VOLUME'
+      endurance: 'RUNS, ROWS, SUSTAINED CARDIO',
+      recovery: 'MOBILITY, STRETCH, WALK'
     };
-    var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', dynamic: 'var(--gold)', recovery: '#a0a0a0', other: '#a0a0a0' };
+    var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', dynamic: 'var(--gold)', endurance: 'var(--red)', recovery: '#a0a0a0' };
     var fHTML = fOrder.map(function(k) {
       return '<button onclick="beginFreestyle(\'' + k + '\')" '
         + 'style="display:block;width:100%;text-align:left;position:relative;overflow:hidden;'
@@ -3857,12 +3857,12 @@ function resumeWorkout() {
 }
 
 var FREESTYLE_FOCUS = {
-  upper:    { label: 'Upper',         color: 'lime' },
-  lower:    { label: 'Lower',         color: 'red'  },
-  power:    { label: 'Speed / Power', color: 'red'  },
-  dynamic:  { label: 'Dynamic',       color: 'gold' },
-  recovery: { label: 'Recovery',      color: 'grey' },
-  other:    { label: 'Other',         color: 'grey' }
+  upper:     { label: 'Upper',         color: 'lime' },
+  lower:     { label: 'Lower',         color: 'red'  },
+  power:     { label: 'Speed / Power', color: 'red'  },
+  dynamic:   { label: 'Dynamic',       color: 'gold' },
+  endurance: { label: 'Endurance',     color: 'red'  },
+  recovery:  { label: 'Recovery',      color: 'grey' }
 };
 
 function startFreestyle() {

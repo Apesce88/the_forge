@@ -1999,6 +1999,7 @@ function renderModal() {
   }
 
   if (m.mode === 'freestyle') {
+    var fName = (m.freestyleName || '');
     var fOrder = ['upper','lower','power','dynamic','endurance','recovery'];
     var fDesc = {
       upper: 'COUNTS TOWARD UPPER VOLUME',
@@ -2022,10 +2023,17 @@ function renderModal() {
         + 'background:linear-gradient(to right,transparent,' + fBar[k] + ',transparent);"></div>'
         + '</button>';
     }).join('');
+    var fNameInput = '<input type="text" placeholder="Name this workout (optional)" '
+      + 'value="' + escHtml(fName) + '" '
+      + 'oninput="state.modal.freestyleName = this.value;" '
+      + 'style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:10px;'
+      + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
+      + 'font-size:13px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;"/>';
     return '<div class="modal-overlay" onclick="closeModal()">'
       + '<div class="modal-sheet" onclick="event.stopPropagation()">'
       + '<div class="modal-handle"></div>'
       + '<div class="modal-title">Off-Plan Workout</div>'
+      + fNameInput
       + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
       + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
       + 'What did you train? This sets how the volume counts toward your stats.</div>'
@@ -3059,7 +3067,7 @@ function renderJourney() {
     var visible = logs.slice(0, state.journeyLogsShown);
 
     visible.forEach(function(log) {
-      var dc = log.dayColor || 'lime';
+      var dc = log.freestyle ? 'grey' : (log.dayColor || 'lime');
       var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : dc === 'gold' ? 'var(--gold)' : 'var(--lime)';
       var acBorder = dc === 'red' ? 'rgba(239,68,68,0.4)' : dc === 'grey' ? 'rgba(160,160,160,0.2)' : dc === 'gold' ? 'rgba(245,158,11,0.4)' : 'rgba(163,230,53,0.35)';
       var acGlow = dc === 'red' ? 'rgba(239,68,68,0.08)' : dc === 'grey' ? 'rgba(160,160,160,0.04)' : dc === 'gold' ? 'rgba(245,158,11,0.08)' : 'rgba(163,230,53,0.08)';
@@ -3873,10 +3881,11 @@ function startFreestyle() {
 function beginFreestyle(focus) {
   var f = FREESTYLE_FOCUS[focus];
   if (!f || state.activeSession) return;
+  var customName = ((state.modal && state.modal.freestyleName) || '').trim();
   state.activeSession = {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     dayIndex: null,
-    dayName: 'Freestyle · ' + f.label,
+    dayName: customName || f.label,
     dayColor: f.color,
     freestyle: true,
     startedAt: Date.now(),
@@ -3983,7 +3992,7 @@ function renderActiveWorkout() {
   if (!s) return '<div class="lib-header"><div class="lib-title">No Active Session</div></div>';
 
 var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
-  var dc = s.dayColor || 'lime';
+  var dc = s.freestyle ? 'grey' : (s.dayColor || 'lime');
   var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : dc === 'gold' ? 'var(--gold)' : 'var(--lime)';
   var acBg    = dc === 'red' ? 'rgba(239,68,68,0.06)'   : dc === 'grey' ? 'rgba(160,160,160,0.06)'  : dc === 'gold' ? 'rgba(245,158,11,0.06)' : 'rgba(163,230,53,0.06)';
   var acGlow  = dc === 'red' ? 'rgba(239,68,68,0.25)'   : dc === 'grey' ? 'rgba(160,160,160,0.15)'  : dc === 'gold' ? 'rgba(245,158,11,0.25)' : 'rgba(163,230,53,0.25)';

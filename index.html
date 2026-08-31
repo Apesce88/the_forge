@@ -1999,8 +1999,6 @@ function renderModal() {
   }
 
   if (m.mode === 'freestyle') {
-    var fName = (m.freestyleName || '');
-    var fOrder = ['upper','lower','power','dynamic','endurance','recovery'];
     var fDesc = {
       upper: 'COUNTS TOWARD UPPER VOLUME',
       lower: 'COUNTS TOWARD LOWER VOLUME',
@@ -2010,8 +2008,35 @@ function renderModal() {
       recovery: 'MOBILITY, STRETCH, WALK'
     };
     var fBar = { upper: 'var(--lime)', lower: 'var(--red)', power: 'var(--red)', dynamic: 'var(--gold)', endurance: 'var(--red)', recovery: '#a0a0a0' };
+
+    // Step 2 — focus already chosen, now naming is optional
+    if (m.step === 'name') {
+      var chosenLabel = FREESTYLE_FOCUS[m.focus].label;
+      return '<div class="modal-overlay" onclick="closeModal()">'
+        + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+        + '<div class="modal-handle"></div>'
+        + '<div class="modal-title">' + chosenLabel + '</div>'
+        + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
+        + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
+        + 'Name this workout, or leave blank to use "' + chosenLabel + '".</div>'
+        + '<input type="text" placeholder="Name this workout (optional)" '
+        + 'value="' + escHtml(m.freestyleName || '') + '" '
+        + 'oninput="state.modal.freestyleName = this.value;" '
+        + 'style="width:100%;padding:10px 12px;margin-bottom:14px;border-radius:10px;'
+        + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
+        + 'font-size:13px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;"/>'
+        + '<button onclick="beginFreestyle()" style="display:block;width:100%;padding:12px;'
+        + 'border-radius:12px;border:none;background:var(--gold-metal);color:#0a0a0a;'
+        + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;'
+        + 'cursor:pointer;margin-bottom:8px;">START WORKOUT</button>'
+        + '<button class="btn-cancel" onclick="state.modal.step=null;state.modal.focus=null;render();">‹ Back</button>'
+        + '</div></div>';
+    }
+
+    // Step 1 — choose focus
+    var fOrder = ['upper','lower','power','dynamic','endurance','recovery'];
     var fHTML = fOrder.map(function(k) {
-      return '<button onclick="beginFreestyle(\'' + k + '\')" '
+      return '<button onclick="chooseFreestyleFocus(\'' + k + '\')" '
         + 'style="display:block;width:100%;text-align:left;position:relative;overflow:hidden;'
         + 'background:#0d0d0d;border:1px solid var(--grey-light);border-radius:12px;'
         + 'padding:12px 14px;margin-bottom:8px;cursor:pointer;">'
@@ -2023,17 +2048,10 @@ function renderModal() {
         + 'background:linear-gradient(to right,transparent,' + fBar[k] + ',transparent);"></div>'
         + '</button>';
     }).join('');
-    var fNameInput = '<input type="text" placeholder="Name this workout (optional)" '
-      + 'value="' + escHtml(fName) + '" '
-      + 'oninput="state.modal.freestyleName = this.value;" '
-      + 'style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:10px;'
-      + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
-      + 'font-size:13px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;"/>';
     return '<div class="modal-overlay" onclick="closeModal()">'
       + '<div class="modal-sheet" onclick="event.stopPropagation()">'
       + '<div class="modal-handle"></div>'
       + '<div class="modal-title">Off-Plan Workout</div>'
-      + fNameInput
       + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
       + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
       + 'What did you train? This sets how the volume counts toward your stats.</div>'
@@ -3878,7 +3896,16 @@ function startFreestyle() {
   openModal({ mode: 'freestyle' });
 }
 
-function beginFreestyle(focus) {
+function chooseFreestyleFocus(focus) {
+  if (!state.modal) return;
+  state.modal.step = 'name';
+  state.modal.focus = focus;
+  state.modal.freestyleName = '';
+  render();
+}
+  
+function beginFreestyle() {
+  var focus = state.modal && state.modal.focus;
   var f = FREESTYLE_FOCUS[focus];
   if (!f || state.activeSession) return;
   var customName = ((state.modal && state.modal.freestyleName) || '').trim();

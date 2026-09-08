@@ -1993,6 +1993,33 @@ function renderModal() {
       + '</div></div>';
   }
 
+  if (m.mode === 'streakHistory') {
+    var wk = computeWeekStreak();
+    var hist = computeWeekStreakHistory();
+    var wkName = wk.level > 0 ? WEEK_STREAK_NAMES[wk.level] : 'No Streak';
+    var monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var listHTML = hist.length === 0
+      ? '<div style="text-align:center;padding:20px;color:var(--text-mute);font-size:11px;font-family:var(--font-body);">No qualifying weeks yet.</div>'
+      : hist.map(function(h) {
+          var d = new Date(h.weekStart);
+          var label = 'Week of ' + monthsShort[d.getMonth()] + ' ' + d.getDate();
+          return '<div style="display:flex;justify-content:space-between;align-items:center;'
+            + 'padding:10px 14px;background:#0d0d0d;border:1px solid var(--grey-light);'
+            + 'border-radius:10px;margin-bottom:6px;">'
+            + '<span style="font-family:var(--font-body);font-size:12px;color:var(--text-pri);letter-spacing:0.03em;">' + label + '</span>'
+            + '<span style="font-family:var(--font-title);font-size:12px;color:var(--gold-metal);">' + h.dayCount + ' days</span>'
+            + '</div>';
+        }).join('');
+    return '<div class="modal-overlay" onclick="closeModal()">'
+      + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+      + '<div class="modal-handle"></div>'
+      + '<div class="modal-title">' + wkName + (wk.weeksRunning > 0 ? ' · ' + wk.weeksRunning + ' Week Streak' : '') + '</div>'
+      + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);letter-spacing:0.03em;margin-bottom:14px;">Weeks counting toward your current streak, most recent first.</div>'
+      + '<div style="max-height:50vh;overflow-y:auto;">' + listHTML + '</div>'
+      + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Close</button></div>'
+      + '</div></div>';
+  }
+
   if (m.mode === 'freestyle') {
     var fDesc = {
       upper: 'COUNTS TOWARD UPPER VOLUME',
@@ -3042,7 +3069,8 @@ function renderJourney() {
       var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       var dateStr = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
-
+      var isStreakDay = !log.archived && log.dayIndex !== 6 && (log.completedAt || log.startedAt) >= getWeekStart(0);
+      
       // Stats
       var duration = log.completedAt
         ? Math.round((log.completedAt - log.startedAt) / 60000)
@@ -3088,7 +3116,7 @@ function renderJourney() {
         + '<div style="padding:14px 16px 12px;">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
         + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + log.dayName + '</div>'
-        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + '</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + (isStreakDay ? ' <span style="color:var(--gold);text-shadow:0 0 6px rgba(245,158,11,0.7);">◆</span>' : '') + '</div>'
         + '</div>'
         + '<div style="display:flex;gap:16px;">'
         + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + duration + ' MIN</div>'
@@ -3203,7 +3231,7 @@ function closeProfileSheet() {
   // ── Day Streak — live count of distinct days trained THIS week, 0-7.
   // No tiers, no names. Escalates visually only, capped at 5+ = biggest treatment.
   function computeDayStreak() {
-    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayColor !== 'grey'; });
+    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayIndex !== 6; });
     var thisWeekStart = getWeekStart(0);
     var days = {};
     logs.forEach(function(l) {
@@ -3240,7 +3268,7 @@ function closeProfileSheet() {
   // under 2 days resets it to zero. Tier is read straight off that number:
   // 2=Initiate 3=Contender 5=Vanguard 7=Champion 10+=Legendary.
   function computeWeekStreak() {
-    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayColor !== 'grey'; });
+    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayIndex !== 6; });
     if (logs.length === 0) return { level: 0, weeksRunning: 0 };
   
     var WEEK = 86400000 * 7;
@@ -3275,6 +3303,35 @@ function closeProfileSheet() {
     return { level: level, weeksRunning: weeksRunning };
   }
   
+  // Every fully-completed week that still qualifies (2+ days), most recent first.
+  // Stops at the first week that doesn't qualify — that's the streak's boundary.
+  function computeWeekStreakHistory() {
+    var logs = loadLogs().filter(function(l) { return !l.archived && l.dayIndex !== 6; });
+    if (logs.length === 0) return [];
+    var WEEK = 86400000 * 7;
+    var history = [];
+    for (var w = 1; w <= 52; w++) {
+      var wStart = getWeekStart(-w);
+      var wEnd = wStart + WEEK;
+      var days = {};
+      logs.forEach(function(l) {
+        var t = l.completedAt || l.startedAt;
+        if (t >= wStart && t < wEnd) {
+          var d = new Date(t);
+          days[d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate()] = true;
+        }
+      });
+      var dayCount = Object.keys(days).length;
+      if (dayCount < 2) break;
+      history.push({ weekStart: wStart, dayCount: dayCount });
+    }
+    return history;
+  }
+
+  function openStreakHistory() {
+    openModal({ mode: 'streakHistory' });
+  }
+
   function weekPanelHTML() {
     var wk = computeWeekStreak();
     if (wk.level === 0) {
@@ -3286,7 +3343,7 @@ function closeProfileSheet() {
       + (wk.level >= 3 ? ' gring' : '')
       + (wk.level === 4 ? ' gring-glow' : '')
       + (wk.level === 5 ? ' gring-glow-lg' : '');
-    return '<div class="' + cls + '">'
+    return '<div class="' + cls + '" style="cursor:pointer;" onclick="openStreakHistory()">'
       + '<div class="week-top">'
       + '<div class="week-name' + (wk.level === 5 ? ' gradient' : '') + '">' + name + '</div>'
       + '<div class="week-flame">🔥</div>'

@@ -1200,6 +1200,7 @@ var state = {
   journeySwiped: null,
   rmCalc: null,
   showArchived: false,
+  showStreakDiamonds: false,
   journeyPeriod: 'week'
 };
  
@@ -2971,7 +2972,7 @@ function renderJourney() {
   var statsHTML = '';
 
   statsHTML += '<div style="display:flex;gap:8px;padding:0 16px 10px;align-items:stretch;">'
-    + '<div style="flex:1;">' + dayWidgetHTML(computeDayStreak(), true) + '</div>'
+    + '<div style="flex:1;">' + dayWidgetHTML(computeDayStreak(), true, true) + '</div>'
     + '<div style="flex:1.4;">' + weekPanelHTML() + '</div>'
     + '</div>';
   
@@ -3116,8 +3117,7 @@ function renderJourney() {
         + '<div style="padding:14px 16px 12px;">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
         + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + log.dayName + '</div>'
-        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + (isStreakDay ? ' <span style="color:var(--gold);text-shadow:0 0 6px rgba(245,158,11,0.7);">◆</span>' : '') + '</div>'
-        + '</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + ((isStreakDay && state.showStreakDiamonds) ? ' <span style="color:var(--gold);text-shadow:0 0 6px rgba(245,158,11,0.7);">◆</span>' : '') + '</div>'        + '</div>'
         + '<div style="display:flex;gap:16px;">'
         + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + duration + ' MIN</div>'
         + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + totalSets + ' SETS</div>'
@@ -3246,7 +3246,22 @@ function closeProfileSheet() {
   
   // Day tiers: 2=Initiate(dark ring) 3=Contender(ring+bar) 4=Vanguard(full ring)
   // 5=Champion(full ring+glow) 6+=Legendary(full ring+big pulse)
-  function dayWidgetHTML(n, big) {
+  var streakDiamondTimer = null;
+
+  function toggleStreakDiamonds() {
+    state.showStreakDiamonds = !state.showStreakDiamonds;
+    if (streakDiamondTimer) { clearTimeout(streakDiamondTimer); streakDiamondTimer = null; }
+    if (state.showStreakDiamonds) {
+      streakDiamondTimer = setTimeout(function() {
+        state.showStreakDiamonds = false;
+        streakDiamondTimer = null;
+        render();
+      }, 60000);
+    }
+    render();
+  }
+
+  function dayWidgetHTML(n, big, clickable) {
     var cls = 'day-widget' + (big ? ' day-widget-lg' : '');
     if (n >= 6) cls += ' gring gring-glow-lg';
     else if (n === 5) cls += ' gring gring-glow';
@@ -3254,7 +3269,8 @@ function closeProfileSheet() {
     else if (n === 3) cls += ' streak-ring streak-bar';
     else if (n === 2) cls += ' streak-ring';
     else cls += ' day-widget-plain';
-    return '<div class="' + cls + '"><div class="day-num">' + n + '</div><div class="day-lbl">DAYS THIS WK</div></div>';
+    var attrs = clickable ? ' onclick="toggleStreakDiamonds()" style="cursor:pointer;"' : '';
+    return '<div class="' + cls + '"' + attrs + '><div class="day-num">' + n + '</div><div class="day-lbl">DAYS THIS WK</div></div>';
   }
   
   // ── Week Streak — Initiate/Contender/Champion/Vanguard/Legendary ladder.

@@ -185,6 +185,15 @@
       0%,100% { box-shadow: 0 0 24px 4px rgba(245,158,11,0.5); }
       50% { box-shadow: 0 0 36px 8px rgba(245,158,11,0.78); }
     }
+    .streak-diamond {
+      color: var(--gold);
+      display: inline-block;
+      animation: diamondPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes diamondPulse {
+      0%,100% { text-shadow: 0 0 5px rgba(245,158,11,0.55); opacity: 0.85; }
+      50% { text-shadow: 0 0 12px rgba(245,158,11,1), 0 0 18px rgba(245,158,11,0.6); opacity: 1; }
+    }
     .day-num { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
     .day-widget-lg .day-num { font-size: 28px; }
     .day-lbl { font-size: 7.5px; letter-spacing: 0.1em; color: var(--text-mute); margin-top: 3px; }
@@ -3117,7 +3126,8 @@ function renderJourney() {
         + '<div style="padding:14px 16px 12px;">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
         + '<div style="font-family:var(--font-title);font-size:15px;color:var(--text-pri);">' + log.dayName + '</div>'
-        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + ((isStreakDay && state.showStreakDiamonds) ? ' <span style="color:var(--gold);text-shadow:0 0 6px rgba(245,158,11,0.7);">◆</span>' : '') + '</div>'        + '</div>'
+        + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);">' + dateStr + ((isStreakDay && state.showStreakDiamonds) ? ' <span class="streak-diamond">◆</span>' : '') + '</div>'
+        + '</div>'
         + '<div style="display:flex;gap:16px;">'
         + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + duration + ' MIN</div>'
         + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-sec);">' + totalSets + ' SETS</div>'
@@ -3311,7 +3321,16 @@ function closeProfileSheet() {
         }
       });
       var dayCount = Object.keys(days).length;
-      weeksRunning = (dayCount >= 2) ? weeksRunning + 1 : 0;
+      if (dayCount >= 3) {
+        weeksRunning = weeksRunning + 1;
+      } else if (dayCount === 2) {
+        // A 2-day week no longer grows the streak — it knocks it back one,
+        // but only if a streak already exists. It can't create one from nothing,
+        // and it can never be the thing that takes a streak to zero.
+        weeksRunning = weeksRunning > 0 ? Math.max(1, weeksRunning - 1) : 0;
+      } else {
+        weeksRunning = 0;
+      }
     }
   
     var level = weeksRunning >= 10 ? 5 : weeksRunning >= 7 ? 4 : weeksRunning >= 5 ? 3 : weeksRunning >= 3 ? 2 : weeksRunning >= 2 ? 1 : 0;

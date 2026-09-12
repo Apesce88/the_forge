@@ -388,7 +388,3 @@ function openGroundsSection(section) {
 }
 
 Extract Proving Grounds
-//     + '<div style="padding:14px;border-radius:12px;border:1px dashed var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
-//     + '</div>'
-//     + '<div class="forge-mark">The Gauntlet · Test Your Limits</div>';
-// }

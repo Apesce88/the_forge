@@ -386,5 +386,3 @@ function openGroundsSection(section) {
     renderSignetHub();
   }
 }
-
-Extract Proving Grounds

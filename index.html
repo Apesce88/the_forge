@@ -3097,31 +3097,35 @@ function renderJourney() {
       var isExpanded = state.journeyExpanded[log.id] === true;
 
       var isSwiped = state.journeySwiped === log.id;
+      var revealW = log.archived ? 170 : 90;
+      var restX = isSwiped ? -revealW : 0;
 
-      // Collapsed card
-      var cardHTML = '<div style="margin:0 16px 12px;background:#0d0d0d;'
-        + 'border:1px solid ' + (isSwiped ? 'var(--red)' : acBorder) + ';border-radius:14px;overflow:hidden;'
-        + 'box-shadow:0 0 16px ' + acGlow + ';cursor:pointer;"'
-        + ' ontouchstart="jSwipeStart(event)" ontouchend="jSwipeEnd(event,\'' + log.id + '\')"'
+      var bannerHTML = log.archived
+        ? '<div style="display:flex;gap:6px;padding:0 10px;">'
+          + '<button onclick="restoreJourneyLog(\'' + log.id + '\')" '
+          + 'style="padding:8px 14px;border-radius:8px;border:none;background:var(--lime);'
+          + 'color:#0a0a0a;font-size:11px;font-weight:700;font-family:var(--font-body);letter-spacing:0.05em;cursor:pointer;white-space:nowrap;">RESTORE</button>'
+          + '<button onclick="purgeJourneyLog(\'' + log.id + '\')" '
+          + 'style="padding:8px 14px;border-radius:8px;border:none;background:var(--red);'
+          + 'color:#fff;font-size:11px;font-weight:700;font-family:var(--font-body);letter-spacing:0.05em;cursor:pointer;white-space:nowrap;">DELETE</button>'
+          + '</div>'
+        : '<div style="padding:0 10px;">'
+          + '<button onclick="deleteJourneyLog(\'' + log.id + '\')" '
+          + 'style="padding:8px 16px;border-radius:8px;border:none;background:var(--red);'
+          + 'color:#fff;font-size:11px;font-weight:700;font-family:var(--font-body);letter-spacing:0.05em;cursor:pointer;white-space:nowrap;">REMOVE</button>'
+          + '</div>';
+
+      // Two layers: a fixed delete/restore banner underneath, and the visible
+      // card on top that slides via transform to reveal it as you drag.
+      var cardHTML = '<div style="position:relative;margin:0 16px 12px;border-radius:14px;overflow:hidden;">'
+        + '<div style="position:absolute;inset:0;background:#1a0000;display:flex;align-items:center;justify-content:flex-end;">'
+        + bannerHTML
+        + '</div>'
+        + '<div id="jcard-' + log.id + '" data-reveal="' + revealW + '" style="position:relative;background:#0d0d0d;'
+        + 'border:1px solid ' + (isSwiped ? 'var(--red)' : acBorder) + ';border-radius:14px;'
+        + 'box-shadow:0 0 16px ' + acGlow + ';cursor:pointer;transform:translateX(' + restX + 'px);"'
+        + ' ontouchstart="jSwipeStart(event)" ontouchmove="jSwipeMove(event)" ontouchend="jSwipeEnd(event,\'' + log.id + '\')"'
         + ' onclick="toggleJourneyLog(\'' + log.id + '\')">'
-        + (isSwiped
-          ? '<div style="padding:10px 16px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;">'
-            + '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.08em;color:var(--text-mute);">'
-            + (log.archived ? 'RESTORE TO JOURNEY?' : 'REMOVE FROM JOURNEY?') + '</span>'
-            + (log.archived
-              ? '<div style="display:flex;gap:8px;">'
-                + '<button ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();restoreJourneyLog(\'' + log.id + '\')" '
-                + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--lime);background:rgba(163,230,53,0.1);'
-                + 'color:var(--lime);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">RESTORE</button>'
-                + '<button ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();purgeJourneyLog(\'' + log.id + '\')" '
-                + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--red);background:rgba(239,68,68,0.1);'
-                + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">DELETE</button>'
-                + '</div>'
-              : '<button ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();deleteJourneyLog(\'' + log.id + '\')" '
-                + 'style="padding:6px 16px;border-radius:8px;border:1px solid var(--red);background:rgba(239,68,68,0.1);'
-                + 'color:var(--red);font-size:11px;font-family:var(--font-body);letter-spacing:0.06em;cursor:pointer;">REMOVE</button>')
-            + '</div>'
-          : '')
 
         // Card header
         + '<div style="padding:14px 16px 12px;">'
@@ -3168,7 +3172,7 @@ function renderJourney() {
         cardHTML += '</div>';
       }
 
-      cardHTML += '</div>';
+      cardHTML += '</div></div>';
       logsHTML += cardHTML;
     });
 
@@ -3830,6 +3834,8 @@ function computeJourneyStats(period) {
 }
   
 var jSwipeX = null;
+var jSwipeEl = null;
+var jSwipeMoved = false;
 
 function jSwipeStart(e) {
   jSwipeX = e.touches[0].clientX;
@@ -3888,6 +3894,7 @@ function toggleArchivedLogs() {
 }
   
   function toggleJourneyLog(id) {
+  if (jSwipeMoved) { jSwipeMoved = false; return; }
   state.journeyExpanded[id] = !state.journeyExpanded[id];
   render();
 }

@@ -3838,20 +3838,38 @@ var jSwipeEl = null;
 var jSwipeMoved = false;
 
 function jSwipeStart(e) {
+  jSwipeEl = e.currentTarget;
   jSwipeX = e.touches[0].clientX;
+  jSwipeMoved = false;
+  jSwipeEl.style.transition = 'none';
+}
+
+function jSwipeMove(e) {
+  if (!jSwipeEl || jSwipeX === null) return;
+  var delta = e.touches[0].clientX - jSwipeX;
+  if (Math.abs(delta) > 4) jSwipeMoved = true;
+  var reveal = parseInt(jSwipeEl.dataset.reveal, 10) || 90;
+  var clamped = Math.max(-reveal, Math.min(0, delta));
+  jSwipeEl.style.transform = 'translateX(' + clamped + 'px)';
 }
 
 function jSwipeEnd(e, logId) {
-  if (jSwipeX === null) return;
-  var deltaX = e.changedTouches[0].clientX - jSwipeX;
-  jSwipeX = null;
-  if (deltaX > 60) {
+  if (!jSwipeEl || jSwipeX === null) { jSwipeMoved = false; return; }
+  var el = jSwipeEl;
+  var reveal = parseInt(el.dataset.reveal, 10) || 90;
+  var lastX = e.changedTouches ? e.changedTouches[0].clientX : jSwipeX;
+  var delta = lastX - jSwipeX;
+  el.style.transition = 'transform 0.22s ease-out';
+  if (delta < -(reveal / 2)) {
+    el.style.transform = 'translateX(-' + reveal + 'px)';
+    el.style.borderColor = 'var(--red)';
     state.journeySwiped = logId;
-    render();
-  } else if (state.journeySwiped) {
-    state.journeySwiped = null;
-    render();
+  } else {
+    el.style.transform = 'translateX(0px)';
+    if (state.journeySwiped === logId) state.journeySwiped = null;
   }
+  jSwipeEl = null;
+  jSwipeX = null;
 }
 
 // Soft delete — flags the log as archived, never removes it from storage

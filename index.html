@@ -1207,6 +1207,7 @@ var state = {
   profileSheet: false,
   journeyLogsShown: 10,
   journeyExpanded: {},
+  libExpanded: {},
   journeySwiped: null,
   rmCalc: null,
   showArchived: false,
@@ -1855,6 +1856,11 @@ function saveEditDayExercise() {
 
 // Dynamic exercises show Distance / Volume / Rest instead of equipment variants.
 // One renderer so library, picker, and day card can never drift apart again.
+function toggleLibExpand(id) {
+  state.libExpanded[id] = !state.libExpanded[id];
+  render();
+}
+
 function dynOptsHTML(ex) {
   return '<div class="lib-ex-options">'
     + '<div class="lib-ex-option">DIST: <span>' + escHtml(ex.fw || '—') + '</span></div>'
@@ -1897,30 +1903,35 @@ function renderLibrary() {
   } else {
     filtered.forEach(function(ex) {
       var menuOpen = state.openMenuId === ex.id;
-      exHTML += '<div class="lib-ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '">'
+      var isOpen = !!state.libExpanded[ex.id];
+      exHTML += '<div class="lib-ex-card' + (ex.cat ? ' cat-' + ex.cat : '') + '" onclick="toggleLibExpand(\''+ex.id+'\')">'
         + '<div class="lib-ex-header">'
         + '<div><div class="lib-ex-name">'+ex.name+'</div></div>'
-        + '<button class="lib-ex-menu-btn" onclick="toggleMenu(\''+ex.id+'\')">•••</button>'
+        + '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<span style="font-size:10px;color:var(--text-mute);">' + (isOpen ? '▲' : '▼') + '</span>'
+        + '<button class="lib-ex-menu-btn" onclick="event.stopPropagation();toggleMenu(\''+ex.id+'\')">•••</button>'
+        + '</div>'
         + '</div>';
  
       if (menuOpen) {
-        exHTML += '<div class="lib-ex-actions">'
-          + '<button class="lib-ex-action lib-ex-edit" onclick="openEditLibModal(\''+ex.id+'\')">✏️ Edit</button>'
-          + '<button class="lib-ex-action lib-ex-delete" onclick="deleteLibEx(\''+ex.id+'\')">🗑 Delete</button>'
+        exHTML += '<div class="lib-ex-actions" onclick="event.stopPropagation();">'
+          + '<button class="lib-ex-action lib-ex-edit" onclick="event.stopPropagation();openEditLibModal(\''+ex.id+'\')">✏️ Edit</button>'
+          + '<button class="lib-ex-action lib-ex-delete" onclick="event.stopPropagation();deleteLibEx(\''+ex.id+'\')">🗑 Delete</button>'
           + '</div>';
       }
  
-      exHTML += (ex.cat === 'dynamic'
-        ? dynOptsHTML(ex)
-        : '<div class="lib-ex-options">'
-          + '<div class="lib-ex-option"><span>'+ex.fw+'</span></div>'
-          + '<div class="lib-ex-option"><span>'+ex.mb+'</span></div>'
-          + '<div class="lib-ex-option"><span>'+ex.bw+'</span></div>'
-          + '</div>')
-        + (ex.notes ? '<div class="ex-notes">' + escHtml(ex.notes) + '</div>' : '')
-        + '</div>';
+      if (isOpen) {
+        exHTML += (ex.cat === 'dynamic'
+          ? dynOptsHTML(ex)
+          : '<div class="lib-ex-options">'
+            + '<div class="lib-ex-option">Weighted: <span>'+ex.fw+'</span></div>'
+            + '<div class="lib-ex-option">Machine/Band: <span>'+ex.mb+'</span></div>'
+            + '<div class="lib-ex-option">Bodyweight: <span>'+ex.bw+'</span></div>'
+            + '</div>')
+          + (ex.notes ? '<div class="ex-notes"><span style="color:var(--text-mute);">Notes: </span>' + escHtml(ex.notes) + '</div>' : '');
+      }
+      exHTML += '</div>';
     });
-  }
  
   return '<div class="lib-header">'
     + '<div class="home-eyebrow">Exercise Bank</div>'

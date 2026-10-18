@@ -156,6 +156,18 @@
     .week-panel { position: relative; background: #0d0d0d; border-radius: 12px; padding: 12px 14px 11px; }
     .streak-broken { background: #0d0d0d; border: 1px dashed var(--grey-muted); border-radius: 12px; padding: 12px; text-align: center; }
     .streak-broken-txt { font-size: 10px; color: var(--text-mute); font-family: var(--font-body); letter-spacing: 0.04em; line-height: 1.5; }
+    /* ── Base box (no streak) — invisible at rest, pulses in once every 30s.
+       Cycle 30s: fade in 2s, hold 1.6s, fade out 2.4s (~6s visible), then dark. ── */
+    .streak-broken.base-pulse { border: 1px solid rgba(210,210,210,0.5); opacity: 0; animation: basePulse 30s ease-in-out infinite; }
+    .base-pulse .week-name { color: #c8c8c8; }
+    @keyframes basePulse {
+      0%    { opacity: 0; box-shadow: 0 0 0 0 rgba(210,210,210,0); }
+      6.7%  { opacity: 1; box-shadow: 0 0 10px 1px rgba(210,210,210,0.28); }
+      12%   { opacity: 1; box-shadow: 0 0 10px 1px rgba(210,210,210,0.28); }
+      20%   { opacity: 0; box-shadow: 0 0 0 0 rgba(210,210,210,0); }
+      100%  { opacity: 0; box-shadow: 0 0 0 0 rgba(210,210,210,0); }
+    }
+    @media (prefers-reduced-motion: reduce) { .streak-broken.base-pulse { animation: none; } }
     .week-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .week-name { font-family: var(--font-title); font-size: 16px; font-weight: 700; color: var(--text-pri); }
     .week-name.gradient { background: linear-gradient(to bottom,#F2D57A,#D4AF37 45%,#8B6A1F); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
@@ -3446,7 +3458,11 @@ function closeProfileSheet() {
   function weekPanelHTML() {
     var wk = computeWeekStreak();
     if (wk.level === 0) {
-      return '<div class="streak-broken"><div class="streak-broken-txt">No streak yet.<br>Log a workout to begin.</div></div>';
+      // Base box: invisible at rest, pulses in on a fixed 30s wall-clock rhythm.
+      // Negative delay = current position in the cycle, so re-renders don't restart it.
+      var basePhase = ((Date.now() % 30000) / 1000).toFixed(2);
+      return '<div class="streak-broken base-pulse" style="animation-delay:-' + basePhase + 's;">'
+        + '<div class="week-name">Base</div></div>';
     }
     var name = WEEK_STREAK_NAMES[wk.level];
     var cls = 'week-panel'

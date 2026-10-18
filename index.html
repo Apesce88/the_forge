@@ -2089,12 +2089,18 @@ function renderModal() {
         + '<div class="modal-title">Log a Missed Day</div>'
         + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
         + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
-        + 'Which day did you train? It counts toward your streak and that week on your Journey.</div>'
-        + '<input id="backdateInput" type="date" value="' + dateDefault + '" max="' + forgeLocalDateStr(new Date()) + '" '
+        + 'Which day did you train? </div>'
+        + '<input id="backdateInput" type="date" value="' + dateDefault + '" min="' + forgeLocalDateStr(new Date(getWeekStart(0))) + '" max="' + forgeLocalDateStr(new Date()) + '" '
         + 'style="width:100%;padding:10px 12px;margin-bottom:14px;border-radius:10px;'
         + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
         + 'font-size:14px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;color-scheme:dark;"/>'
-        + '<button onclick="chooseBackdateDate(document.getElementById(\'backdateInput\').value)" style="display:block;width:100%;padding:12px;'
+        + '<button onclick="chooseBackdateDate(document.getElementById(\'backdateInput\').value)" style="display:block;width:100%;position:relative;overflow:hidden;'
+        + 'padding:12px 14px;margin-bottom:8px;border-radius:12px;cursor:pointer;'
+        + 'background:#0d0d0d;border:1px solid var(--grey-light);color:var(--gold-metal);'
+        + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;">CONTINUE'
+        + '<div style="position:absolute;bottom:0;left:0;right:0;height:1.5px;'
+        + 'background:linear-gradient(to right,transparent,var(--gold-metal),transparent);"></div>'
+        + '</button>'
         + 'border-radius:12px;border:none;background:var(--gold-metal);color:#0a0a0a;'
         + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;'
         + 'cursor:pointer;margin-bottom:8px;">CONTINUE</button>'
@@ -4014,7 +4020,14 @@ function startBackdatedWorkout() {
 
 function chooseBackdateDate(dateStr) {
   if (!state.modal || !dateStr) return;
-  if (dateStr > forgeLocalDateStr(new Date())) return; // no future dates (YYYY-MM-DD compares correctly as text)
+  // Current week only (Monday through today) - no past weeks, no future dates.
+  // YYYY-MM-DD strings compare correctly as text.
+  var weekStartStr = forgeLocalDateStr(new Date(getWeekStart(0)));
+  var todayStr = forgeLocalDateStr(new Date());
+  if (dateStr > todayStr || dateStr < weekStartStr) {
+    alert('Pick a day from this week (Monday through today).');
+    return;
+  }
   state.modal.date = dateStr;
   state.modal.step = null;
   render();

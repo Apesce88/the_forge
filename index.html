@@ -3460,7 +3460,7 @@ function closeProfileSheet() {
     if (wk.level === 0) {
       // Base box: invisible at rest, pulses in on a fixed 30s wall-clock rhythm.
       // Negative delay = current position in the cycle, so re-renders don't restart it.
-      var basePhase = ((Date.now() % 30000) / 1000).toFixed(2);
+      var basePhase = ((Date.now() % 15000) / 1000).toFixed(2);
       return '<div class="streak-broken base-pulse" style="animation-delay:-' + basePhase + 's;">'
         + '<div class="week-name">Base</div></div>';
     }

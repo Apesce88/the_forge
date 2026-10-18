@@ -2078,6 +2078,30 @@ function renderModal() {
         + '</div></div>';
     }
 
+    // Step 0 — backdated workout: pick the day to log
+    if (m.step === 'date') {
+      var yest = new Date();
+      yest.setDate(yest.getDate() - 1);
+      var dateDefault = m.date || forgeLocalDateStr(yest);
+      return '<div class="modal-overlay" onclick="closeModal()">'
+        + '<div class="modal-sheet" onclick="event.stopPropagation()">'
+        + '<div class="modal-handle"></div>'
+        + '<div class="modal-title">Log a Missed Day</div>'
+        + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
+        + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
+        + 'Which day did you train? It counts toward your streak and that week on your Journey.</div>'
+        + '<input id="backdateInput" type="date" value="' + dateDefault + '" max="' + forgeLocalDateStr(new Date()) + '" '
+        + 'style="width:100%;padding:10px 12px;margin-bottom:14px;border-radius:10px;'
+        + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
+        + 'font-size:14px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;color-scheme:dark;"/>'
+        + '<button onclick="chooseBackdateDate(document.getElementById(\'backdateInput\').value)" style="display:block;width:100%;padding:12px;'
+        + 'border-radius:12px;border:none;background:var(--gold-metal);color:#0a0a0a;'
+        + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;'
+        + 'cursor:pointer;margin-bottom:8px;">CONTINUE</button>'
+        + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
+        + '</div></div>';
+    }
+    
     // Step 1 — choose focus
     var fOrder = ['upper','lower','power','dynamic','endurance','recovery'];
     var fHTML = fOrder.map(function(k) {
@@ -3036,7 +3060,7 @@ function renderJourney() {
   
   if (state.activeSession) {
     var s = state.activeSession;
-    var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
+    var elapsed = Math.floor((Date.now() - (s._realStart || s.startedAt)) / 60000);
     var totalSets = s.exercises.reduce(function(acc, ex) { return acc + ex.sets.length; }, 0);
     var completedEx = s.exercises.filter(function(ex) { return ex.completed; }).length;
     sessionHTML = '<div style="margin:0 16px 20px;background:#0d0d0d;'
@@ -3060,6 +3084,10 @@ function renderJourney() {
       + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
       + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
       + 'letter-spacing:0.1em;cursor:pointer;">+ LOG OFF-PLAN WORKOUT</button>'
+      + '<button onclick="startBackdatedWorkout()" style="display:block;width:100%;margin-top:8px;'
+      + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
+      + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
+      + 'letter-spacing:0.1em;cursor:pointer;">+ LOG A MISSED DAY</button>'
       + '</div>';
   }
 
@@ -3973,6 +4001,25 @@ function startFreestyle() {
   openModal({ mode: 'freestyle' });
 }
 
+// YYYY-MM-DD in the user's local time zone (never use toISOString for this - it is UTC)
+function forgeLocalDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// "Log a missed day": same flow as off-plan, with a date step first
+function startBackdatedWorkout() {
+  if (state.activeSession) return;
+  openModal({ mode: 'freestyle', backdate: true, step: 'date', date: null });
+}
+
+function chooseBackdateDate(dateStr) {
+  if (!state.modal || !dateStr) return;
+  if (dateStr > forgeLocalDateStr(new Date())) return; // no future dates (YYYY-MM-DD compares correctly as text)
+  state.modal.date = dateStr;
+  state.modal.step = null;
+  render();
+}
+  
 function chooseFreestyleFocus(focus) {
   if (!state.modal) return;
   state.modal.step = 'name';
@@ -3986,13 +4033,22 @@ function beginFreestyle() {
   var f = FREESTYLE_FOCUS[focus];
   if (!f || state.activeSession) return;
   var customName = ((state.modal && state.modal.freestyleName) || '').trim();
+  // Backdated ("log a missed day"): anchor the log to noon local time on the chosen date.
+  // Build it from parts - new Date("2026-09-10") parses as UTC and lands on the wrong day in US time zones.
+  var backdate = state.modal && state.modal.date;
+  var startTs = Date.now();
+  if (backdate) {
+    var p = backdate.split('-');
+    startTs = Math.min(new Date(+p[0], +p[1] - 1, +p[2], 12, 0, 0).getTime(), Date.now());
+  }
   state.activeSession = {
     id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     dayIndex: null,
     dayName: customName || f.label,
     dayColor: f.color,
     freestyle: true,
-    startedAt: Date.now(),
+    startedAt: startTs,
+    _realStart: backdate ? Date.now() : null,
     completedAt: null,
     user_id: null,
     exercises: []
@@ -4095,7 +4151,7 @@ function renderActiveWorkout() {
   var s = state.activeSession;
   if (!s) return '<div class="lib-header"><div class="lib-title">No Active Session</div></div>';
 
-var elapsed = Math.floor((Date.now() - s.startedAt) / 60000);
+var elapsed = Math.floor((Date.now() - (s._realStart || s.startedAt)) / 60000);
   var dc = s.freestyle ? 'grey' : (s.dayColor || 'lime');
   var acColor = dc === 'red' ? 'var(--red)' : dc === 'grey' ? 'var(--text-sec)' : dc === 'gold' ? 'var(--gold)' : 'var(--lime)';
   var acBg    = dc === 'red' ? 'rgba(239,68,68,0.06)'   : dc === 'grey' ? 'rgba(160,160,160,0.06)'  : dc === 'gold' ? 'rgba(245,158,11,0.06)' : 'rgba(163,230,53,0.06)';
@@ -4514,9 +4570,18 @@ function removeSet(ei, si) {
 
 function finishWorkout() {
   if (!state.activeSession) return;
-  state.activeSession.completedAt = Date.now();
+  var sess = state.activeSession;
+  if (sess._realStart) {
+    // Backdated log: duration = real time spent entering it, not the days between
+    sess.completedAt = sess.startedAt + (Date.now() - sess._realStart);
+  } else {
+    sess.completedAt = Date.now();
+  }
+  delete sess._realStart;
   var logs = loadLogs();
-  logs.push(state.activeSession);
+  logs.push(sess);
+  // Keep storage in date order so a backdated log sits in its real place in Journey history
+  logs.sort(function(a, b) { return (a.completedAt || a.startedAt) - (b.completedAt || b.startedAt); });
   saveLogs(logs);
   var dayIndex = state.activeSession.dayIndex;
   state.activeSession = null;

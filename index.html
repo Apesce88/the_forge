@@ -2078,33 +2078,58 @@ function renderModal() {
         + '</div></div>';
     }
 
-    // Step 0 — backdated workout: pick the day to log
+    // Step 0 — backdated workout: pick which day this week to log
     if (m.step === 'date') {
-      var yest = new Date();
-      yest.setDate(yest.getDate() - 1);
-      var dateDefault = m.date || forgeLocalDateStr(yest);
+      var bdMonths = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      var bdDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var bdBase = new Date(getWeekStart(0));
+      var bdToday = forgeLocalDateStr(new Date());
+      // Dates that already have a (non-archived) log, so the picker can tag them
+      var bdLogged = {};
+      loadLogs().forEach(function(l) {
+        if (l.archived) return;
+        bdLogged[forgeLocalDateStr(new Date(l.completedAt || l.startedAt))] = true;
+      });
+      var bdHTML = '';
+      for (var bdI = 0; bdI < 7; bdI++) {
+        var bdDate = new Date(bdBase.getFullYear(), bdBase.getMonth(), bdBase.getDate() + bdI);
+        var bdStr = forgeLocalDateStr(bdDate);
+        if (bdStr > bdToday) break; // Monday through today only
+        var bdTags = '';
+        if (bdLogged[bdStr]) {
+          bdTags += '<span style="font-size:9px;font-family:var(--font-body);letter-spacing:0.12em;'
+            + 'color:var(--lime);border:1px solid var(--lime-dark);border-radius:4px;padding:2px 6px;">LOGGED</span>';
+        }
+        if (bdStr === bdToday) {
+          bdTags += '<span style="font-size:9px;font-family:var(--font-body);letter-spacing:0.12em;'
+            + 'color:var(--gold-metal);border:1px solid var(--gold-dark);border-radius:4px;padding:2px 6px;">TODAY</span>';
+        }
+        bdHTML += '<button onclick="chooseBackdateDate(\'' + bdStr + '\')" '
+          + 'style="display:block;width:100%;text-align:left;position:relative;overflow:hidden;'
+          + 'background:#0d0d0d;border:1px solid var(--grey-light);border-radius:12px;'
+          + 'padding:12px 14px;margin-bottom:8px;cursor:pointer;">'
+          + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+          + '<div>'
+          + '<div style="font-family:var(--font-title);font-size:14px;font-weight:700;color:var(--text-pri);">'
+          + bdDays[bdDate.getDay()] + '</div>'
+          + '<div style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);margin-top:3px;">'
+          + bdMonths[bdDate.getMonth()] + ' ' + bdDate.getDate() + '</div>'
+          + '</div>'
+          + '<div style="display:flex;gap:6px;">' + bdTags + '</div>'
+          + '</div>'
+          + '<div style="position:absolute;bottom:0;left:0;right:0;height:1.5px;'
+          + 'background:linear-gradient(to right,transparent,var(--gold-metal),transparent);"></div>'
+          + '</button>';
+      }
       return '<div class="modal-overlay" onclick="closeModal()">'
         + '<div class="modal-sheet" onclick="event.stopPropagation()">'
         + '<div class="modal-handle"></div>'
         + '<div class="modal-title">Log a Missed Day</div>'
         + '<div style="font-size:11px;font-family:var(--font-body);color:var(--text-mute);'
         + 'letter-spacing:0.03em;line-height:1.5;margin-bottom:14px;">'
-        + 'Which day did you train? </div>'
-        + '<input id="backdateInput" type="date" value="' + dateDefault + '" min="' + forgeLocalDateStr(new Date(getWeekStart(0))) + '" max="' + forgeLocalDateStr(new Date()) + '" '
-        + 'style="width:100%;padding:10px 12px;margin-bottom:14px;border-radius:10px;'
-        + 'background:var(--grey-mid);border:1px solid var(--grey-light);color:var(--text-pri);'
-        + 'font-size:14px;font-family:var(--font-body);letter-spacing:0.02em;outline:none;color-scheme:dark;"/>'
-        + '<button onclick="chooseBackdateDate(document.getElementById(\'backdateInput\').value)" style="display:block;width:100%;position:relative;overflow:hidden;'
-        + 'padding:12px 14px;margin-bottom:8px;border-radius:12px;cursor:pointer;'
-        + 'background:#0d0d0d;border:1px solid var(--grey-light);color:var(--gold-metal);'
-        + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;">CONTINUE'
-        + '<div style="position:absolute;bottom:0;left:0;right:0;height:1.5px;'
-        + 'background:linear-gradient(to right,transparent,var(--gold-metal),transparent);"></div>'
-        + '</button>'
-        + 'border-radius:12px;border:none;background:var(--gold-metal);color:#0a0a0a;'
-        + 'font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:0.08em;'
-        + 'cursor:pointer;margin-bottom:8px;">CONTINUE</button>'
-        + '<button class="btn-cancel" onclick="closeModal()">Cancel</button>'
+        + 'Tap the day you trained. This week only.</div>'
+        + bdHTML
+        + '<div style="margin-top:8px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
         + '</div></div>';
     }
     

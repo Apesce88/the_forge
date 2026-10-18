@@ -197,6 +197,11 @@
     .day-num { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; }
     .day-widget-lg .day-num { font-size: 28px; }
     .day-lbl { font-size: 7.5px; letter-spacing: 0.1em; color: var(--text-mute); margin-top: 3px; }
+    /* ── Journey streak row — compact layout only (padding/margins; no font or color changes) ── */
+    .jr-row .day-widget-lg { padding: 6px 6px; }
+    .jr-row .week-panel { padding: 8px 14px; }
+    .jr-row .week-top { margin-bottom: 3px; }
+    .jr-row .streak-broken { padding: 8px 12px; }
 
     .cat-tab.period-tab.active {
       background: rgba(255,255,255,0.08);
@@ -3048,9 +3053,9 @@ function renderJourney() {
 
   var statsHTML = '';
 
-  statsHTML += '<div style="display:flex;gap:8px;padding:0 16px 10px;align-items:stretch;">'
-    + '<div style="flex:1;">' + dayWidgetHTML(computeDayStreak(), true, true) + '</div>'
-    + '<div style="flex:1.4;">' + weekPanelHTML() + '</div>'
+  statsHTML += '<div class="jr-row" style="display:flex;justify-content:space-between;gap:8px;padding:0 16px 10px;align-items:stretch;">'
+    + '<div style="flex:0 0 25%;">' + dayWidgetHTML(computeDayStreak(), true, true) + '</div>'
+    + '<div style="flex:0 0 50%;">' + weekPanelHTML() + '</div>'
     + '</div>';
   
   // Progressive overload spotlight — only when earned
@@ -3075,15 +3080,11 @@ function renderJourney() {
       }).join('')
     + '</div>';
 
-  // Stat card grid — compact, scoped to the toggled period
-  statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 16px 6px;">'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.count + '</div><div class="stat-label-sm">Workouts</div></div>'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + fmtVol(stats.totalVol) + '</div><div class="stat-label-sm">Total Vol</div></div>'
-    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.runDist.toFixed(1) + '<span style="font-size:9px;color:var(--text-sec);"> mi</span></div><div class="stat-label-sm">Run</div></div>'
-    + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 16px 16px;">'
+  // Stat card grid — Upper / Lower / Run, scoped to the toggled period
+  statsHTML += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 16px 16px;">'
     + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--lime);">' + fmtVol(stats.upperVol) + '</div><div class="stat-label-sm">Upper Vol</div></div>'
     + '<div class="stat-card-sm"><div class="stat-num-sm" style="color:var(--red);">' + fmtVol(stats.lowerVol) + '</div><div class="stat-label-sm">Lower Vol</div></div>'
+    + '<div class="stat-card-sm"><div class="stat-num-sm">' + stats.runDist.toFixed(1) + '<span style="font-size:9px;color:var(--text-sec);"> mi</span></div><div class="stat-label-sm">Run</div></div>'
     + '</div>';
 
   // ── Active session card ──
@@ -3110,8 +3111,7 @@ function renderJourney() {
       + '</div>';
   } else {
     sessionHTML = '<div class="lib-section-pad">'
-      + '<div class="day-empty-tier">No active session.<br>Start a workout from any day card.</div>'
-      + '<button onclick="startFreestyle()" style="display:block;width:100%;margin-top:10px;'
+      + '<button onclick="startFreestyle()" style="display:block;width:100%;margin-top:0;'
       + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
       + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
       + 'letter-spacing:0.1em;cursor:pointer;">+ LOG OFF-PLAN WORKOUT</button>'

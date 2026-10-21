@@ -154,7 +154,7 @@
       display: flex; flex-direction: column; justify-content: center;
     }
     .week-panel { position: relative; background: #0d0d0d; border-radius: 12px; padding: 12px 14px 11px; }
-    .streak-broken { background: #0d0d0d; border: 1px dashed var(--grey-muted); border-radius: 12px; padding: 12px; text-align: center; }
+    .streak-broken { background: #0d0d0d; border: 1px solid var(--grey-muted); border-radius: 12px; padding: 12px; text-align: center; }
     .streak-broken-txt { font-size: 10px; color: var(--text-mute); font-family: var(--font-body); letter-spacing: 0.04em; line-height: 1.5; }
     /* ── Base box (no streak) — invisible at rest, pulses in once every 30s.
        Cycle 30s: fade in 2s, hold 1.6s, fade out 2.4s (~6s visible), then dark. ── */
@@ -408,7 +408,7 @@
     }
  
     .day-empty-tier {
-      background: #0d0d0d; border: 1.5px dashed var(--grey-muted);
+      background: #0d0d0d; border: 1.5px solid var(--grey-muted);
       border-radius: 12px; padding: 20px; text-align: center;
       font-size: 13px; color: var(--text-mute); font-family: var(--font-body);
       letter-spacing: 0.04em; margin-bottom: 8px;
@@ -533,14 +533,14 @@
  
     .lib-add-btn {
       width: 100%; padding: 14px; border-radius: 14px; margin-top: 8px;
-      border: 1.5px dashed var(--gold-metal); background: var(--gold-dim);
+      border: 1.5px solid var(--gold-metal); background: var(--gold-dim);
       color: var(--gold-metal); font-size: 13px; font-family: var(--font-body);
       letter-spacing: 0.06em; cursor: pointer;
     }
    
     .add-ex-btn {
       width: 100%; padding: 10px; border-radius: 12px; margin-top: 4px;
-      border: 1.5px dashed var(--gold-metal); background: var(--gold-dim);
+      border: 1.5px solid var(--gold-metal); background: var(--gold-dim);
       color: var(--gold-metal); font-size: 12px; font-family: var(--font-body);
       letter-spacing: 0.06em; cursor: pointer;
     }
@@ -1994,7 +1994,7 @@ function renderModal() {
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromSession(\'replace\',' + m.ei + ')" '
       + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
-      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'border:1px solid var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
@@ -2026,7 +2026,7 @@ function renderModal() {
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromSession(\'add\',\'' + escHtml(m.tier || '') + '\')" '
       + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
-      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'border:1px solid var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">Cancel</button></div>'
@@ -2205,7 +2205,7 @@ function renderModal() {
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromField(' + m.di + ')" '
       + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
-      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'border:1px solid var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;">'
@@ -2245,7 +2245,7 @@ function renderModal() {
       + '<div style="max-height:55vh;overflow-y:auto;padding:0 4px;">' + listHTML + '</div>'
       + '<button onclick="openNewExFromDay(' + m.di + ',' + m.ti + ')" '
       + 'style="display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:10px;'
-      + 'border:1px dashed var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
+      + 'border:1px solid var(--grey-muted);background:var(--grey-mid);color:var(--text-sec);'
       + 'font-size:11px;font-family:var(--font-body);letter-spacing:0.08em;cursor:pointer;">'
       + '+ NEW EXERCISE</button>'
       + '<div style="margin-top:12px;">'
@@ -2522,7 +2522,7 @@ function toggleAIConnector() {
 //         return '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px solid var(--grey-light);color:var(--text-sec);">' + t + '</span>';
 //       }).join('')
 //     + '</div>'
-//     + '<div style="padding:14px;border-radius:12px;border:1px dashed var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
+//     + '<div style="padding:14px;border-radius:12px;border:1px solid var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
 //     + '</div>'
 //     + '<div class="forge-mark">The Gauntlet · Test Your Limits</div>';
 // }
@@ -2797,7 +2797,7 @@ function toggleAIConnector() {
 //         return '<span style="font-size:10px;font-family:var(--font-body);letter-spacing:0.06em;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px solid var(--grey-light);color:var(--text-sec);">' + t + '</span>';
 //       }).join('')
 //     + '</div>'
-//     + '<div style="padding:14px;border-radius:12px;border:1px dashed var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
+//     + '<div style="padding:14px;border-radius:12px;border:1px solid var(--grey-muted);text-align:center;font-size:11px;color:var(--text-mute);font-family:var(--font-body);letter-spacing:0.08em;">REGISTRATION &amp; TRACKING · COMING SOON</div>'
 //     + '</div>'
 //     + '<div class="forge-mark">The Gauntlet · Test Your Limits</div>';
 // }
@@ -3124,11 +3124,11 @@ function renderJourney() {
   } else {
     sessionHTML = '<div class="lib-section-pad">'
       + '<button onclick="startFreestyle()" style="display:block;width:100%;margin-top:0;'
-      + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
+      + 'padding:11px;border-radius:12px;border:1px solid var(--grey-muted);'
       + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
       + 'letter-spacing:0.1em;cursor:pointer;">+ LOG OFF-PLAN WORKOUT</button>'
       + '<button onclick="startBackdatedWorkout()" style="display:block;width:100%;margin-top:8px;'
-      + 'padding:11px;border-radius:12px;border:1px dashed var(--grey-muted);'
+      + 'padding:11px;border-radius:12px;border:1px solid var(--grey-muted);'
       + 'background:var(--grey-mid);color:#a0a0a0;font-size:12px;font-family:var(--font-body);'
       + 'letter-spacing:0.1em;cursor:pointer;">+ LOG A MISSED DAY</button>'
       + '</div>';
@@ -3582,7 +3582,7 @@ function renderHeroScreen() {
     // Emblem slot — Phase 13 drops the forged signet emblem in here
     + '<div style="width:76px;height:76px;border-radius:50%;flex-shrink:0;'
     + 'display:flex;align-items:center;justify-content:center;font-size:30px;'
-    + 'background:rgba(210,210,210,0.05);border:1.5px dashed rgba(210,210,210,0.35);'
+    + 'background:rgba(210,210,210,0.05);border:1.5px solid rgba(210,210,210,0.35);'
     + 'box-shadow:0 0 16px rgba(210,210,210,0.12);color:rgba(210,210,210,0.5);">⚔</div>'
 
     + '<div style="min-width:0;flex:1;">'
@@ -3603,7 +3603,7 @@ function renderHeroScreen() {
     + '</div>';
 
   var placeholderCard = function(label, sub) {
-    return '<div style="background:#0d0d0d;border:1px dashed var(--grey-muted);border-radius:12px;padding:12px 10px;text-align:center;">'
+    return '<div style="background:#0d0d0d;border:1px solid var(--grey-muted);border-radius:12px;padding:12px 10px;text-align:center;">'
       + '<div style="font-size:8px;font-family:var(--font-body);letter-spacing:0.14em;color:var(--text-sec);">' + label + '</div>'
       + '<div style="font-size:7px;font-family:var(--font-body);letter-spacing:0.06em;color:var(--text-mute);margin-top:3px;line-height:1.5;">' + sub + '</div>'
       + '</div>';
@@ -4379,7 +4379,7 @@ var elapsed = Math.floor((Date.now() - (s._realStart || s.startedAt)) / 60000);
       // ── Bypassed state ──
       if (ex.bypassed) {
         html += '<div style="text-align:center;padding:16px;font-size:11px;font-family:var(--font-body);'
-          + 'letter-spacing:0.08em;color:var(--text-mute);border:1px dashed var(--grey-muted);border-radius:10px;margin-bottom:8px;">BYPASSED</div>'
+          + 'letter-spacing:0.08em;color:var(--text-mute);border:1px solid var(--grey-muted);border-radius:10px;margin-bottom:8px;">BYPASSED</div>'
           + '<button onclick="undoBypass(' + ei + ')" '
           + 'style="width:100%;padding:8px;border-radius:10px;margin-bottom:8px;'
           + 'border:1px solid var(--grey-light);background:transparent;'
@@ -4508,7 +4508,7 @@ var elapsed = Math.floor((Date.now() - (s._realStart || s.startedAt)) / 60000);
     // Add exercise to this tier (session-only)
     html += '<button onclick="addSessionExercise(' + tierIdx + ')" '
       + 'style="display:block;width:calc(100% - 32px);margin:0 16px 16px;padding:9px;'
-      + 'border-radius:10px;border:1px dashed var(--grey-light);background:var(--grey-mid);'
+      + 'border-radius:10px;border:1px solid var(--grey-light);background:var(--grey-mid);'
       + 'color:var(--text-sec);font-size:11px;font-family:var(--font-body);'
       + 'letter-spacing:0.08em;cursor:pointer;">+ ADD EXERCISE</button>';
   });

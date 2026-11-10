@@ -3782,6 +3782,7 @@ function confirmAddSessionExercise(exId) {
   state.activeSession.exercises.push({
     exName: ex.name,
     tier: state.modal.tier,
+    cat: ex.cat || '',
     type: detectExType(ex.name),
     unit: 'mi',
     fw: ex.fw,
@@ -3801,6 +3802,7 @@ function confirmReplaceSessionExercise(ei, exId) {
   state.activeSession.exercises[ei] = {
     exName: ex.name,
     tier: old.tier,
+    cat: ex.cat || '',
     type: detectExType(ex.name),
     unit: old.unit || 'mi',
     fw: ex.fw,
@@ -3839,6 +3841,28 @@ function logVolume(log) {
   }, 0);
 }
 
+// Upper/lower volume split by each exercise's OWN category, not the day card's color.
+// Category = ex.cat stamped on the log entry, else the library category looked up by name.
+// Core / power / dynamic / recovery / unknown exercises fall back to the day card's
+// color, so they behave exactly as before. libCat is a { exerciseName: cat } map.
+function logVolumeSplit(log, libCat) {
+  var upper = 0, lower = 0;
+  log.exercises.forEach(function(ex) {
+    var vol = ex.sets.reduce(function(a, set) {
+      if (set.loadType === 'bw' || set.loadType === 'distance' || set.loadType === 'height' || set.effortType === 'time' || !set.load) return a;
+      return a + ((parseFloat(set.load) || 0) * (parseInt(set.effort) || 0));
+    }, 0);
+    if (!vol) return;
+    var cat = ex.cat || (libCat && libCat[ex.exName]) || '';
+    if (cat !== 'upper' && cat !== 'lower') {
+      cat = log.dayColor === 'red' ? 'lower' : log.dayColor === 'lime' ? 'upper' : '';
+    }
+    if (cat === 'lower') lower += vol;
+    else if (cat === 'upper') upper += vol;
+  });
+  return { upper: upper, lower: lower };
+}
+  
 function logDistance(log) {
   // Yards converted to miles (1760 yd = 1 mi), summed with mile distances
   return log.exercises.reduce(function(acc, ex) {
@@ -3875,6 +3899,10 @@ function computeJourneyStats(period) {
     overloads: []
   };
 
+  // Library category by exercise name, used to split upper/lower volume per exercise
+  var libCat = {};
+  (state.library || []).forEach(function(l) { if (l.cat) libCat[l.name] = l.cat; });
+  
   // Main lift volume maps: exName → volume
   var thisWeekMains = {};
   var lastWeekMains = {};
@@ -3886,8 +3914,9 @@ function computeJourneyStats(period) {
       stats.count++;
       var vol = logVolume(log);
       stats.totalVol += vol;
-      if (log.dayColor === 'red') stats.lowerVol += vol;
-      else if (log.dayColor === 'lime') stats.upperVol += vol;
+      var split = logVolumeSplit(log, libCat);
+      stats.upperVol += split.upper;
+      stats.lowerVol += split.lower;
       stats.runDist += logDistance(log);
     }
 
@@ -4162,6 +4191,7 @@ function startWorkout(dayIndex) {
           bw: ex.bw,
           equipTab: savedTab,
           mainLift: ex.mainLift === true,
+          cat: ex.cat || '',
           sets: []
         });
       });

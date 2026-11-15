@@ -2461,10 +2461,6 @@ async function geminiAutoFill(name, fw, mb, bw) {
   function escHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
- 
-// ── Boot ───────────────────────────────────────────────────────────────────
-loadData();
-render();
 
       
 // ── Tracker Screen ──
@@ -4105,10 +4101,15 @@ function cancelWorkout() {
   render();
   document.getElementById('screen').scrollTop = 0;
 }
+ 
+// ── Boot ───────────────────────────────────────────────────────────────────
+loadData();
+render();
   
 </script>
 
 <script>
+  
   // ============================================================
   // SERVICE WORKER REGISTRATION
   // Tells the browser to use sw.js as the cache controller.

@@ -48,4 +48,3 @@ function detectGroup(t){
     return{fw:fw||pick(db.fw),mb:mb||pick(db.mb),bw:bw||pick(db.bw)};
   }
 
-  Extract tabled Gemini code

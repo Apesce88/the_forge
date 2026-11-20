@@ -5,13 +5,16 @@
 // That version mismatch is what triggers the old cache to clear.
 // ============================================================
 
-const CACHE_NAME = 'forge-v10.54';
+const CACHE_NAME = 'forge-v10.55';
 
 // These are the files we pre-cache when the SW first installs.
 // The app can load fully from cache even with no network.
 const ASSETS = [
   '/the_forge/',
-  '/the_forge/index.html'
+  '/the_forge/index.html',
+  '/the_forge/forge-gemini-tabled.js',
+  '/the_forge/forge-grounds.js',
+  '/the_forge/forge-day.js'
 ];
 
 // ---- INSTALL ----
